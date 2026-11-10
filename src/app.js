@@ -134,28 +134,90 @@ function escHTML(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ── ESTRELLAS HERO ──
+// ── ESTRELLAS HERO con destellos ──
 const canvas = document.getElementById('stars');
 if (canvas) {
   const ctx = canvas.getContext('2d');
   function resizeC() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resizeC();
   window.addEventListener('resize', resizeC);
-  const stars = Array.from({length: 160}, () => ({
+
+  // Estrellas normales
+  const stars = Array.from({length: 180}, () => ({
     x: Math.random(), y: Math.random(),
-    r: Math.random() * 1.2 + .2,
-    a: Math.random(), speed: Math.random() * .0004 + .0001
+    r: Math.random() * 1.3 + .2,
+    a: Math.random() * Math.PI * 2,
+    speed: Math.random() * .005 + .002
   }));
+
+  // Estrellas con destello en cruz (sparkle)
+  const sparkles = Array.from({length: 18}, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 2.5 + 1.5,
+    a: Math.random() * Math.PI * 2,
+    speed: Math.random() * .008 + .003,
+    rot: Math.random() * Math.PI
+  }));
+
+  function drawCross(x, y, size, alpha) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(Math.PI / 4);
+    ctx.globalAlpha = alpha;
+    // Cruz de 4 puntas
+    for (let i = 0; i < 4; i++) {
+      ctx.rotate(Math.PI / 2);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      const grad = ctx.createLinearGradient(0, 0, 0, -size * 3);
+      grad.addColorStop(0, 'rgba(255,240,180,1)');
+      grad.addColorStop(1, 'rgba(255,240,180,0)');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = size * .6;
+      ctx.lineCap = 'round';
+      ctx.lineTo(0, -size * 3);
+      ctx.stroke();
+    }
+    // Punto central brillante
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(0, 0, size * .8, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,248,210,1)';
+    ctx.fill();
+    ctx.restore();
+  }
+
   function drawStars() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Estrellas normales
     stars.forEach(s => {
       s.a += s.speed;
+      const alpha = .1 + .5 * Math.abs(Math.sin(s.a));
       ctx.beginPath();
       ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(240,220,180,${.15 + .35 * Math.abs(Math.sin(s.a))})`;
+      ctx.fillStyle = `rgba(240,220,160,${alpha})`;
       ctx.fill();
     });
+
+    // Sparkles con cruz
+    sparkles.forEach(s => {
+      s.a += s.speed;
+      const alpha = Math.max(0, Math.sin(s.a));
+      if (alpha > 0.05) {
+        drawCross(s.x * canvas.width, s.y * canvas.height, s.r, alpha * .9);
+      }
+      // Reubicar cuando desaparece
+      if (s.a > Math.PI * 2) {
+        s.a = 0;
+        s.x = Math.random();
+        s.y = Math.random();
+        s.r = Math.random() * 2.5 + 1.5;
+      }
+    });
+
     requestAnimationFrame(drawStars);
   }
+
   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) drawStars();
 }
