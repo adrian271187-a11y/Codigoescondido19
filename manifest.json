@@ -1,0 +1,39 @@
+{
+  "name": "Código Escondido 19",
+  "short_name": "CE19",
+  "description": "Decodificando la Verdad por medio del Espíritu Santo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#c9a84c",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["education", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Enseñanzas",
+      "url": "/ensenanzas.html",
+      "description": "Ver todas las enseñanzas"
+    },
+    {
+      "name": "Herramientas",
+      "url": "/index.html#herramientas",
+      "description": "Traductor y Calendario"
+    }
+  ]
+}

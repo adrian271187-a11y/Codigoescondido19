@@ -7,6 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/style.css">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c9a84c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CE19">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <style>
     /* ── HERO ENSEÑANZAS ── */
     .ens-hero {
@@ -100,7 +107,17 @@
     }
 
     @media(max-width:600px) {
-      .ens-grid, .ens-grid.wide { grid-template-columns:1fr; }
+      .ens-grid, .ens-grid.wide { grid-template-columns:1fr 1fr; gap:.6rem; }
+      .ens-card.tall img { aspect-ratio:3/4; }
+      .ens-card-body { padding:.6rem .8rem; }
+      .ens-card-title { font-size:.78rem; }
+      .filtros { gap:.4rem; padding:1.2rem .8rem 0; }
+      .filtro-btn { font-size:.72rem; padding:.4rem .8rem; }
+      /* Lightbox móvil: imagen ocupa toda la pantalla */
+      #lightbox { padding:.3rem; align-items:center; }
+      #lightbox img { max-height:85vh; border-radius:4px; }
+      #lightbox-caption { font-size:.72rem; bottom:.5rem; }
+      #lightbox-close { top:.5rem; right:.8rem; font-size:1.6rem; }
     }
   </style>
 </head>
@@ -345,6 +362,7 @@
 </div>
 
 <script type="module" src="src/app.js"></script>
+<script src="src/pwa.js"></script>
 <script>
 // ── LIGHTBOX ──
 function abrirLightbox(src, caption) {
