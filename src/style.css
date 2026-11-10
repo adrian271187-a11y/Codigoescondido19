@@ -27,9 +27,9 @@ body {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 2.5rem;
-  background: rgba(10,10,15,.9);
+  background: rgba(59,26,0,.96);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(201,168,76,.18);
+  border-bottom: 1px solid rgba(232,93,4,.18);
 }
 .logo {
   font-family: 'Cinzel', serif; font-weight: 900; font-size: 1rem;
@@ -47,7 +47,7 @@ body {
 }
 .btn-nav:hover { background: var(--dorado2) !important; }
 .btn-nav-out {
-  border: 1px solid rgba(201,168,76,.4); color: var(--gris) !important;
+  border: 1px solid rgba(232,93,4,.4); color: var(--gris) !important;
   padding: .45rem 1rem;
 }
 .btn-nav-out:hover { color: var(--dorado) !important; border-color: var(--dorado) !important; }
@@ -58,7 +58,7 @@ body {
   align-items: center; justify-content: center;
   text-align: center; padding: 6rem 2rem 4rem;
   position: relative; overflow: hidden;
-  background: radial-gradient(ellipse 60% 55% at 50% 40%, rgba(90,63,160,.35) 0%, transparent 70%);
+  background: radial-gradient(ellipse 60% 55% at 50% 40%, rgba(122,40,0,.35) 0%, transparent 70%);
 }
 #stars { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .hero-content { position: relative; z-index: 1; }
@@ -101,7 +101,7 @@ h1 {
   padding: .85rem 2rem; border: 1px solid var(--dorado);
   text-decoration: none; display: inline-block; transition: background .2s;
 }
-.btn-outline:hover { background: rgba(201,168,76,.1); }
+.btn-outline:hover { background: rgba(232,93,4,.1); }
 .btn-danger {
   background: var(--rojo); color: #fff;
   font-family: 'Lato', sans-serif; font-weight: 700;
@@ -129,7 +129,7 @@ h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: clamp(1.6rem, 4v
   padding: .2rem .6rem; margin-bottom: .6rem;
 }
 .badge-publico { background: rgba(39,174,96,.15); color: #2ecc71; }
-.badge-miembros { background: rgba(90,63,160,.3); color: var(--dorado2); }
+.badge-miembros { background: rgba(122,40,0,.3); color: var(--dorado2); }
 .post-title { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--blanco); margin-bottom: .5rem; }
 .post-text { font-size: .88rem; color: var(--gris); line-height: 1.6; }
 .post-fecha { font-size: .75rem; color: rgba(148,148,164,.5); margin-top: .75rem; }
@@ -144,7 +144,7 @@ h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: clamp(1.6rem, 4v
 .tool-desc { font-size: .88rem; color: var(--gris); margin-bottom: 1.2rem; }
 .tool-body { display: flex; flex-direction: column; gap: .8rem; }
 .tool-body textarea, .tool-body input[type="date"] {
-  background: var(--oscuro); border: 1px solid rgba(201,168,76,.2);
+  background: var(--oscuro); border: 1px solid rgba(232,93,4,.2);
   color: var(--blanco); font-family: 'Lato', sans-serif; font-size: .9rem;
   padding: .7rem 1rem; resize: vertical; width: 100%;
 }
@@ -199,7 +199,7 @@ h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: clamp(1.6rem, 4v
 .field { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1rem; }
 .field label { font-size: .75rem; letter-spacing: .12em; color: var(--dorado); font-weight: 700; }
 .field input, .field select, .field textarea {
-  background: var(--oscuro); border: 1px solid rgba(201,168,76,.2);
+  background: var(--oscuro); border: 1px solid rgba(232,93,4,.2);
   color: var(--blanco); font-family: 'Lato', sans-serif; font-size: .9rem;
   padding: .7rem 1rem; width: 100%;
 }
@@ -214,7 +214,7 @@ h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: clamp(1.6rem, 4v
 /* ── ADMIN ── */
 .admin-wrap { max-width: 900px; margin: 6rem auto 3rem; padding: 2rem; }
 .admin-title { font-family: 'Cinzel', serif; color: var(--dorado); font-size: 1.8rem; margin-bottom: 1.5rem; }
-.admin-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid rgba(201,168,76,.2); }
+.admin-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid rgba(232,93,4,.2); }
 .atab {
   padding: .75rem 1.5rem; background: none; border: none;
   color: var(--gris); font-family: 'Lato', sans-serif; font-size: .88rem;
@@ -242,7 +242,7 @@ h2 { font-family: 'Cinzel', serif; font-weight: 700; font-size: clamp(1.6rem, 4v
 .perfil-card h3 { font-family: 'Cinzel', serif; color: var(--dorado); text-align: left; }
 
 /* ── FOOTER ── */
-footer { background: var(--oscuro); border-top: 1px solid rgba(201,168,76,.12); padding: 2rem; text-align: center; }
+footer { background: var(--oscuro); border-top: 1px solid rgba(232,93,4,.12); padding: 2rem; text-align: center; }
 footer p { font-size: .78rem; color: var(--gris); }
 footer strong { color: var(--dorado); font-family: 'Cinzel', serif; }
 
