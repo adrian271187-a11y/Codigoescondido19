@@ -39,27 +39,20 @@
 <!-- Arcoíris animado — centro en 500,600 (parte baja del hero) -->
 <div id="arcoiris" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
   <svg id="arc-svg" width="100%" height="100%" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <g id="arc-g" opacity="0">
-  <!-- 7=violeta -->
-  <path d="M   2,700 A 498,498 0 0,1  998,700" fill="none" stroke="#8b5cf6" stroke-width="48"/>
-  <!-- 6=azul -->
-  <path d="M  38,700 A 462,462 0 0,1  962,700" fill="none" stroke="#3b82f6" stroke-width="48"/>
-  <!-- 5=verde -->
-  <path d="M  74,700 A 426,426 0 0,1  926,700" fill="none" stroke="#22c55e" stroke-width="48"/>
-  <!-- 4=amarillo -->
-  <path d="M 110,700 A 390,390 0 0,1  890,700" fill="none" stroke="#eab308" stroke-width="48"/>
-  <!-- 3=naranja -->
-  <path d="M 146,700 A 354,354 0 0,1  854,700" fill="none" stroke="#f97316" stroke-width="48"/>
-  <!-- 2=rojo -->
-  <path d="M 182,700 A 318,318 0 0,1  818,700" fill="none" stroke="#ef4444" stroke-width="48"/>
-  <!-- 1=café -->
-  <path d="M 218,700 A 282,282 0 0,1  782,700" fill="none" stroke="#92400e" stroke-width="48"/>
-  <!-- 0=negro -->
-  <path d="M 254,700 A 246,246 0 0,1  746,700" fill="none" stroke="#333333" stroke-width="48"/>
+    <!-- Colores de afuera hacia adentro: 9=blanco, 8=gris, 7=violeta, 6=azul, 5=verde, 4=amarillo, 3=naranja, 2=rojo, 1=café, 0=negro -->
+<!-- Blanco y gris fuera del grupo para que tengan opacidad independiente y se vean puros -->
+<path id="arc-blanco" d="M -70,700 A 570,570 0 0,1 1070,700" fill="none" stroke="#ffffff" stroke-width="52" opacity="0"/>
+<path id="arc-gris"   d="M -34,700 A 534,534 0 0,1 1034,700" fill="none" stroke="#808080" stroke-width="52" opacity="0"/>
+<g id="arc-g" opacity="0">
+  <path d="M   2,700 A 498,498 0 0,1  998,700" fill="none" stroke="#8b5cf6" stroke-width="52"/>
+  <path d="M  40,700 A 460,460 0 0,1  960,700" fill="none" stroke="#3b82f6" stroke-width="52"/>
+  <path d="M  78,700 A 422,422 0 0,1  922,700" fill="none" stroke="#22c55e" stroke-width="52"/>
+  <path d="M 116,700 A 384,384 0 0,1  884,700" fill="none" stroke="#eab308" stroke-width="52"/>
+  <path d="M 154,700 A 346,346 0 0,1  846,700" fill="none" stroke="#f97316" stroke-width="52"/>
+  <path d="M 192,700 A 308,308 0 0,1  808,700" fill="none" stroke="#ef4444" stroke-width="52"/>
+  <path d="M 230,700 A 270,270 0 0,1  770,700" fill="none" stroke="#92400e" stroke-width="52"/>
+  <path d="M 268,700 A 232,232 0 0,1  732,700" fill="none" stroke="#222222" stroke-width="52"/>
 </g>
-<!-- 8=gris y 9=blanco fuera del grupo — tienen id propios para animarse por separado -->
-<path id="arc-gris"   d="M -34,700 A 534,534 0 0,1 1034,700" fill="none" stroke="#808080" stroke-width="48" opacity="0"/>
-<path id="arc-blanco" d="M -70,700 A 570,570 0 0,1 1070,700" fill="none" stroke="#ffffff" stroke-width="48" opacity="0"/>
   </svg>
 </div>
   <div class="hero-content">
