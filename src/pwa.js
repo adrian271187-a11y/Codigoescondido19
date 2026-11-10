@@ -1,123 +1,206 @@
 // ══════════════════════════════════════════
-//  PWA — Registro del Service Worker
-//        + Modal de instalación
+//  PWA — Service Worker + Modal instalación
+//  Chrome / Edge: botón directo
+//  Safari iOS:    instrucciones paso a paso
+//  Safari macOS:  instrucciones Archivo > Añadir
 // ══════════════════════════════════════════
 
-// ── 1. REGISTRAR SERVICE WORKER ──
+// ── 1. SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('SW registrado:', reg.scope))
-      .catch(err => console.log('SW error:', err));
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 }
 
-// ── 2. MODAL DE INSTALACIÓN ──
-// Inyectar el HTML del modal
-const modalHTML = `
-<div id="pwa-modal" style="display:none;position:fixed;inset:0;z-index:9999;
-     background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
-     align-items:flex-end;justify-content:center;padding:1rem;">
-  <div style="background:#1a1a2e;width:100%;max-width:480px;padding:2rem;
-              border-top:2px solid #c9a84c;position:relative;">
-    <button onclick="cerrarPWA()" style="position:absolute;top:1rem;right:1rem;
-            background:none;border:none;color:#9494a4;font-size:1.3rem;cursor:pointer;">✕</button>
+// ── 2. DETECTORES ──
+const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+const isAndroid = /android/i.test(navigator.userAgent);
+const isSafari  = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isMac     = /macintosh/i.test(navigator.userAgent) && isSafari;
 
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;">
-      <img src="assets/icons/icon-192.png" alt="CE19"
-           style="width:56px;height:56px;border-radius:12px;">
-      <div>
-        <div style="font-family:'Cinzel',serif;color:#c9a84c;font-size:1rem;font-weight:700;">
-          Código Escondido 19
-        </div>
-        <div style="color:#9494a4;font-size:.78rem;margin-top:.2rem;">
-          Instala la app en tu celular
+function yaInstalada() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         navigator.standalone === true;
+}
+
+if (yaInstalada()) { /* ya instalada, no mostrar nada */ } else {
+
+// ── 3. MODAL HTML ──
+document.body.insertAdjacentHTML('beforeend', `
+<div id="pwa-overlay" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,.75); backdrop-filter:blur(8px);
+  align-items:flex-end; justify-content:center; padding:1rem;
+  font-family:'Lato',sans-serif;">
+
+  <div id="pwa-box" style="
+    background:#1a1a2e; width:100%; max-width:460px;
+    border-top:3px solid #c9a84c; position:relative;
+    padding:0; overflow:hidden; border-radius:0 0 4px 4px;">
+
+    <!-- Header con arcoíris -->
+    <div style="
+      background:linear-gradient(135deg,#2d1b69 0%,#1a1a2e 60%);
+      padding:1.5rem 1.5rem 1rem;
+      border-bottom:1px solid rgba(201,168,76,.2);">
+      <button onclick="cerrarPWA()" style="
+        position:absolute; top:.8rem; right:1rem;
+        background:none; border:none; color:#9494a4;
+        font-size:1.4rem; cursor:pointer; line-height:1;">✕</button>
+
+      <div style="display:flex; align-items:center; gap:1rem;">
+        <img src="assets/icons/icon-192.png" style="
+          width:60px; height:60px; border-radius:14px;
+          border:2px solid rgba(201,168,76,.4);" alt="CE19">
+        <div>
+          <div style="font-family:'Cinzel',serif; color:#c9a84c;
+                      font-size:1.05rem; font-weight:700;">
+            Código Escondido 19
+          </div>
+          <div style="color:#9494a4; font-size:.78rem; margin-top:.2rem;">
+            codigoescondido19
+          </div>
         </div>
       </div>
+
+      <p style="color:#f0eee8; font-size:.88rem; line-height:1.6;
+                margin:.9rem 0 0;">
+        Instala la app y accede a las enseñanzas, herramientas
+        y el calendario sumerio directamente desde tu pantalla de inicio.
+      </p>
     </div>
 
-    <p style="color:#f0eee8;font-size:.88rem;line-height:1.6;margin-bottom:1.4rem;">
-      Accede a las enseñanzas, herramientas y contenido exclusivo directamente
-      desde tu pantalla de inicio — sin necesidad de abrir el navegador.
-    </p>
+    <!-- Cuerpo según plataforma -->
+    <div style="padding:1.2rem 1.5rem 1.5rem;">
 
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-      <button id="pwa-instalar" onclick="instalarPWA()"
-              style="flex:1;background:#c9a84c;color:#0a0a0f;font-family:'Lato',sans-serif;
-                     font-weight:700;font-size:.88rem;padding:.85rem 1.5rem;
-                     border:none;cursor:pointer;min-width:140px;">
-        📲 Instalar app
-      </button>
-      <button onclick="cerrarPWA()"
-              style="flex:1;background:transparent;color:#9494a4;
-                     font-family:'Lato',sans-serif;font-size:.85rem;
-                     padding:.85rem 1.5rem;border:1px solid rgba(201,168,76,.3);
-                     cursor:pointer;min-width:120px;">
+      <!-- Chrome / Edge: botón directo -->
+      <div id="pwa-chrome">
+        <button onclick="instalarPWA()" id="pwa-btn-instalar" style="
+          width:100%; background:#c9a84c; color:#0a0a0f;
+          font-family:'Lato',sans-serif; font-weight:700;
+          font-size:.95rem; padding:1rem; border:none;
+          cursor:pointer; letter-spacing:.05em;
+          display:flex; align-items:center; justify-content:center; gap:.6rem;">
+          <span style="font-size:1.2rem;">📲</span> Instalar app gratis
+        </button>
+        <p style="color:#9494a4; font-size:.75rem; text-align:center;
+                  margin:.6rem 0 0;">
+          Sin App Store · Sin Play Store · Gratis
+        </p>
+      </div>
+
+      <!-- Safari iOS: instrucciones -->
+      <div id="pwa-ios" style="display:none;">
+        <p style="color:#c9a84c; font-weight:700; font-size:.85rem;
+                  margin:0 0 .8rem;">Instalar en iPhone / iPad:</p>
+        <div style="display:flex; flex-direction:column; gap:.6rem;">
+          <div style="display:flex; align-items:center; gap:.8rem;
+                      background:rgba(201,168,76,.08); padding:.7rem 1rem;">
+            <span style="font-size:1.5rem; min-width:2rem;">1️⃣</span>
+            <span style="color:#f0eee8; font-size:.85rem;">
+              Toca el botón <strong style="color:#c9a84c;">Compartir</strong>
+              <span style="font-size:1rem;"> ⬆️</span> en la barra de Safari
+            </span>
+          </div>
+          <div style="display:flex; align-items:center; gap:.8rem;
+                      background:rgba(201,168,76,.08); padding:.7rem 1rem;">
+            <span style="font-size:1.5rem; min-width:2rem;">2️⃣</span>
+            <span style="color:#f0eee8; font-size:.85rem;">
+              Desplázate y toca
+              <strong style="color:#c9a84c;">"Agregar a pantalla de inicio"</strong>
+            </span>
+          </div>
+          <div style="display:flex; align-items:center; gap:.8rem;
+                      background:rgba(201,168,76,.08); padding:.7rem 1rem;">
+            <span style="font-size:1.5rem; min-width:2rem;">3️⃣</span>
+            <span style="color:#f0eee8; font-size:.85rem;">
+              Toca <strong style="color:#c9a84c;">"Agregar"</strong>
+              en la esquina superior derecha
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Safari macOS -->
+      <div id="pwa-mac" style="display:none;">
+        <p style="color:#c9a84c; font-weight:700; font-size:.85rem;
+                  margin:0 0 .8rem;">Instalar en Mac (Safari):</p>
+        <div style="display:flex; flex-direction:column; gap:.6rem;">
+          <div style="display:flex; align-items:center; gap:.8rem;
+                      background:rgba(201,168,76,.08); padding:.7rem 1rem;">
+            <span style="font-size:1.5rem; min-width:2rem;">1️⃣</span>
+            <span style="color:#f0eee8; font-size:.85rem;">
+              En el menú <strong style="color:#c9a84c;">Archivo</strong>
+              de Safari
+            </span>
+          </div>
+          <div style="display:flex; align-items:center; gap:.8rem;
+                      background:rgba(201,168,76,.08); padding:.7rem 1rem;">
+            <span style="font-size:1.5rem; min-width:2rem;">2️⃣</span>
+            <span style="color:#f0eee8; font-size:.85rem;">
+              Selecciona
+              <strong style="color:#c9a84c;">"Añadir al Dock"</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="cerrarPWA()" style="
+        width:100%; margin-top:.8rem; background:transparent;
+        color:#9494a4; font-family:'Lato',sans-serif;
+        font-size:.82rem; padding:.6rem;
+        border:1px solid rgba(148,148,164,.3); cursor:pointer;">
         Ahora no
       </button>
     </div>
-
-    <!-- Instrucciones iOS (Safari no soporta beforeinstallprompt) -->
-    <div id="pwa-ios" style="display:none;margin-top:1.2rem;padding:1rem;
-         background:rgba(201,168,76,.08);border-left:3px solid #c9a84c;">
-      <p style="color:#c9a84c;font-size:.8rem;font-weight:700;margin-bottom:.5rem;">
-        En iPhone / iPad:
-      </p>
-      <p style="color:#9494a4;font-size:.82rem;line-height:1.6;">
-        1. Toca el botón <strong style="color:#f0eee8;">Compartir</strong> 
-           (el cuadrado con flecha ↑ en Safari)<br>
-        2. Selecciona <strong style="color:#f0eee8;">"Agregar a pantalla de inicio"</strong><br>
-        3. Toca <strong style="color:#f0eee8;">"Agregar"</strong>
-      </p>
-    </div>
-
   </div>
-</div>`;
+</div>
 
-document.body.insertAdjacentHTML('beforeend', modalHTML);
+<!-- Botón fijo en esquina para abrir el modal manualmente -->
+<button id="pwa-fab" onclick="mostrarModal()" style="
+  display:none; position:fixed; bottom:1.5rem; right:1.5rem;
+  z-index:9000; background:#c9a84c; color:#0a0a0f;
+  font-family:'Lato',sans-serif; font-weight:700;
+  font-size:.78rem; padding:.6rem 1rem;
+  border:none; cursor:pointer; letter-spacing:.05em;
+  box-shadow:0 4px 20px rgba(201,168,76,.4);">
+  📲 Instalar app
+</button>
+`);
 
-// ── 3. LÓGICA DE INSTALACIÓN ──
+// ── 4. LÓGICA ──
 let deferredPrompt = null;
 
-// Android / Chrome: capturar el evento de instalación
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
+// Mostrar sección correcta según plataforma
+function configurarPlataforma() {
+  document.getElementById('pwa-chrome').style.display = 'none';
+  document.getElementById('pwa-ios').style.display    = 'none';
+  document.getElementById('pwa-mac').style.display    = 'none';
 
-  // Mostrar modal después de 3 segundos si no lo han cerrado antes
-  const yaRechazo = sessionStorage.getItem('pwa-rechazo');
-  if (!yaRechazo && !estaInstalada()) {
-    setTimeout(mostrarModal, 3000);
+  if (isIOS) {
+    document.getElementById('pwa-ios').style.display = 'block';
+  } else if (isMac) {
+    document.getElementById('pwa-mac').style.display = 'block';
+  } else {
+    document.getElementById('pwa-chrome').style.display = 'block';
   }
-});
-
-// Detectar si ya está instalada
-window.addEventListener('appinstalled', () => {
-  deferredPrompt = null;
-  cerrarPWA();
-  console.log('PWA instalada correctamente');
-});
-
-function estaInstalada() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-         window.navigator.standalone === true;
-}
-
-function esIOS() {
-  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 }
 
 function mostrarModal() {
-  if (estaInstalada()) return;
-  const modal = document.getElementById('pwa-modal');
-  modal.style.display = 'flex';
-
-  // Si es iOS mostrar instrucciones manuales
-  if (esIOS()) {
-    document.getElementById('pwa-instalar').style.display = 'none';
-    document.getElementById('pwa-ios').style.display = 'block';
-  }
+  if (yaInstalada()) return;
+  configurarPlataforma();
+  const overlay = document.getElementById('pwa-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
+
+window.cerrarPWA = function() {
+  document.getElementById('pwa-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  sessionStorage.setItem('pwa-cerrado', '1');
+  // Mostrar FAB para que puedan instalarlo después
+  document.getElementById('pwa-fab').style.display = 'block';
+};
 
 window.instalarPWA = async function() {
   if (!deferredPrompt) return;
@@ -125,17 +208,35 @@ window.instalarPWA = async function() {
   const { outcome } = await deferredPrompt.userChoice;
   deferredPrompt = null;
   cerrarPWA();
+  document.getElementById('pwa-fab').style.display = 'none';
 };
 
-window.cerrarPWA = function() {
-  document.getElementById('pwa-modal').style.display = 'none';
-  sessionStorage.setItem('pwa-rechazo', '1');
-};
-
-// iOS: mostrar modal si no está instalada y es Safari
-if (esIOS() && !estaInstalada()) {
-  const yaRechazo = sessionStorage.getItem('pwa-rechazo');
-  if (!yaRechazo) {
-    setTimeout(mostrarModal, 3000);
+// Chrome / Edge: capturar evento
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostrar FAB siempre en Chrome/Edge
+  document.getElementById('pwa-fab').style.display = 'block';
+  // Modal automático si no lo cerró antes
+  if (!sessionStorage.getItem('pwa-cerrado')) {
+    setTimeout(mostrarModal, 2500);
   }
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  document.getElementById('pwa-fab').style.display = 'none';
+  document.getElementById('pwa-overlay').style.display = 'none';
+});
+
+// iOS / Safari: mostrar modal automático
+if ((isIOS || isMac) && !sessionStorage.getItem('pwa-cerrado')) {
+  setTimeout(mostrarModal, 2500);
 }
+
+// Cerrar al hacer clic fuera del modal
+document.getElementById('pwa-overlay').addEventListener('click', function(e) {
+  if (e.target === this) cerrarPWA();
+});
+
+} // fin if(!yaInstalada)
