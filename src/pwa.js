@@ -7,6 +7,9 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// 2. TODO DENTRO DE IIFE para evitar return fuera de función
+(function() {
+
 function yaInstalada() {
   return window.matchMedia('(display-mode: standalone)').matches ||
          navigator.standalone === true;
@@ -14,11 +17,9 @@ function yaInstalada() {
 
 if (yaInstalada()) return;
 
-const isIOS    = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isMac    = /macintosh/i.test(navigator.userAgent) && isSafari;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 
-// 2. MODAL
+// 3. MODAL
 document.body.insertAdjacentHTML('beforeend', `
 <div id="pwa-overlay" style="display:none;position:fixed;inset:0;z-index:9999;
   background:rgba(42,15,0,.85);backdrop-filter:blur(8px);
@@ -26,7 +27,6 @@ document.body.insertAdjacentHTML('beforeend', `
   font-family:'Lato',sans-serif;">
   <div style="background:#4e2300;width:100%;max-width:460px;
     border-top:3px solid #e85d04;position:relative;border-radius:0 0 6px 6px;overflow:hidden;">
-
     <div style="background:linear-gradient(135deg,#7a2800 0%,#4e2300 60%);
       padding:1.5rem 1.5rem 1rem;border-bottom:1px solid rgba(232,93,4,.2);">
       <button onclick="cerrarPWA()" style="position:absolute;top:.8rem;right:1rem;
@@ -44,7 +44,6 @@ document.body.insertAdjacentHTML('beforeend', `
         Accede a las enseñanzas, herramientas y el calendario sumerio
         directamente desde tu pantalla de inicio.</p>
     </div>
-
     <div style="padding:1.2rem 1.5rem 1.5rem;">
       <div id="pwa-chrome">
         <button onclick="instalarPWA()" style="width:100%;background:#e85d04;color:#fff8f0;
@@ -62,7 +61,7 @@ document.body.insertAdjacentHTML('beforeend', `
           <div style="display:flex;align-items:center;gap:.8rem;
             background:rgba(232,93,4,.1);padding:.7rem 1rem;">
             <span style="font-size:1.4rem;min-width:2rem;">1️⃣</span>
-            <span style="color:#fff8f0;font-size:.85rem;">Toca el botón
+            <span style="color:#fff8f0;font-size:.85rem;">Toca
               <strong style="color:#f48c06;">Compartir ⬆️</strong> en Safari</span>
           </div>
           <div style="display:flex;align-items:center;gap:.8rem;
@@ -149,3 +148,5 @@ if (isIOS && !sessionStorage.getItem('pwa-cerrado')) {
 document.getElementById('pwa-overlay').addEventListener('click', function(e) {
   if (e.target === this) cerrarPWA();
 });
+
+})(); // fin IIFE
