@@ -1,15 +1,15 @@
 :root {
-  --negro:   #0a0a0f;
-  --oscuro:  #12121c;
-  --panel:   #1a1a2e;
-  --dorado:  #c9a84c;
-  --dorado2: #f0cc6e;
-  --blanco:  #f0eee8;
-  --gris:    #9494a4;
-  --violeta: #3d2b6e;
-  --violeta2:#5a3fa0;
-  --rojo:    #c0392b;
-  --verde:   #27ae60;
+  --negro:   #3b1a00;
+  --oscuro:  #4e2300;
+  --panel:   #6b3200;
+  --dorado:  #e85d04;
+  --dorado2: #f48c06;
+  --blanco:  #fff8f0;
+  --gris:    #d4a882;
+  --violeta: #7a2800;
+  --violeta2:#9a3800;
+  --rojo:    #dc2626;
+  --verde:   #e85d04;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
