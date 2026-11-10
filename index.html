@@ -36,6 +36,23 @@
 <!-- HERO -->
 <section id="hero">
   <canvas id="stars"></canvas>
+<!-- Arcoíris animado -->
+<div id="arcoiris" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
+  <svg id="arc-svg" width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <g id="arc-g" opacity="0">
+      <path d="M -60,0 A 560,560 0 0,1 1060,0" fill="none" stroke="#ffffff" stroke-width="52"/>
+      <path d="M -24,0 A 524,524 0 0,1 1024,0" fill="none" stroke="#bbbbbb" stroke-width="52"/>
+      <path d="M  12,0 A 488,488 0 0,1  988,0" fill="none" stroke="#8b5cf6" stroke-width="52"/>
+      <path d="M  48,0 A 452,452 0 0,1  952,0" fill="none" stroke="#3b82f6" stroke-width="52"/>
+      <path d="M  84,0 A 416,416 0 0,1  916,0" fill="none" stroke="#22c55e" stroke-width="52"/>
+      <path d="M 120,0 A 380,380 0 0,1  880,0" fill="none" stroke="#eab308" stroke-width="52"/>
+      <path d="M 156,0 A 344,344 0 0,1  844,0" fill="none" stroke="#f97316" stroke-width="52"/>
+      <path d="M 192,0 A 308,308 0 0,1  808,0" fill="none" stroke="#ef4444" stroke-width="52"/>
+      <path d="M 228,0 A 272,272 0 0,1  772,0" fill="none" stroke="#92400e" stroke-width="52"/>
+      <path d="M 264,0 A 236,236 0 0,1  736,0" fill="none" stroke="#333333" stroke-width="52"/>
+    </g>
+  </svg>
+</div>
   <div class="hero-content">
     <div class="hero-eyebrow">Decodificando la Verdad</div>
     <h1>Código<br>Escondido</h1>
@@ -152,5 +169,43 @@
 <script type="module" src="src/app.js"></script>
 <script src="src/tools.js"></script>
 <script src="src/pwa.js"></script>
+<script>
+// ── ARCOÍRIS ANIMADO ──
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const g = document.getElementById('arc-g');
+  if (!g) return;
+  let op = 0;
+  let dir = 1;
+  let fase = 0; // 0=subiendo, 1=espera visible, 2=bajando, 3=espera invisible
+
+  const MAX_OP   = 0.45;  // opacidad máxima
+  const STEP_UP  = 0.004; // velocidad de aparición
+  const STEP_DN  = 0.003; // velocidad de desaparición
+  const WAIT_ON  = 180;   // frames visible (~3s a 60fps)
+  const WAIT_OFF = 220;   // frames invisible (~3.6s)
+
+  let wait = 0;
+
+  function animar() {
+    if (fase === 0) {
+      op += STEP_UP;
+      if (op >= MAX_OP) { op = MAX_OP; fase = 1; wait = 0; }
+    } else if (fase === 1) {
+      wait++;
+      if (wait >= WAIT_ON) fase = 2;
+    } else if (fase === 2) {
+      op -= STEP_DN;
+      if (op <= 0) { op = 0; fase = 3; wait = 0; }
+    } else if (fase === 3) {
+      wait++;
+      if (wait >= WAIT_OFF) fase = 0;
+    }
+    g.setAttribute('opacity', op);
+    requestAnimationFrame(animar);
+  }
+  requestAnimationFrame(animar);
+})();
+</script>
 </body>
 </html>
