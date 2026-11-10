@@ -32,7 +32,7 @@ document.body.insertAdjacentHTML('beforeend', `
       <button onclick="cerrarPWA()" style="position:absolute;top:.8rem;right:1rem;
         background:none;border:none;color:#d4a882;font-size:1.4rem;cursor:pointer;">✕</button>
       <div style="display:flex;align-items:center;gap:1rem;">
-        <img src="./assets/icons/icon-192.png" style="width:60px;height:60px;
+        <img src="./assets/ensenanzas/Icons/icon-192.png" style="width:60px;height:60px;
           border-radius:14px;border:2px solid rgba(232,93,4,.5);" alt="CE19">
         <div>
           <div style="font-family:'Cinzel',serif;color:#f48c06;font-size:1.05rem;font-weight:700;">
