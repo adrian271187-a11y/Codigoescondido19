@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar — Código Escondido 19</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body class="auth-page">
+<nav id="navbar">
+  <a href="index.html" class="logo">CE·19</a>
+</nav>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">✦</div>
+    <h2 id="auth-title">Ingresar</h2>
+
+    <div class="tab-row">
+      <button class="tab active" onclick="showTab('login')">Iniciar sesión</button>
+      <button class="tab" onclick="showTab('register')">Registrarse</button>
+    </div>
+
+    <div id="msg-error" class="msg-error" style="display:none"></div>
+    <div id="msg-ok" class="msg-ok" style="display:none"></div>
+
+    <!-- LOGIN -->
+    <form id="form-login">
+      <div class="field">
+        <label>Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="tucorreo@email.com" required>
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" id="login-pass" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-primary full">Ingresar</button>
+      <p class="auth-link"><a href="#" onclick="showReset()">¿Olvidaste tu contraseña?</a></p>
+    </form>
+
+    <!-- REGISTRO -->
+    <form id="form-register" style="display:none">
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="reg-name" placeholder="Tu nombre" required>
+      </div>
+      <div class="field">
+        <label>Correo electrónico</label>
+        <input type="email" id="reg-email" placeholder="tucorreo@email.com" required>
+      </div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" required>
+      </div>
+      <button type="submit" class="btn-primary full">Crear cuenta</button>
+    </form>
+
+    <!-- RESET -->
+    <form id="form-reset" style="display:none">
+      <p style="color:var(--gris);font-size:.9rem;margin-bottom:1rem">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+      <div class="field">
+        <label>Correo electrónico</label>
+        <input type="email" id="reset-email" placeholder="tucorreo@email.com" required>
+      </div>
+      <button type="submit" class="btn-primary full">Enviar enlace</button>
+      <p class="auth-link"><a href="#" onclick="showTab('login')">← Volver</a></p>
+    </form>
+
+  </div>
+</div>
+
+<script type="module" src="src/auth.js"></script>
+<script>
+function showTab(tab) {
+  document.getElementById('form-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('form-reset').style.display    = 'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='register'&&i===1));
+  });
+  document.getElementById('auth-title').textContent = tab==='login' ? 'Ingresar' : 'Crear cuenta';
+  hideMsg();
+}
+function showReset() {
+  document.getElementById('form-login').style.display = 'none';
+  document.getElementById('form-reset').style.display = 'block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('auth-title').textContent = 'Restablecer contraseña';
+  hideMsg();
+}
+function hideMsg() {
+  document.getElementById('msg-error').style.display='none';
+  document.getElementById('msg-ok').style.display='none';
+}
+</script>
+</body>
+</html>

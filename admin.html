@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin — Código Escondido 19</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<nav id="navbar">
+  <a href="index.html" class="logo">CE·19</a>
+  <ul>
+    <li><a href="index.html">← Sitio</a></li>
+    <li><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
+  </ul>
+</nav>
+
+<div class="admin-wrap">
+  <h2 class="admin-title">Panel de Administrador</h2>
+
+  <!-- TABS ADMIN -->
+  <div class="admin-tabs">
+    <button class="atab active" onclick="adminTab('publicar')">Publicar</button>
+    <button class="atab" onclick="adminTab('posts')">Publicaciones</button>
+    <button class="atab" onclick="adminTab('usuarios')">Suscriptores</button>
+  </div>
+
+  <!-- PUBLICAR -->
+  <div id="tab-publicar" class="admin-panel">
+    <h3>Nueva publicación</h3>
+    <div id="pub-msg" class="msg-ok" style="display:none"></div>
+    <div class="field">
+      <label>Título</label>
+      <input type="text" id="pub-titulo" placeholder="Título de la enseñanza">
+    </div>
+    <div class="field">
+      <label>Descripción / Texto</label>
+      <textarea id="pub-texto" rows="4" placeholder="Escribe el mensaje..."></textarea>
+    </div>
+    <div class="field">
+      <label>Link de YouTube (opcional)</label>
+      <input type="text" id="pub-youtube" placeholder="https://www.youtube.com/watch?v=...">
+    </div>
+    <div class="field">
+      <label>Link de TikTok (opcional)</label>
+      <input type="text" id="pub-tiktok" placeholder="https://www.tiktok.com/@hiddencode.19/video/...">
+    </div>
+    <div class="field">
+      <label>Visibilidad</label>
+      <select id="pub-visibilidad">
+        <option value="publico">Público (todos lo ven)</option>
+        <option value="miembros">Solo miembros registrados</option>
+      </select>
+    </div>
+    <button class="btn-primary" onclick="publicar()">Publicar</button>
+  </div>
+
+  <!-- LISTA POSTS -->
+  <div id="tab-posts" class="admin-panel" style="display:none">
+    <h3>Publicaciones existentes</h3>
+    <div id="admin-posts-list" class="admin-list">Cargando...</div>
+  </div>
+
+  <!-- USUARIOS -->
+  <div id="tab-usuarios" class="admin-panel" style="display:none">
+    <h3>Suscriptores registrados</h3>
+    <div id="admin-users-list" class="admin-list">Cargando...</div>
+  </div>
+</div>
+
+<script type="module" src="src/admin.js"></script>
+<script>
+function adminTab(tab) {
+  ['publicar','posts','usuarios'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.atab').forEach((el,i) => {
+    el.classList.toggle('active', ['publicar','posts','usuarios'][i] === tab);
+  });
+}
+</script>
+</body>
+</html>

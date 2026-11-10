@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mi Perfil — Código Escondido 19</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+<nav id="navbar">
+  <a href="index.html" class="logo">CE·19</a>
+  <ul>
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
+  </ul>
+</nav>
+
+<div class="perfil-wrap">
+  <div class="perfil-card">
+    <div class="perfil-avatar" id="perfil-avatar">✦</div>
+    <h2 id="perfil-nombre">Cargando...</h2>
+    <p id="perfil-email" class="perfil-email"></p>
+    <p id="perfil-fecha" class="perfil-fecha"></p>
+
+    <div class="divider" style="margin:1.5rem auto"></div>
+
+    <h3>Contenido exclusivo para miembros</h3>
+    <div id="miembros-posts" class="posts-grid" style="margin-top:1.5rem">
+      Cargando contenido para miembros...
+    </div>
+  </div>
+</div>
+
+<script type="module" src="src/perfil.js"></script>
+</body>
+</html>
