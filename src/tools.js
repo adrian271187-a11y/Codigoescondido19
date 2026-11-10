@@ -112,10 +112,13 @@ window.traducir = function() {
   resDiv.style.display = 'block';
 };
 
-// ── CALENDARIO BABILÓNICO (360 días/año, 12 meses × 30 días) ──
-// Fecha base: 1 de enero de 539 a.C. (caída de Babilonia)
-// Usamos como época el año 539 a.C. = año 1 del calendario
-// En práctica: contamos días desde epoch gregoriano y dividimos por 360.
+// ── CALENDARIO DE 360 DÍAS ──
+// Lógica: tomar la fecha gregoriana, calcular cuántos días han pasado
+// desde el 1 de enero del mismo año, y convertirlos a un año de 360 días
+// (12 meses × 30 días). El año base es el mismo año gregoriano.
+//
+// Ejemplo: si estamos en el día 180 del año gregoriano,
+// en el calendario de 360 días sería el mes 6, día 30 de ese mismo año.
 
 const MESES_BABILONICOS = [
   'Nisanu','Aiaru','Simanu','Duzu',
@@ -123,56 +126,51 @@ const MESES_BABILONICOS = [
   'Kislimu','Tebetu','Shabatu','Addaru'
 ];
 
-// Época: 23 de marzo de 539 a.C. (inicio del año nuevo babilónico en año de caída)
-// Aproximación: usamos JDN (Julian Day Number) para precisión
-function gregorioAJDN(year, month, day) {
-  const a = Math.floor((14 - month) / 12);
-  const y = year + 4800 - a;
-  const m = month + 12 * a - 3;
-  return day + Math.floor((153*m+2)/5) + 365*y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
-}
-
-// Época babilónica: 23 de marzo de -538 (539 a.C. en astronomía = -538)
-const EPOCA_JDN = gregorioAJDN(-538, 3, 23);
-
 window.calcularBabilonico = function() {
   const val = document.getElementById('cal-input').value;
   const resDiv = document.getElementById('cal-result');
   if (!val) { resDiv.style.display='none'; return; }
 
   const [yyyy, mm, dd] = val.split('-').map(Number);
-  const jdn = gregorioAJDN(yyyy, mm, dd);
-  const diasDesdeEpoca = jdn - EPOCA_JDN;
+  const fecha = new Date(yyyy, mm-1, dd);
 
-  if (diasDesdeEpoca < 0) {
-    resDiv.innerHTML = '<div style="color:var(--gris)">Fecha anterior a la época babilónica de referencia.</div>';
-    resDiv.style.display='block';
-    return;
-  }
+  // Día del año gregoriano (1 = 1 enero)
+  const inicio = new Date(yyyy, 0, 1);
+  const diffMs = fecha - inicio;
+  const diaDelAnio = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // 0-based
 
-  const anioBab  = Math.floor(diasDesdeEpoca / 360) + 1;
-  const diasRest = diasDesdeEpoca % 360;
-  const mesBab   = Math.floor(diasRest / 30) + 1;
-  const diaBab   = (diasRest % 30) + 1;
+  // Total de días del año gregoriano
+  const esBisiesto = (yyyy % 4 === 0 && yyyy % 100 !== 0) || (yyyy % 400 === 0);
+  const diasAnioGreg = esBisiesto ? 366 : 365;
+
+  // Proporción del año transcurrida, aplicada a 360 días
+  // Día equivalente en año de 360 días (0-based)
+  const diaEn360 = Math.floor((diaDelAnio / diasAnioGreg) * 360);
+
+  const mesBab  = Math.floor(diaEn360 / 30) + 1;    // 1–12
+  const diaBab  = (diaEn360 % 30) + 1;               // 1–30
   const nombreMes = MESES_BABILONICOS[mesBab - 1];
 
-  // Fecha gregoriana seleccionada formateada
-  const fechaGreg = new Date(yyyy, mm-1, dd).toLocaleDateString('es-ES', {
+  // Día gregoriano del año (1-based para mostrar)
+  const diaGreg = diaDelAnio + 1;
+
+  const fechaStr = fecha.toLocaleDateString('es-ES', {
     day:'numeric', month:'long', year:'numeric'
   });
 
   resDiv.innerHTML = `
-    <div style="color:var(--gris);font-size:.78rem;margin-bottom:.4rem">${fechaGreg}</div>
-    <div class="result-num">${anioBab}</div>
-    <div class="result-detail">Año babilónico <strong style="color:var(--dorado)">${anioBab}</strong></div>
-    <div class="result-detail" style="margin-top:.3rem">
-      Mes: <strong style="color:var(--dorado)">${mesBab} — ${nombreMes}</strong>
-    </div>
-    <div class="result-detail">
-      Día: <strong style="color:var(--dorado)">${diaBab}</strong>
-    </div>
-    <div class="result-detail" style="margin-top:.5rem;font-size:.78rem;opacity:.6">
-      Días transcurridos desde época: ${diasDesdeEpoca.toLocaleString('es-ES')}
+    <div style="color:var(--gris);font-size:.78rem;margin-bottom:.6rem">${fechaStr}</div>
+    <div class="result-num">${yyyy}</div>
+    <div class="result-detail">Año gregoriano <strong style="color:var(--dorado)">${yyyy}</strong> → equivale al año <strong style="color:var(--dorado)">${yyyy}</strong> en 360 días</div>
+    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(201,168,76,.2)">
+      <div class="result-detail">Día del año gregoriano: <strong style="color:var(--blanco)">${diaGreg} de ${diasAnioGreg}</strong></div>
+      <div class="result-detail" style="margin-top:.4rem">Equivalente en año de 360 días: <strong style="color:var(--dorado)">día ${diaEn360 + 1} de 360</strong></div>
+      <div class="result-detail" style="margin-top:.4rem">
+        Mes babilónico: <strong style="color:var(--dorado)">${mesBab} — ${nombreMes}</strong>
+      </div>
+      <div class="result-detail" style="margin-top:.2rem">
+        Día del mes: <strong style="color:var(--dorado)">${diaBab} de 30</strong>
+      </div>
     </div>`;
   resDiv.style.display='block';
 };
