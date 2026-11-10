@@ -112,13 +112,11 @@ window.traducir = function() {
   resDiv.style.display = 'block';
 };
 
-// ── CALENDARIO DE 360 DÍAS ──
-// Lógica: tomar la fecha gregoriana, calcular cuántos días han pasado
-// desde el 1 de enero del mismo año, y convertirlos a un año de 360 días
-// (12 meses × 30 días). El año base es el mismo año gregoriano.
-//
-// Ejemplo: si estamos en el día 180 del año gregoriano,
-// en el calendario de 360 días sería el mes 6, día 30 de ese mismo año.
+// ── CALENDARIO DE 360 DÍAS — AÑOS DE GRACIA ──
+// Base: 29 d.C. (muerte y resurrección de Cristo = inicio de los 2000 años de gracia)
+// Lógica: contar los días transcurridos desde el 1 de abril del año 29 d.C.
+// y dividir entre 360 para obtener el año de gracia actual.
+// 2000 años × 360 días = 720,000 días desde el año 29 d.C.
 
 const MESES_BABILONICOS = [
   'Nisanu','Aiaru','Simanu','Duzu',
@@ -126,51 +124,78 @@ const MESES_BABILONICOS = [
   'Kislimu','Tebetu','Shabatu','Addaru'
 ];
 
+// Calcular número de día juliano (JDN) para cualquier fecha gregoriana
+function toJDN(year, month, day) {
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  return day + Math.floor((153*m+2)/5) + 365*y +
+         Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
+}
+
+// Época: calculada desde el fin de la gracia hacia atrás
+// Fin de la gracia = 11 de abril de 2029 = último día del año 2000
+// Inicio día 0 = 11 abril 2029 - (2000 × 360 - 1) días
+const JDN_FIN_GRACIA = toJDN(2029, 4, 11);
+const JDN_EPOCA = JDN_FIN_GRACIA - (2000 * 360 - 1);
+
 window.calcularBabilonico = function() {
   const val = document.getElementById('cal-input').value;
   const resDiv = document.getElementById('cal-result');
   if (!val) { resDiv.style.display='none'; return; }
 
   const [yyyy, mm, dd] = val.split('-').map(Number);
-  const fecha = new Date(yyyy, mm-1, dd);
+  const jdnFecha = toJDN(yyyy, mm, dd);
 
-  // Día del año gregoriano (1 = 1 enero)
-  const inicio = new Date(yyyy, 0, 1);
-  const diffMs = fecha - inicio;
-  const diaDelAnio = Math.floor(diffMs / (1000 * 60 * 60 * 24)); // 0-based
+  const diasTranscurridos = jdnFecha - JDN_EPOCA;
 
-  // Total de días del año gregoriano
-  const esBisiesto = (yyyy % 4 === 0 && yyyy % 100 !== 0) || (yyyy % 400 === 0);
-  const diasAnioGreg = esBisiesto ? 366 : 365;
+  if (diasTranscurridos < 0) {
+    resDiv.innerHTML = '<div style="color:var(--gris)">Fecha anterior al inicio de la era de Gracia (año 29 d.C.).</div>';
+    resDiv.style.display = 'block';
+    return;
+  }
 
-  // Proporción del año transcurrida, aplicada a 360 días
-  // Día equivalente en año de 360 días (0-based)
-  const diaEn360 = Math.floor((diaDelAnio / diasAnioGreg) * 360);
+  // Año de gracia (0-based: año 0 = nacimiento de Jesús)
+  const anioGracia = Math.floor(diasTranscurridos / 360);
+  const diasEnAnio = diasTranscurridos % 360;          // 0-based dentro del año
+  const mesBab     = Math.floor(diasEnAnio / 30) + 1; // 1–12
+  const diaBab     = (diasEnAnio % 30) + 1;            // 1–30
+  const nombreMes  = MESES_BABILONICOS[mesBab - 1];
 
-  const mesBab  = Math.floor(diaEn360 / 30) + 1;    // 1–12
-  const diaBab  = (diaEn360 % 30) + 1;               // 1–30
-  const nombreMes = MESES_BABILONICOS[mesBab - 1];
+  // Días restantes para los 2000 años de gracia
+  const totalGracia    = 2000 * 360;          // 720,000 días
+  const diasRestantes  = totalGracia - diasTranscurridos;
+  const aniosRestantes = (diasRestantes / 360).toFixed(1);
 
-  // Día gregoriano del año (1-based para mostrar)
-  const diaGreg = diaDelAnio + 1;
-
-  const fechaStr = fecha.toLocaleDateString('es-ES', {
+  const fechaStr = new Date(yyyy, mm-1, dd).toLocaleDateString('es-ES', {
     day:'numeric', month:'long', year:'numeric'
   });
 
+  const progreso = Math.min(100, ((diasTranscurridos / totalGracia) * 100)).toFixed(2);
+
   resDiv.innerHTML = `
     <div style="color:var(--gris);font-size:.78rem;margin-bottom:.6rem">${fechaStr}</div>
-    <div class="result-num">${yyyy}</div>
-    <div class="result-detail">Año gregoriano <strong style="color:var(--dorado)">${yyyy}</strong> → equivale al año <strong style="color:var(--dorado)">${yyyy}</strong> en 360 días</div>
-    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(201,168,76,.2)">
-      <div class="result-detail">Día del año gregoriano: <strong style="color:var(--blanco)">${diaGreg} de ${diasAnioGreg}</strong></div>
-      <div class="result-detail" style="margin-top:.4rem">Equivalente en año de 360 días: <strong style="color:var(--dorado)">día ${diaEn360 + 1} de 360</strong></div>
-      <div class="result-detail" style="margin-top:.4rem">
+    <div class="result-num">${anioGracia}</div>
+    <div class="result-detail">Año de Gracia <strong style="color:var(--dorado)">${anioGracia}</strong> de 2000 — fin: 11 abril 2029</div>
+
+    <div style="margin:.8rem 0;background:rgba(255,255,255,.06);border-radius:2px;height:6px;">
+      <div style="height:6px;background:var(--dorado);width:${progreso}%;border-radius:2px;"></div>
+    </div>
+    <div style="font-size:.72rem;color:var(--gris);margin-bottom:.8rem">${progreso}% del tiempo de Gracia transcurrido</div>
+
+    <div style="padding-top:.8rem;border-top:1px solid rgba(201,168,76,.2)">
+      <div class="result-detail">
         Mes babilónico: <strong style="color:var(--dorado)">${mesBab} — ${nombreMes}</strong>
       </div>
-      <div class="result-detail" style="margin-top:.2rem">
+      <div class="result-detail" style="margin-top:.3rem">
         Día del mes: <strong style="color:var(--dorado)">${diaBab} de 30</strong>
       </div>
+      <div class="result-detail" style="margin-top:.3rem">
+        Días transcurridos desde el año 29 d.C.: <strong style="color:var(--blanco)">${diasTranscurridos.toLocaleString('es-ES')}</strong>
+      </div>
+      <div class="result-detail" style="margin-top:.3rem">
+        Tiempo restante de Gracia: <strong style="color:var(--dorado2)">${diasRestantes > 0 ? '~' + aniosRestantes + ' años de 360 días' : '¡Tiempo cumplido!'}</strong>
+      </div>
     </div>`;
-  resDiv.style.display='block';
+  resDiv.style.display = 'block';
 };
