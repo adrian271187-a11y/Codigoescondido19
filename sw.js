@@ -1,4 +1,4 @@
-const CACHE = 'ce19-v7';
+const CACHE = 'ce19-v8';
 const ARCHIVOS = [
   './',
   './index.html',
