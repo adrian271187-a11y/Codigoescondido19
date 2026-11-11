@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Estudios — Código Escondido 19</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#e85d04">
+  <link rel="apple-touch-icon" href="./assets/ensenanzas/Icons/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+  <style>
+    .estudios-hero {
+      padding: 7rem 2rem 3rem;
+      text-align: center;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232,93,4,.2) 0%, transparent 70%);
+      border-bottom: 1px solid rgba(232,93,4,.15);
+    }
+    .estudios-hero h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,4rem); color:var(--blanco); }
+    .estudios-hero p  { color:var(--gris); max-width:52ch; margin:.8rem auto 0; }
+
+    /* FILTROS */
+    .filtros {
+      display:flex; flex-wrap:wrap; gap:.5rem;
+      justify-content:center; padding:2rem 1rem 0;
+    }
+    .filtro-btn {
+      background:var(--panel); border:1px solid rgba(232,93,4,.2);
+      color:var(--gris); font-family:'Lato',sans-serif; font-size:.78rem;
+      letter-spacing:.08em; padding:.5rem 1.2rem; cursor:pointer; transition:all .2s;
+    }
+    .filtro-btn:hover, .filtro-btn.active {
+      background:var(--dorado); color:var(--cafe); border-color:var(--dorado);
+    }
+
+    /* GRID DE ESTUDIOS */
+    .estudios-container { max-width:1050px; margin:0 auto; padding:2.5rem 1.5rem; }
+    .cat-titulo {
+      font-family:'Cinzel',serif; font-size:1rem; color:var(--dorado);
+      letter-spacing:.08em; margin:2.5rem 0 1.2rem;
+      display:flex; align-items:center; gap:.8rem;
+    }
+    .cat-titulo::after { content:''; flex:1; height:1px; background:rgba(232,93,4,.2); }
+
+    .estudios-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+      gap:1rem;
+    }
+
+    /* CARD DE ESTUDIO */
+    .estudio-card {
+      background:var(--panel);
+      border-top:2px solid var(--dorado);
+      padding:1.4rem;
+      display:flex; flex-direction:column; gap:.8rem;
+      transition:transform .2s, border-color .2s;
+    }
+    .estudio-card:hover { transform:translateY(-3px); border-top-color:var(--rojo); }
+    .estudio-icono { font-size:1.8rem; }
+    .estudio-cat {
+      font-size:.65rem; letter-spacing:.2em; color:var(--dorado);
+      font-weight:700;
+    }
+    .estudio-titulo {
+      font-family:'Cinzel',serif; font-size:.9rem; color:var(--blanco);
+      line-height:1.3; flex:1;
+    }
+    .estudio-desc { font-size:.82rem; color:var(--gris); line-height:1.5; }
+    .estudio-btns { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.3rem; }
+    .btn-ver {
+      background:var(--dorado); color:var(--cafe);
+      font-family:'Lato',sans-serif; font-weight:700;
+      font-size:.75rem; padding:.45rem 1rem;
+      border:none; cursor:pointer; text-decoration:none;
+      display:inline-block; transition:background .2s;
+    }
+    .btn-ver:hover { background:var(--dorado2); }
+    .btn-dl {
+      background:transparent; color:var(--gris);
+      font-family:'Lato',sans-serif; font-size:.75rem;
+      padding:.45rem 1rem; border:1px solid rgba(201,169,138,.3);
+      cursor:pointer; text-decoration:none; display:inline-block;
+      transition:all .2s;
+    }
+    .btn-dl:hover { color:var(--dorado); border-color:var(--dorado); }
+
+    /* MODAL VISOR PDF */
+    #pdf-modal {
+      display:none; position:fixed; inset:0; z-index:9998;
+      background:rgba(42,15,0,.95); flex-direction:column;
+    }
+    #pdf-modal.open { display:flex; }
+    .pdf-topbar {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.7rem 1.2rem;
+      background:var(--cafe2);
+      border-bottom:2px solid var(--naranja);
+      flex-shrink:0;
+    }
+    .pdf-topbar-title {
+      font-family:'Cinzel',serif; color:var(--naranja);
+      font-size:.88rem; font-weight:700; letter-spacing:.06em;
+    }
+    .pdf-topbar-actions { display:flex; gap:.8rem; align-items:center; }
+    .pdf-topbar-actions a { color:var(--gris); font-size:.75rem; text-decoration:none; }
+    .pdf-topbar-actions a:hover { color:var(--dorado); }
+    #pdf-iframe { flex:1; border:none; width:100%; background:#fff; }
+    #pdf-close {
+      background:none; border:none; color:var(--gris);
+      font-size:1.4rem; cursor:pointer; padding:0 .3rem;
+    }
+
+    @media(max-width:600px) {
+      .estudios-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <a href="index.html" class="logo">CE·19</a>
+  <ul id="nav-links">
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="ensenanzas.html">Enseñanzas</a></li>
+    <li><a href="estudios.html" style="color:var(--dorado)">Estudios</a></li>
+    <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
+    <li id="nav-perfil" style="display:none"><a href="perfil.html" id="nav-usuario">Mi perfil</a></li>
+    <li id="nav-login"><a href="login.html" class="btn-nav">Ingresar</a></li>
+    <li id="nav-logout" style="display:none"><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="estudios-hero">
+  <div class="section-label">Material de estudio</div>
+  <h1>Estudios</h1>
+  <p>Documentos, diagramas y materiales de Código Escondido 19 para profundizar en la Palabra.</p>
+</div>
+
+<!-- FILTROS -->
+<div class="filtros">
+  <button class="filtro-btn active" onclick="filtrar('todo',this)">Todo</button>
+  <button class="filtro-btn" onclick="filtrar('numeros',this)">Números Bíblicos</button>
+  <button class="filtro-btn" onclick="filtrar('mercaderias',this)">Mercaderías</button>
+  <button class="filtro-btn" onclick="filtrar('identidad',this)">Identidad</button>
+  <button class="filtro-btn" onclick="filtrar('profecia',this)">Profecía</button>
+  <button class="filtro-btn" onclick="filtrar('otros',this)">Otros</button>
+</div>
+
+<div class="estudios-container">
+
+  <!-- NÚMEROS BÍBLICOS -->
+  <div class="cat-titulo" data-cat="numeros">🔢 Números Bíblicos</div>
+  <div class="estudios-grid" id="grid-numeros">
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">📊</div>
+      <div class="estudio-cat">Números Bíblicos</div>
+      <div class="estudio-titulo">Los Números Bíblicos</div>
+      <div class="estudio-desc">Significado de los números del 0 al 49 con versículos de referencia.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/NUMEROS_BIBLICOS.pdf','Los Números Bíblicos')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/NUMEROS_BIBLICOS.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">🌈</div>
+      <div class="estudio-cat">Números · Colores</div>
+      <div class="estudio-titulo">Colores Bíblicos</div>
+      <div class="estudio-desc">Los 10 colores del arcoíris y su significado espiritual según las Escrituras.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/colores_biblicos.pdf','Colores Bíblicos')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/colores_biblicos.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">🎨</div>
+      <div class="estudio-cat">Colores</div>
+      <div class="estudio-titulo">Colores — Ezequiel 28</div>
+      <div class="estudio-desc">Las piedras preciosas del Edén y sus colores según Ezequiel 28:13.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/colores.pdf','Colores — Ezequiel 28')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/colores.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">⚡</div>
+      <div class="estudio-cat">Apocalipsis · Números</div>
+      <div class="estudio-titulo">Número de la Bestia — Apocalipsis 13:18</div>
+      <div class="estudio-desc">Las tres deidades (10, 11, 12) y el significado del 666.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/numero_de_la_bestia.pdf','Número de la Bestia')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/numero_de_la_bestia.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">⭐</div>
+      <div class="estudio-cat">Apocalipsis · 7 Estrellas</div>
+      <div class="estudio-titulo">El Camino de las Estrellas</div>
+      <div class="estudio-desc">El misterio de las 7 iglesias — Apocalipsis 1:20, 2:1-29, 3:1-22.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/7ESTRELLAS.pdf','El Camino de las Estrellas')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/7ESTRELLAS.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">🧬</div>
+      <div class="estudio-cat">Deidades · Números</div>
+      <div class="estudio-titulo">Deidades 10, 11 y 12</div>
+      <div class="estudio-desc">Dios Todopoderoso, el Hombre y Satanás — la lucha por el alma.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/deidades-2.pdf','Deidades 10, 11 y 12')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/deidades-2.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MERCADERÍAS DE BABILONIA -->
+  <div class="cat-titulo" data-cat="mercaderias">🏛️ Mercaderías de Babilonia</div>
+  <div class="estudios-grid" id="grid-mercaderias">
+
+    <div class="estudio-card" data-cat="mercaderias">
+      <div class="estudio-icono">📖</div>
+      <div class="estudio-cat">Mercaderías</div>
+      <div class="estudio-titulo">Derribando las Mercaderías de Babilonia</div>
+      <div class="estudio-desc">Serie completa: Palabras, La Fe, Preguntas, Lexico y más.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/MERCADERIAS.pdf','Mercaderías de Babilonia')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/MERCADERIAS.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="mercaderias">
+      <div class="estudio-icono">🗣️</div>
+      <div class="estudio-cat">Mercaderías · Léxico</div>
+      <div class="estudio-titulo">Léxico — Marzo 2026</div>
+      <div class="estudio-desc">Actualización del léxico de Código Escondido 19 para marzo de 2026.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/LEXICO_marzo_2026.pdf','Léxico Marzo 2026')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/LEXICO_marzo_2026.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="mercaderias">
+      <div class="estudio-icono">👁️</div>
+      <div class="estudio-cat">Voz · Espíritu</div>
+      <div class="estudio-titulo">Identificar la Voz</div>
+      <div class="estudio-desc">Voz del Alma vs Voz del Espíritu — cómo discernir entre ambas.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/IDENTIFICA_LA_VOZ.pdf','Identificar la Voz')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/IDENTIFICA_LA_VOZ.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="mercaderias">
+      <div class="estudio-icono">🔑</div>
+      <div class="estudio-cat">Marcos 11:27</div>
+      <div class="estudio-titulo">Marcos 11:27 — La Puerta</div>
+      <div class="estudio-desc">Libertad, Babilonia y Jerusalén — Marcos 11:27-33 y la autoridad de Cristo.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/MARCOS1127.pdf','Marcos 11:27 — La Puerta')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/MARCOS1127.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IDENTIDAD Y CREACIÓN -->
+  <div class="cat-titulo" data-cat="identidad">🧬 Identidad y Creación</div>
+  <div class="estudios-grid" id="grid-identidad">
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🧬</div>
+      <div class="estudio-cat">Matrimonio · ADN</div>
+      <div class="estudio-titulo">El Matrimonio de Dios Todopoderoso</div>
+      <div class="estudio-desc">Varón y Varona — ADN, fusión genética y el diseño original de Dios.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/adn.pdf','Matrimonio de Dios — ADN')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/adn.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🚹🚺</div>
+      <div class="estudio-cat">Varón · Varona</div>
+      <div class="estudio-titulo">Varón y Varona</div>
+      <div class="estudio-desc">La derecha, la izquierda y el orden divino en la creación del hombre.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/VARON_Y_VARONA_HTAL.pdf','Varón y Varona')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/VARON_Y_VARONA_HTAL.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🔷</div>
+      <div class="estudio-cat">Dimensiones</div>
+      <div class="estudio-titulo">Las Dimensiones</div>
+      <div class="estudio-desc">Efesios 3:18 — La anchura, longitud, profundidad y altura del Espíritu.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirImg('assets/estudios/las_dimensiones.jpg','Las Dimensiones')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/las_dimensiones.jpg" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🌊</div>
+      <div class="estudio-cat">Bautismo</div>
+      <div class="estudio-titulo">Bautismo en las Aguas Azules</div>
+      <div class="estudio-desc">El bautismo al aire libre y con sol — Juan 3:5, Lucas 3:21, Mateo 3:11.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/bautismo.pdf','Bautismo en las Aguas Azules')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/bautismo.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🙏</div>
+      <div class="estudio-cat">Oración</div>
+      <div class="estudio-titulo">Oración Padre Nuestro</div>
+      <div class="estudio-desc">Los 9 puntos del Padre Nuestro — Lucas 11:2-3, Mateo 6:9-13.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/padrenuestro.pdf','Oración Padre Nuestro')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/padrenuestro.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="identidad">
+      <div class="estudio-icono">🔥</div>
+      <div class="estudio-cat">Orfebrería Divina</div>
+      <div class="estudio-titulo">Purificación del Oro</div>
+      <div class="estudio-desc">7 etapas y 7 pruebas — el proceso de purificación espiritual.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/purificacion_del_oro.pdf','Purificación del Oro')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/purificacion_del_oro.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PROFECÍA -->
+  <div class="cat-titulo" data-cat="profecia">📜 Profecía y Ángeles</div>
+  <div class="estudios-grid" id="grid-profecia">
+
+    <div class="estudio-card" data-cat="profecia">
+      <div class="estudio-icono">🔒</div>
+      <div class="estudio-cat">Ángeles Caídos</div>
+      <div class="estudio-titulo">Ángeles en Prisiones Oscuras</div>
+      <div class="estudio-desc">1 Pedro 3:19, Judas 1:6-7 — los ángeles caídos y las eras bíblicas.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/Angeles_en_Prisiones_Oscuras-1.pdf','Ángeles en Prisiones Oscuras')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/Angeles_en_Prisiones_Oscuras-1.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="profecia">
+      <div class="estudio-icono">🍷</div>
+      <div class="estudio-cat">Profecía</div>
+      <div class="estudio-titulo">De Agua y Vino</div>
+      <div class="estudio-desc">Apocalipsis 17:15, Juan 2:1 — Babilonia, el agua, el vino y la sangre.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/de_agua_y_vino.pdf','De Agua y Vino')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/de_agua_y_vino.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CÓDIGO ESCONDIDO 19 -->
+  <div class="cat-titulo" data-cat="otros">✦ Código Escondido 19</div>
+  <div class="estudios-grid" id="grid-otros">
+
+    <div class="estudio-card" data-cat="otros">
+      <div class="estudio-icono">📘</div>
+      <div class="estudio-cat">Estudio General</div>
+      <div class="estudio-titulo">Código Escondido 19 — Estudio Completo</div>
+      <div class="estudio-desc">Apocalipsis 13:18 — Las deidades, los planetas y el mensaje profético.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirPDF('assets/estudios/codigo_escondido_19.pdf','Código Escondido 19')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/codigo_escondido_19.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="otros">
+      <div class="estudio-icono">🌌</div>
+      <div class="estudio-cat">Deidades</div>
+      <div class="estudio-titulo">Apocalipsis 13:18 — Diagrama de Deidades</div>
+      <div class="estudio-desc">Jesús: Yo Soy el Camino, la Verdad y la Vida — Juan 14:6.</div>
+      <div class="estudio-btns">
+        <button class="btn-ver" onclick="abrirImg('assets/estudios/deidades.jpg','Deidades — Apocalipsis 13:18')">Ver</button>
+        <a class="btn-dl" href="assets/estudios/deidades.jpg" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /estudios-container -->
+
+<!-- MODAL VISOR PDF -->
+<div id="pdf-modal">
+  <div class="pdf-topbar">
+    <span class="pdf-topbar-title" id="pdf-modal-title">Estudio</span>
+    <div class="pdf-topbar-actions">
+      <a id="pdf-dl-link" href="#" download>⬇ Descargar</a>
+      <a id="pdf-new-link" href="#" target="_blank" rel="noopener">Abrir en nueva pestaña ↗</a>
+      <button id="pdf-close" onclick="cerrarPDF()">✕</button>
+    </div>
+  </div>
+  <iframe id="pdf-iframe" src=""></iframe>
+</div>
+
+<!-- MODAL IMAGEN -->
+<div id="img-modal" style="display:none;position:fixed;inset:0;z-index:9998;
+  background:rgba(42,15,0,.95);align-items:center;justify-content:center;padding:1rem;">
+  <button onclick="cerrarImg()" style="position:absolute;top:1rem;right:1.2rem;
+    background:none;border:none;color:var(--gris);font-size:1.6rem;cursor:pointer;">✕</button>
+  <img id="img-modal-src" src="" style="max-width:100%;max-height:90vh;object-fit:contain;" alt="">
+</div>
+
+<footer>
+  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Decodificando la Verdad</p>
+</footer>
+
+<script type="module" src="src/app.js"></script>
+<script>
+// FILTROS
+function filtrar(cat, btn) {
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.estudio-card').forEach(c => {
+    c.style.display = (cat === 'todo' || c.dataset.cat === cat) ? 'flex' : 'none';
+  });
+  document.querySelectorAll('.cat-titulo').forEach(t => {
+    if (cat === 'todo') { t.style.display = ''; return; }
+    t.style.display = t.dataset.cat === cat ? '' : 'none';
+  });
+}
+
+// VISOR PDF
+function abrirPDF(src, title) {
+  document.getElementById('pdf-modal-title').textContent = title;
+  document.getElementById('pdf-iframe').src = src;
+  document.getElementById('pdf-dl-link').href = src;
+  document.getElementById('pdf-dl-link').download = src.split('/').pop();
+  document.getElementById('pdf-new-link').href = src;
+  document.getElementById('pdf-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function cerrarPDF() {
+  document.getElementById('pdf-modal').classList.remove('open');
+  document.getElementById('pdf-iframe').src = '';
+  document.body.style.overflow = '';
+}
+
+// VISOR IMAGEN
+function abrirImg(src, title) {
+  document.getElementById('img-modal-src').src = src;
+  document.getElementById('img-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function cerrarImg() {
+  document.getElementById('img-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { cerrarPDF(); cerrarImg(); }
+});
+</script>
+</body>
+</html>
