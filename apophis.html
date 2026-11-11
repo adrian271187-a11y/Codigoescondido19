@@ -314,7 +314,7 @@
 </footer>
 
 <!-- THREE.JS -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ── CUENTA REGRESIVA ──
 function actualizarCuentaRegresiva() {
@@ -445,24 +445,27 @@ setInterval(actualizarDistancia, 1000);
 
 // ── SISTEMA SOLAR 3D ──
 const canvas = document.getElementById('three-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 renderer.setClearColor(0x1a0a00, 1);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(55, canvas.clientWidth/500, 0.01, 100);
+const camera = new THREE.PerspectiveCamera(55, 2, 0.01, 100);
 camera.position.set(0, 2.5, 4);
 camera.lookAt(0,0,0);
 
 function resizeRenderer() {
-  const w = canvas.parentElement.clientWidth;
-  const h = Math.min(500, window.innerHeight * 0.6);
+  const wrap = document.getElementById('canvas-wrap');
+  const w = wrap ? wrap.clientWidth : window.innerWidth;
+  const h = Math.min(500, Math.max(300, window.innerHeight * 0.55));
+  canvas.style.height = h + 'px';
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
-resizeRenderer();
+window.addEventListener('load', resizeRenderer);
 window.addEventListener('resize', resizeRenderer);
+setTimeout(resizeRenderer, 100);
 
 // Estrellas de fondo
 const starGeo = new THREE.BufferGeometry();
