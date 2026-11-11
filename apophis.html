@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Apophis — 13 Abril 2029 · Código Escondido 19</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cafe:    #3b1a00;
+      --cafe2:   #5a2800;
+      --cafe3:   #7a3800;
+      --naranja: #e85d04;
+      --naranja2:#f48c06;
+      --rojo:    #dc2626;
+      --blanco:  #fff8f0;
+      --gris:    #c9a98a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cafe);
+      color: var(--blanco);
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 2rem;
+      background: rgba(59,26,0,.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(232,93,4,.2);
+    }
+    .logo { font-family:'Cinzel',serif; font-weight:900; font-size:.95rem;
+            letter-spacing:.12em; color:var(--naranja); text-decoration:none; }
+    nav a { color:var(--gris); text-decoration:none; font-size:.82rem;
+            letter-spacing:.06em; transition:color .2s; }
+    nav a:hover { color:var(--naranja2); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction:column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 5rem 1.5rem 2rem;
+      position: relative;
+      background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(220,38,38,.15) 0%, transparent 70%);
+    }
+    .hero-eyebrow {
+      font-size:.7rem; letter-spacing:.3em; color:var(--rojo);
+      font-weight:700; margin-bottom:1.2rem;
+    }
+    h1 {
+      font-family:'Cinzel',serif; font-weight:900;
+      font-size: clamp(3.5rem,10vw,8rem);
+      line-height:.9; color:var(--blanco);
+      text-shadow: 0 0 60px rgba(220,38,38,.4);
+    }
+    .hero-fecha {
+      font-family:'Cinzel',serif; font-size:clamp(1rem,3vw,1.6rem);
+      color:var(--naranja); margin-top:.8rem; letter-spacing:.1em;
+    }
+    .hero-versiculo {
+      margin-top:1.5rem; color:var(--gris); font-size:.9rem;
+      max-width:48ch; line-height:1.7; font-style:italic;
+    }
+
+    /* CUENTA REGRESIVA */
+    #countdown {
+      display: flex; gap:1rem; flex-wrap:wrap;
+      justify-content:center; margin-top:2.5rem;
+    }
+    .cd-item {
+      background: rgba(90,40,0,.6);
+      border: 1px solid rgba(232,93,4,.3);
+      padding:1rem 1.4rem; min-width:90px; text-align:center;
+    }
+    .cd-num {
+      font-family:'Cinzel',serif; font-size:clamp(1.8rem,5vw,3rem);
+      font-weight:900; color:var(--naranja); line-height:1; display:block;
+    }
+    .cd-label {
+      font-size:.65rem; letter-spacing:.2em; color:var(--gris);
+      margin-top:.3rem; display:block;
+    }
+
+    /* CANVAS 3D */
+    #canvas-wrap {
+      width:100%; max-width:900px; margin:0 auto;
+      position:relative;
+    }
+    #three-canvas {
+      width:100% !important; height:500px;
+      display:block; cursor:grab;
+    }
+    #three-canvas:active { cursor:grabbing; }
+    .canvas-label {
+      text-align:center; color:var(--gris); font-size:.75rem;
+      margin-top:.5rem; letter-spacing:.08em;
+    }
+
+    /* SECCIONES */
+    section { padding:4rem 2rem; }
+    #datos  { background: var(--cafe2); }
+    #profecia { background: var(--cafe); }
+    .container { max-width:900px; margin:0 auto; }
+    h2 { font-family:'Cinzel',serif; font-weight:700;
+         font-size:clamp(1.4rem,3.5vw,2.2rem); color:var(--blanco);
+         margin-bottom:1.5rem; }
+    .divider { width:3rem; height:2px; background:var(--naranja);
+               margin-bottom:2rem; opacity:.7; }
+
+    /* GRID DATOS */
+    .datos-grid {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+      gap:1px;
+    }
+    .dato-card {
+      background:var(--cafe3); padding:1.5rem;
+      border-top:2px solid var(--naranja);
+    }
+    .dato-label { font-size:.7rem; letter-spacing:.18em; color:var(--naranja); font-weight:700; }
+    .dato-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--blanco);
+                margin:.4rem 0 .2rem; }
+    .dato-sub { font-size:.8rem; color:var(--gris); }
+
+    /* DISTANCIA EN VIVO */
+    #live-dist {
+      background: rgba(220,38,38,.1);
+      border: 1px solid rgba(220,38,38,.3);
+      padding:2rem; text-align:center; margin-bottom:2.5rem;
+    }
+    .live-dot {
+      display:inline-block; width:8px; height:8px;
+      background:var(--rojo); border-radius:50%;
+      animation: pulse 1.5s ease-in-out infinite;
+      margin-right:.5rem; vertical-align:middle;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+    .dist-num { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.5rem);
+                color:var(--rojo); display:block; margin:.6rem 0;
+                letter-spacing:.03em; transition:color .5s; }
+    .dist-sub  { color:var(--gris); font-size:.85rem; }
+    .dist-badge {
+      display:inline-block; background:rgba(232,93,4,.15);
+      border:1px solid rgba(232,93,4,.3); color:var(--naranja);
+      font-size:.75rem; padding:.3rem .8rem; margin:.5rem .3rem 0;
+      letter-spacing:.08em;
+    }
+
+    /* VERSÍCULOS */
+    .vers-grid { display:flex; flex-direction:column; gap:1rem; }
+    .vers-card {
+      background:var(--cafe2); border-left:3px solid var(--naranja);
+      padding:1.2rem 1.5rem;
+    }
+    .vers-ref  { font-size:.72rem; letter-spacing:.15em; color:var(--naranja); font-weight:700; margin-bottom:.4rem; }
+    .vers-text { color:var(--gris); font-size:.9rem; line-height:1.7; font-style:italic; }
+
+    /* FOOTER */
+    footer { background:var(--cafe2); border-top:1px solid rgba(232,93,4,.2);
+             padding:2rem; text-align:center; }
+    footer p { font-size:.78rem; color:var(--gris); }
+    footer strong { color:var(--naranja); font-family:'Cinzel',serif; }
+
+    @media(max-width:600px) {
+      .datos-grid { grid-template-columns:1fr 1fr; }
+      #three-canvas { height:320px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">CE·19</a>
+  <a href="index.html">← Inicio</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">Apocalipsis 10 · Señal del Tiempo</div>
+  <h1>APOPHIS</h1>
+  <div class="hero-fecha">13 · Abril · 2029</div>
+  <p class="hero-versiculo">
+    "Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza..."
+    <br><strong style="color:var(--naranja);font-style:normal;">Apocalipsis 10:1</strong>
+  </p>
+
+  <!-- CUENTA REGRESIVA -->
+  <div id="countdown">
+    <div class="cd-item"><span class="cd-num" id="cd-dias">---</span><span class="cd-label">Días</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-horas">--</span><span class="cd-label">Horas</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-min">--</span><span class="cd-label">Minutos</span></div>
+    <div class="cd-item"><span class="cd-num" id="cd-seg">--</span><span class="cd-label">Segundos</span></div>
+  </div>
+</section>
+
+<!-- SISTEMA SOLAR 3D -->
+<section style="background:var(--cafe);padding:3rem 2rem;">
+  <div class="container">
+    <h2>Órbita en tiempo real</h2>
+    <div class="divider"></div>
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+    </div>
+    <p class="canvas-label">Sistema Solar — Sol · Tierra · Apophis · Arrastra para rotar · Scroll para zoom</p>
+  </div>
+</section>
+
+<!-- DATOS -->
+<section id="datos">
+  <div class="container">
+    <h2>Datos del Asteroide</h2>
+    <div class="divider"></div>
+
+    <!-- Distancia en vivo -->
+    <div id="live-dist">
+      <span style="font-size:.78rem;letter-spacing:.15em;color:var(--gris);">
+        <span class="live-dot"></span>DISTANCIA ACTUAL DE LA TIERRA
+      </span>
+      <span class="dist-num" id="dist-km">Calculando...</span>
+      <div style="margin-top:.4rem;">
+        <span class="dist-badge" id="dist-ld-badge">--- lunar distances</span>
+        <span class="dist-badge" id="dist-au-badge">--- AU</span>
+      </div>
+      <span class="dist-sub" id="dist-ld" style="display:none;"></span>
+      <div style="margin-top:.8rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <span id="dist-tend" style="font-size:.78rem;font-weight:700;letter-spacing:.1em;">—</span>
+        <span style="font-size:.78rem;color:var(--gris);">Actualización: cada segundo</span>
+      </div>
+    </div>
+
+    <div class="datos-grid">
+      <div class="dato-card">
+        <div class="dato-label">Nombre oficial</div>
+        <div class="dato-val">99942</div>
+        <div class="dato-sub">Apophis — dios del caos egipcio</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Diámetro</div>
+        <div class="dato-val">375 m</div>
+        <div class="dato-sub">≈ altura de la Torre Eiffel</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Distancia mínima</div>
+        <div class="dato-val">38,011 km</div>
+        <div class="dato-sub">0.1 distancias lunares — más cerca que satélites</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Velocidad</div>
+        <div class="dato-val">7.4 km/s</div>
+        <div class="dato-sub">En el acercamiento del 2029</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Período orbital</div>
+        <div class="dato-val">323 días</div>
+        <div class="dato-sub">0.89 años — órbita tipo Aten</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Descubierto</div>
+        <div class="dato-val">2004</div>
+        <div class="dato-sub">Observatorio Kitt Peak, Arizona</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Fecha clave</div>
+        <div class="dato-val" style="color:var(--rojo)">13·04·2029</div>
+        <div class="dato-sub">Fin del año 2000 — Calendario Sumerio</div>
+      </div>
+      <div class="dato-card">
+        <div class="dato-label">Misión NASA</div>
+        <div class="dato-val">OSIRIS</div>
+        <div class="dato-sub">OSIRIS-APEX rendezvouz post-2029</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROFECÍA -->
+<section id="profecia">
+  <div class="container">
+    <h2>La Señal Profética</h2>
+    <div class="divider"></div>
+    <p style="color:var(--gris);margin-bottom:2rem;max-width:60ch;line-height:1.8;">
+      Según la enseñanza de Código Escondido 19, el 13 de abril de 2029 marca el fin de los 2000 años de Gracia según el Calendario Sumerio de 360 días. Apophis — el asteroide que rozará la Tierra ese mismo día — es señalado como la confirmación astronómica de Apocalipsis 10.
+    </p>
+    <div class="vers-grid">
+      <div class="vers-card">
+        <div class="vers-ref">Apocalipsis 10:1</div>
+        <div class="vers-text">"Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza; y su rostro era como el sol, y sus pies como columnas de fuego."</div>
+      </div>
+      <div class="vers-card">
+        <div class="vers-ref">Apocalipsis 10:3</div>
+        <div class="vers-text">"Y clamó a gran voz, como ruge un león; y cuando hubo clamado, siete truenos emitieron sus voces."</div>
+      </div>
+      <div class="vers-card">
+        <div class="vers-ref">Apocalipsis 10:6</div>
+        <div class="vers-text">"Y juró por el que vive por los siglos de los siglos, que creó el cielo y las cosas que están en él, y la tierra y las cosas que están en ella, y el mar y las cosas que están en él, que el tiempo no sería más."</div>
+      </div>
+      <div class="vers-card">
+        <div class="vers-ref">2 Pedro 3:8</div>
+        <div class="vers-text">"Mas, oh amados, no ignoréis esto: que para con el Señor un día es como mil años, y mil años como un día."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Apophis · 13 Abril 2029 &nbsp;·&nbsp; Decodificando la Verdad</p>
+</footer>
+
+<!-- THREE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ── CUENTA REGRESIVA ──
+function actualizarCuentaRegresiva() {
+  const meta = new Date('2029-04-13T00:00:00Z');
+  const ahora = new Date();
+  const diff = meta - ahora;
+  if (diff <= 0) {
+    document.getElementById('cd-dias').textContent = '0';
+    document.getElementById('cd-horas').textContent = '00';
+    document.getElementById('cd-min').textContent = '00';
+    document.getElementById('cd-seg').textContent = '00';
+    return;
+  }
+  const dias  = Math.floor(diff / (1000*60*60*24));
+  const horas = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const min   = Math.floor((diff % (1000*60*60)) / (1000*60));
+  const seg   = Math.floor((diff % (1000*60)) / 1000);
+  document.getElementById('cd-dias').textContent  = dias.toLocaleString('es-ES');
+  document.getElementById('cd-horas').textContent = String(horas).padStart(2,'0');
+  document.getElementById('cd-min').textContent   = String(min).padStart(2,'0');
+  document.getElementById('cd-seg').textContent   = String(seg).padStart(2,'0');
+}
+actualizarCuentaRegresiva();
+setInterval(actualizarCuentaRegresiva, 1000);
+
+// ── DISTANCIA APOPHIS — Elementos orbitales precisos JPL (epoch 2024-Mar-30) ──
+// Fuente: JPL Small-Body Database / Horizons
+// a=0.9227019 AU, e=0.19129073, i=3.33974°, OM=203.904°, om=126.672°, tp=2024-Mar-10
+function calcularDistanciaApophis() {
+  const AU = 149597870.7; // km por AU
+  const LD = 384400;      // km por distancia lunar
+
+  // ── Apophis parámetros JPL ──
+  const a_ap  = 0.9227019;
+  const e_ap  = 0.19129073;
+  const i_ap  = 3.33974  * Math.PI/180;
+  const OM_ap = 203.90395* Math.PI/180;
+  const om_ap = 126.67198* Math.PI/180;
+  const T_ap  = 323.606;  // días
+  const tp_ap = new Date('2023-05-13T00:00:00Z').getTime();
+
+  // ── Tierra parámetros JPL ──
+  const a_t  = 1.00000261;
+  const e_t  = 0.01671022;
+  const i_t  = 0.00005  * Math.PI/180;
+  const OM_t = -11.26064* Math.PI/180;
+  const om_t = 102.94719* Math.PI/180;
+  const T_t  = 365.25636;
+  const tp_t = new Date('2024-01-02T00:00:00Z').getTime();
+
+  const ahora = Date.now();
+
+  function kepler(M, e, iter=50) {
+    let E = M;
+    for(let i=0;i<iter;i++) E = E - (E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
+    return E;
+  }
+
+  function posicionEcliptica(a, e, inc, OM, om, T_dias, tp_ms) {
+    const M = ((ahora - tp_ms) / (T_dias*86400000) * 2*Math.PI) % (2*Math.PI);
+    const E = kepler(M < 0 ? M + 2*Math.PI : M, e);
+    const xOrb = a*(Math.cos(E)-e);
+    const yOrb = a*Math.sqrt(1-e*e)*Math.sin(E);
+    // Rotación orbital → eclíptica
+    const cosOM=Math.cos(OM), sinOM=Math.sin(OM);
+    const cosom=Math.cos(om), sinom=Math.sin(om);
+    const cosi=Math.cos(inc), sini=Math.sin(inc);
+    return {
+      x: (cosOM*cosom - sinOM*sinom*cosi)*xOrb + (-cosOM*sinom - sinOM*cosom*cosi)*yOrb,
+      y: (sinOM*cosom + cosOM*sinom*cosi)*xOrb + (-sinOM*sinom + cosOM*cosom*cosi)*yOrb,
+      z: (sinom*sini)*xOrb + (cosom*sini)*yOrb
+    };
+  }
+
+  const posAp = posicionEcliptica(a_ap, e_ap, i_ap, OM_ap, om_ap, T_ap, tp_ap);
+  const posT  = posicionEcliptica(a_t,  e_t,  i_t,  OM_t,  om_t,  T_t,  tp_t);
+
+  const distAU = Math.sqrt((posAp.x-posT.x)**2 + (posAp.y-posT.y)**2 + (posAp.z-posT.z)**2);
+  const distKm = distAU * AU;
+  const distLD = distKm / LD;
+
+  return { distKm, distLD, distAU, posAp, posT };
+}
+
+// Actualizar distancia cada segundo
+let prevDistKm = null;
+function actualizarDistancia() {
+  const { distKm, distLD, distAU } = calcularDistanciaApophis();
+
+  // Número animado — dígito a dígito
+  const elKm  = document.getElementById('dist-km');
+  const elLd  = document.getElementById('dist-ld');
+
+  const kmRedondeado = Math.round(distKm);
+  const kmStr = kmRedondeado.toLocaleString('es-ES') + ' km';
+
+  if (elKm.textContent !== kmStr) {
+    elKm.textContent = kmStr;
+    // Color: se pone más rojo conforme se acerca (< 10M km = rojo intenso)
+    const pct = Math.min(1, Math.max(0, 1 - distKm / 300000000));
+    const r = Math.round(220 + 35 * pct);
+    const g = Math.round(38 * (1 - pct));
+    elKm.style.color = `rgb(${r},${g},38)`;
+  }
+
+  const ldBadge = document.getElementById('dist-ld-badge');
+  const auBadge = document.getElementById('dist-au-badge');
+  if (ldBadge) ldBadge.textContent = distLD.toFixed(1) + ' lunar distances';
+  if (auBadge) auBadge.textContent = distAU.toFixed(4) + ' AU';
+  if (elLd) elLd.textContent = distLD.toFixed(2) + ' distancias lunares · ' + distAU.toFixed(4) + ' UA';
+
+  // Indicador de tendencia ↑ alejándose / ↓ acercándose
+  const tendEl = document.getElementById('dist-tend');
+  if (tendEl && prevDistKm !== null) {
+    if (distKm < prevDistKm) {
+      tendEl.textContent = '▼ Acercándose';
+      tendEl.style.color = '#dc2626';
+    } else {
+      tendEl.textContent = '▲ Alejándose';
+      tendEl.style.color = '#16a34a';
+    }
+  }
+  prevDistKm = distKm;
+}
+
+actualizarDistancia();
+setInterval(actualizarDistancia, 1000);
+
+// ── SISTEMA SOLAR 3D ──
+const canvas = document.getElementById('three-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setClearColor(0x1a0a00, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(55, 2, 0.01, 100);
+camera.position.set(0, 2.5, 4);
+camera.lookAt(0,0,0);
+
+function resizeRenderer() {
+  const wrap = document.getElementById('canvas-wrap');
+  const w = wrap ? wrap.clientWidth : window.innerWidth;
+  const h = Math.min(500, Math.max(300, window.innerHeight * 0.55));
+  canvas.style.height = h + 'px';
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('load', resizeRenderer);
+window.addEventListener('resize', resizeRenderer);
+setTimeout(resizeRenderer, 100);
+
+// Estrellas de fondo
+const starGeo = new THREE.BufferGeometry();
+const starPos = [];
+for (let i = 0; i < 2000; i++) {
+  starPos.push((Math.random()-0.5)*80, (Math.random()-0.5)*80, (Math.random()-0.5)*80);
+}
+starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xfff0d0, size:.08})));
+
+// Luz ambiental + punto solar
+scene.add(new THREE.AmbientLight(0x3b1a00, 1.5));
+const sunLight = new THREE.PointLight(0xff8c00, 3, 20);
+scene.add(sunLight);
+
+// ── ETIQUETAS ──
+function makeLabel(text, color) {
+  const c = document.createElement('canvas'); c.width=256; c.height=64;
+  const ctx = c.getContext('2d');
+  ctx.font = 'bold 24px sans-serif';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, 128, 40);
+  const tex = new THREE.CanvasTexture(c);
+  const mat = new THREE.SpriteMaterial({map:tex, transparent:true});
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(.7,.18,1);
+  return sprite;
+}
+
+// ── ÓRBITA CIRCULAR ──
+function makeOrbit(r, color, opacity=0.35) {
+  const geo = new THREE.BufferGeometry();
+  const pts = [];
+  for (let i=0;i<=128;i++) { const a=i/128*Math.PI*2; pts.push(r*Math.cos(a),0,r*Math.sin(a)); }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
+  return new THREE.Line(geo, new THREE.LineBasicMaterial({color, opacity, transparent:true}));
+}
+
+// ── ÓRBITA ELÍPTICA ──
+function makeOrbitEllipse(a, e, color, opacity=0.4) {
+  const geo = new THREE.BufferGeometry();
+  const pts = [];
+  for (let i=0;i<=256;i++) {
+    const E = i/256*Math.PI*2;
+    pts.push(a*(Math.cos(E)-e), 0, a*Math.sqrt(1-e*e)*Math.sin(E));
+  }
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
+  return new THREE.Line(geo, new THREE.LineBasicMaterial({color, opacity, transparent:true}));
+}
+
+// ── PLANETA ──
+function makePlaneta(radio, color, emissive=0x000000) {
+  const geo = new THREE.SphereGeometry(radio, 24, 24);
+  const mat = new THREE.MeshPhongMaterial({color, emissive});
+  return new THREE.Mesh(geo, mat);
+}
+
+// SOL
+const sol = makePlaneta(0.22, 0xff8c00);
+sol.material = new THREE.MeshBasicMaterial({color:0xff8c00});
+scene.add(sol);
+scene.add(new THREE.Mesh(
+  new THREE.SphereGeometry(0.3,32,32),
+  new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.2})
+));
+const labelSol = makeLabel('SOL','#ff8c00');
+labelSol.position.set(0,.4,0);
+scene.add(labelSol);
+
+// Datos planetas: [nombre, a(AU), e, período(días), radio3D, color, colorLabel]
+const PLANETAS = [
+  { n:'MERCURIO', a:0.387, e:0.206, T:87.97,  r:0.025, c:0xaaaaaa, lc:'#aaaaaa' },
+  { n:'VENUS',    a:0.723, e:0.007, T:224.7,  r:0.040, c:0xffcc66, lc:'#ffcc66' },
+  { n:'TIERRA',   a:1.000, e:0.017, T:365.25, r:0.045, c:0x2255cc, lc:'#5588ff' },
+  { n:'MARTE',    a:1.524, e:0.093, T:686.97, r:0.030, c:0xcc4422, lc:'#ff6644' },
+  { n:'JÚPITER',  a:2.5,   e:0.049, T:4332,   r:0.12,  c:0xddaa77, lc:'#ddaa77' },
+  { n:'SATURNO',  a:3.3,   e:0.057, T:10759,  r:0.10,  c:0xccbb88, lc:'#ccbb88' },
+  { n:'URANO',    a:4.0,   e:0.046, T:30687,  r:0.07,  c:0x88ccdd, lc:'#88ccdd' },
+  { n:'NEPTUNO',  a:4.6,   e:0.010, T:60190,  r:0.065, c:0x3355cc, lc:'#5577ff' },
+];
+
+const planetaMeshes = [];
+PLANETAS.forEach(p => {
+  const mesh = makePlaneta(p.r, p.c, 0x111111);
+  scene.add(mesh);
+  scene.add(makeOrbitEllipse(p.a, p.e, p.c, 0.25));
+  const lbl = makeLabel(p.n, p.lc);
+  scene.add(lbl);
+  planetaMeshes.push({ mesh, lbl, ...p });
+});
+
+// Anillo de Saturno
+const ringSat = new THREE.Mesh(
+  new THREE.RingGeometry(0.13, 0.22, 48),
+  new THREE.MeshBasicMaterial({color:0xccbb88, side:THREE.DoubleSide, transparent:true, opacity:.5})
+);
+ringSat.rotation.x = Math.PI/2.5;
+
+// APOPHIS
+const a_ap = 0.9227, e_ap = 0.1912;
+const apophis = makePlaneta(0.028, 0xdc2626, 0x440000);
+scene.add(apophis);
+scene.add(makeOrbitEllipse(a_ap, e_ap, 0xdc2626, 0.6));
+const labelApophis = makeLabel('APOPHIS','#ff3333');
+scene.add(labelApophis);
+
+// Tierra ref para cálculos
+const tierra = planetaMeshes.find(p=>p.n==='TIERRA').mesh;
+
+// GRID suelo
+const gridHelper = new THREE.GridHelper(6, 20, 0x3b1a00, 0x4a2200);
+gridHelper.position.y = -0.5;
+scene.add(gridHelper);
+
+// CONTROLES MOUSE / TOUCH
+let isDragging=false, prevX=0, prevY=0, rotX=0.3, rotY=0, zoom=4;
+canvas.addEventListener('mousedown', e=>{isDragging=true;prevX=e.clientX;prevY=e.clientY;});
+window.addEventListener('mouseup', ()=>isDragging=false);
+window.addEventListener('mousemove', e=>{
+  if (!isDragging) return;
+  rotY += (e.clientX-prevX)*0.005;
+  rotX += (e.clientY-prevY)*0.005;
+  rotX = Math.max(-1.2, Math.min(1.2, rotX));
+  prevX=e.clientX; prevY=e.clientY;
+});
+canvas.addEventListener('wheel', e=>{
+  zoom += e.deltaY*0.005;
+  zoom = Math.max(1.5, Math.min(8, zoom));
+  e.preventDefault();
+}, {passive:false});
+// Touch
+let lastTouchDist=0;
+canvas.addEventListener('touchstart', e=>{
+  if(e.touches.length===1){isDragging=true;prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;}
+  if(e.touches.length===2){lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+  e.preventDefault();
+},{passive:false});
+canvas.addEventListener('touchend', ()=>isDragging=false,{passive:false});
+canvas.addEventListener('touchmove', e=>{
+  if(e.touches.length===1&&isDragging){
+    rotY+=(e.touches[0].clientX-prevX)*0.005;
+    rotX+=(e.touches[0].clientY-prevY)*0.005;
+    rotX=Math.max(-1.2,Math.min(1.2,rotX));
+    prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;
+  }
+  if(e.touches.length===2){
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    zoom-=(d-lastTouchDist)*0.01;
+    zoom=Math.max(1.5,Math.min(8,zoom));
+    lastTouchDist=d;
+  }
+  e.preventDefault();
+},{passive:false});
+
+// ── ANIMACIÓN ──
+let t = 0;
+const SAT_IDX = PLANETAS.findIndex(p=>p.n==='SATURNO');
+
+function kepler(M, e) {
+  let E = M;
+  for(let i=0;i<8;i++) E = M + e*Math.sin(E);
+  return E;
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  t += 0.004;
+
+  // Mover cada planeta
+  planetaMeshes.forEach(p => {
+    const M = t * (365.25 / p.T);
+    const E = kepler(M, p.e);
+    const x = p.a*(Math.cos(E)-p.e);
+    const z = p.a*Math.sqrt(1-p.e**2)*Math.sin(E);
+    p.mesh.position.set(x, 0, z);
+    p.lbl.position.set(x, p.r+0.14, z);
+  });
+
+  // Anillo de Saturno sigue al planeta
+  const sat = planetaMeshes[SAT_IDX];
+  ringSat.position.copy(sat.mesh.position);
+  if (!ringSat.parent) scene.add(ringSat);
+
+  // Apophis
+  const M_ap = t * (365.25/323.6);
+  const E_ap = kepler(M_ap, e_ap);
+  const x_ap = a_ap*(Math.cos(E_ap)-e_ap);
+  const z_ap = a_ap*Math.sqrt(1-e_ap**2)*Math.sin(E_ap);
+  apophis.position.set(x_ap, 0, z_ap);
+  labelApophis.position.set(x_ap, 0.12, z_ap);
+  const sc = 1 + 0.35*Math.sin(t*6);
+  apophis.scale.set(sc,sc,sc);
+
+  // Cámara
+  camera.position.x = zoom*Math.sin(rotY)*Math.cos(rotX);
+  camera.position.y = zoom*Math.sin(rotX);
+  camera.position.z = zoom*Math.cos(rotY)*Math.cos(rotX);
+  camera.lookAt(0,0,0);
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
