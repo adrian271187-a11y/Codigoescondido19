@@ -26,14 +26,14 @@ const ALFABETO = [
   { letra: 'P',  num: 19 },
   { letra: 'Q',  num: 20 },
   { letra: 'R',  num: 21 },
-  { letra: 'S',  num: 21 },  // S=21 según la tabla
-  { letra: 'T',  num: 22 },
-  { letra: 'U',  num: 23 },
-  { letra: 'V',  num: 24 },
-  { letra: 'W',  num: 25 },
-  { letra: 'X',  num: 26 },
-  { letra: 'Y',  num: 27 },
-  { letra: 'Z',  num: 28 },
+  { letra: 'S',  num: 22 },
+  { letra: 'T',  num: 23 },
+  { letra: 'U',  num: 24 },
+  { letra: 'V',  num: 25 },
+  { letra: 'W',  num: 26 },
+  { letra: 'X',  num: 27 },
+  { letra: 'Y',  num: 28 },
+  { letra: 'Z',  num: 29 },
 ];
 
 // Construir mapa rápido
