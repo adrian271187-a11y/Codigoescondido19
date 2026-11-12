@@ -316,9 +316,7 @@ function abrirApophis() {
   const iframe = document.getElementById('apophis-iframe');
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  if (!iframe.src || iframe.src === window.location.href) {
-    iframe.src = 'apophis.html';
-  }
+  iframe.src = 'apophis.html';
 }
 function cerrarApophis() {
   document.getElementById('apophis-modal').style.display = 'none';
