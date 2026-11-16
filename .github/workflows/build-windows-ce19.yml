@@ -84,11 +84,12 @@ jobs:
           npx electron-builder --win --dir
 
       - name: Comprimir app
-        shell: pwsh
+        shell: bash
         run: |
-          $dir = Get-ChildItem -Path "electron-app/dist" -Directory | Where-Object { $_.Name -like "win-*" } | Select-Object -First 1
-          Write-Host "Directorio encontrado: $($dir.FullName)"
-          Compress-Archive -Path $dir.FullName -DestinationPath "electron-app/dist/CodigoEscondido19-windows.zip"
+          cd electron-app/dist
+          DIR=$(find . -maxdepth 1 -type d -name "win-*" | head -1)
+          echo "Directorio encontrado: $DIR"
+          zip -r "CodigoEscondido19-windows.zip" "$DIR"
 
       - name: Publicar Release
         uses: softprops/action-gh-release@v2

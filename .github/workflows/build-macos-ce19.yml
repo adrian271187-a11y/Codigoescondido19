@@ -3,6 +3,9 @@ name: Compilar app macOS - CodigoEscondido19
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_macos:
     runs-on: macos-latest
@@ -16,6 +19,7 @@ jobs:
       - name: Crear proyecto Electron
         run: |
           mkdir -p electron-app
+
           cat > electron-app/package.json << 'EOF'
           {
             "name": "codigoescondido19",
@@ -86,9 +90,11 @@ jobs:
           echo "App encontrada: $APP"
           zip -r "CodigoEscondido19-mac.zip" "$APP"
 
-      - name: Subir artefacto
-        uses: actions/upload-artifact@v4
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: CodigoEscondido19-mac
-          path: electron-app/dist/CodigoEscondido19-mac.zip
-          retention-days: 30
+          tag_name: app-desktop
+          name: "Codigo Escondido 19 - Apps Desktop"
+          draft: false
+          prerelease: false
+          files: electron-app/dist/CodigoEscondido19-mac.zip
