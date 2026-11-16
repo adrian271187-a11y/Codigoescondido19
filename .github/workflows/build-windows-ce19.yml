@@ -3,6 +3,9 @@ name: Compilar app Windows - CodigoEscondido19
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_windows:
     runs-on: windows-latest
@@ -81,16 +84,17 @@ jobs:
           npx electron-builder --win --dir
 
       - name: Comprimir app
-        shell: bash
+        shell: pwsh
         run: |
-          cd electron-app/dist
-          DIR=$(find . -maxdepth 1 -type d -name "win-*" | head -1)
-          echo "Directorio encontrado: $DIR"
-          zip -r "CodigoEscondido19-windows.zip" "$DIR"
+          $dir = Get-ChildItem -Path "electron-app/dist" -Directory | Where-Object { $_.Name -like "win-*" } | Select-Object -First 1
+          Write-Host "Directorio encontrado: $($dir.FullName)"
+          Compress-Archive -Path $dir.FullName -DestinationPath "electron-app/dist/CodigoEscondido19-windows.zip"
 
-      - name: Subir artefacto
-        uses: actions/upload-artifact@v4
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: CodigoEscondido19-windows
-          path: electron-app/dist/CodigoEscondido19-windows.zip
-          retention-days: 30
+          tag_name: app-desktop
+          name: "Codigo Escondido 19 - Apps Desktop"
+          draft: false
+          prerelease: false
+          files: electron-app/dist/CodigoEscondido19-windows.zip
