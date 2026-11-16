@@ -1,0 +1,96 @@
+name: Compilar app Windows - CodigoEscondido19
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Crear proyecto Electron
+        shell: bash
+        run: |
+          mkdir -p electron-app
+
+          cat > electron-app/package.json << 'EOF'
+          {
+            "name": "codigoescondido19",
+            "version": "1.0.0",
+            "description": "Codigo Escondido 19",
+            "main": "main.js",
+            "scripts": {
+              "build": "electron-builder --win --dir"
+            },
+            "build": {
+              "appId": "com.codigoescondido19.app",
+              "productName": "Codigo Escondido 19",
+              "directories": { "output": "dist" },
+              "win": {
+                "target": [{ "target": "dir", "arch": ["x64"] }]
+              }
+            },
+            "devDependencies": {
+              "electron": "^31.0.0",
+              "electron-builder": "^24.0.0"
+            }
+          }
+          EOF
+
+          cat > electron-app/main.js << 'EOF'
+          const { app, BrowserWindow } = require('electron')
+
+          function createWindow() {
+            const win = new BrowserWindow({
+              width: 1280,
+              height: 800,
+              title: 'Codigo Escondido 19',
+              webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+              }
+            })
+            win.loadURL('https://codigoescondido19.web.app')
+            win.setMenuBarVisibility(false)
+          }
+
+          app.whenReady().then(createWindow)
+
+          app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') app.quit()
+          })
+
+          app.on('activate', () => {
+            if (BrowserWindow.getAllWindows().length === 0) createWindow()
+          })
+          EOF
+
+      - name: Instalar dependencias
+        run: |
+          cd electron-app
+          npm install
+
+      - name: Compilar para Windows
+        run: |
+          cd electron-app
+          npx electron-builder --win --dir
+
+      - name: Comprimir app
+        shell: bash
+        run: |
+          cd electron-app/dist
+          DIR=$(find . -maxdepth 1 -type d -name "win-*" | head -1)
+          echo "Directorio encontrado: $DIR"
+          zip -r "CodigoEscondido19-windows.zip" "$DIR"
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodigoEscondido19-windows
+          path: electron-app/dist/CodigoEscondido19-windows.zip
+          retention-days: 30
