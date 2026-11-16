@@ -1,0 +1,94 @@
+name: Compilar app macOS - CodigoEscondido19
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Crear proyecto Electron
+        run: |
+          mkdir -p electron-app
+          cat > electron-app/package.json << 'EOF'
+          {
+            "name": "codigoescondido19",
+            "version": "1.0.0",
+            "description": "Codigo Escondido 19",
+            "main": "main.js",
+            "scripts": {
+              "build": "electron-builder --mac --dir"
+            },
+            "build": {
+              "appId": "com.codigoescondido19.app",
+              "productName": "Codigo Escondido 19",
+              "directories": { "output": "dist" },
+              "mac": {
+                "category": "public.app-category.education",
+                "target": [{ "target": "dir", "arch": ["x64", "arm64"] }]
+              }
+            },
+            "devDependencies": {
+              "electron": "^31.0.0",
+              "electron-builder": "^24.0.0"
+            }
+          }
+          EOF
+
+          cat > electron-app/main.js << 'EOF'
+          const { app, BrowserWindow } = require('electron')
+
+          function createWindow() {
+            const win = new BrowserWindow({
+              width: 1280,
+              height: 800,
+              title: 'Codigo Escondido 19',
+              webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+              }
+            })
+            win.loadURL('https://codigoescondido19.web.app')
+            win.setMenuBarVisibility(false)
+          }
+
+          app.whenReady().then(createWindow)
+
+          app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') app.quit()
+          })
+
+          app.on('activate', () => {
+            if (BrowserWindow.getAllWindows().length === 0) createWindow()
+          })
+          EOF
+
+      - name: Instalar dependencias
+        run: |
+          cd electron-app
+          npm install
+
+      - name: Compilar para macOS
+        run: |
+          cd electron-app
+          npx electron-builder --mac --dir
+
+      - name: Comprimir app
+        run: |
+          cd electron-app/dist
+          APP=$(find . -maxdepth 2 -name "*.app" | head -1)
+          echo "App encontrada: $APP"
+          zip -r "CodigoEscondido19-mac.zip" "$APP"
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodigoEscondido19-mac
+          path: electron-app/dist/CodigoEscondido19-mac.zip
+          retention-days: 30
