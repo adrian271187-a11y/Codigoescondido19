@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Código Escondido 19</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/style.css">
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#e85d04">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CE19">
+  <link rel="apple-touch-icon" sizes="192x192" href="./assets/ensenanzas/Icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="./assets/ensenanzas/Icons/icon-512.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/ensenanzas/Icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/ensenanzas/Icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/ensenanzas/Icons/icon-512.png">
+  <meta name="description" content="Decodificando la Verdad por medio del Espíritu Santo. Números bíblicos, señales del tiempo y enseñanzas.">
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="index.html" class="logo">CE·19</a>
+  <ul id="nav-links">
+    <li><a href="#contenido">Contenido</a></li>
+    <li><a href="ensenanzas.html">Enseñanzas</a></li>
+    <li><a href="#herramientas">Herramientas</a></li>
+    <li><a href="#redes">Redes</a></li>
+    <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
+    <li id="nav-perfil" style="display:none"><a href="perfil.html" id="nav-usuario">Mi perfil</a></li>
+    <li id="nav-login"><a href="login.html" class="btn-nav">Ingresar</a></li>
+    <li id="nav-logout" style="display:none"><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="stars"></canvas>
+<!-- Arcoíris animado — centro en 500,600 (parte baja del hero) -->
+<div id="arcoiris" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;">
+  <svg id="arc-svg" width="100%" height="100%" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- Arcoíris: 10 arcos, 1 grupo, animación por opacidad del grupo -->
+<!-- Afuera→adentro: blanco, gris, violeta, azul, verde, amarillo, naranja, rojo, café, negro -->
+<!-- Grosor=46, espaciado=46 entre centros, centro en x=500 y=700 -->
+<g id="arc-g" opacity="0">
+  <path d="M  -92,700 A 592,592 0 0,1 1092,700" fill="none" stroke="#ffffff" stroke-width="46"/>
+  <path d="M  -46,700 A 546,546 0 0,1 1046,700" fill="none" stroke="#888888" stroke-width="46"/>
+  <path d="M    0,700 A 500,500 0 0,1 1000,700" fill="none" stroke="#7c3cca" stroke-width="46"/>
+  <path d="M   46,700 A 454,454 0 0,1  954,700" fill="none" stroke="#2563eb" stroke-width="46"/>
+  <path d="M   92,700 A 408,408 0 0,1  908,700" fill="none" stroke="#16a34a" stroke-width="46"/>
+  <path d="M  138,700 A 362,362 0 0,1  862,700" fill="none" stroke="#ca8a04" stroke-width="46"/>
+  <path d="M  184,700 A 316,316 0 0,1  816,700" fill="none" stroke="#ea580c" stroke-width="46"/>
+  <path d="M  230,700 A 270,270 0 0,1  770,700" fill="none" stroke="#dc2626" stroke-width="46"/>
+  <path d="M  276,700 A 224,224 0 0,1  724,700" fill="none" stroke="#78350f" stroke-width="46"/>
+  <path d="M  322,700 A 178,178 0 0,1  678,700" fill="none" stroke="#5a2800" stroke-width="46"/>
+</g>
+  </svg>
+</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Decodificando la Verdad</div>
+    <h1>Código<br>Escondido</h1>
+    <div class="hero-num" aria-hidden="true">19</div>
+    <p class="hero-sub">Conoce la verdad por medio del Espíritu Santo. Números bíblicos, señales del tiempo y el mensaje escrito desde el principio.</p>
+    <div class="hero-ctas">
+      <a href="#contenido" class="btn-primary">Ver contenido</a>
+      <a href="login.html" class="btn-outline" id="cta-suscribir">Suscribirse</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENIDO PÚBLICO -->
+<section id="contenido">
+  <div class="container">
+    <div class="section-label">Publicaciones</div>
+    <h2>Enseñanzas y Videos</h2>
+    <div class="divider"></div>
+    <div id="posts-grid" class="posts-grid">
+      <div class="loading">Cargando contenido...</div>
+    </div>
+  </div>
+</section>
+
+<!-- BANNER ENSEÑANZAS -->
+<section style="background:var(--violeta);padding:3rem 2rem;text-align:center">
+  <div class="container">
+    <div class="section-label">Material del ministerio</div>
+    <h2 style="margin-bottom:.75rem">Enseñanzas y Láminas</h2>
+    <p style="color:rgba(240,238,232,.7);max-width:48ch;margin:0 auto 1.5rem;font-size:.95rem">Láminas, diagramas bíblicos y videos organizados por categoría — Mercaderías de Babilonia, Números, Apocalipsis y más.</p>
+    <a href="ensenanzas.html" class="btn-primary">Ver todas las enseñanzas →</a>
+  </div>
+</section>
+
+<!-- HERRAMIENTAS -->
+<section id="herramientas">
+  <div class="container">
+    <div class="section-label">Herramientas</div>
+    <h2>Decodifica la Verdad</h2>
+    <div class="divider"></div>
+    <div class="tools-grid">
+
+      <!-- TRADUCTOR LETRA → NÚMERO -->
+      <div class="tool-card">
+        <div class="tool-icon">🔤</div>
+        <h3>Traductor Letra → Número</h3>
+        <p class="tool-desc">Convierte texto en su valor numérico según el alfabeto español codificado.</p>
+        <div class="tool-body">
+          <textarea id="traductor-input" placeholder="Escribe una palabra o frase..." rows="3"></textarea>
+          <button class="btn-primary" onclick="traducir()">Traducir</button>
+          <div id="traductor-result" class="tool-result" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- CALENDARIO BABILÓNICO -->
+      <div class="tool-card">
+        <div class="tool-icon">🌙</div>
+        <h3>Calendario Sumerio</h3>
+        <p class="tool-desc">Calcula en qué año, mes y día del calendario sumerio de 360 días nos encontramos desde el nacimiento de Jesús.</p>
+        <div class="tool-body">
+          <div class="cal-row">
+            <label>Fecha gregoriana:</label>
+            <input type="date" id="cal-input">
+          </div>
+          <button class="btn-primary" onclick="calcularBabilonico()">Calcular</button>
+          <div id="cal-result" class="tool-result" style="display:none"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABLA ALFABETO -->
+    <div class="alfa-wrap">
+      <div class="section-label" style="margin-top:3rem">Tabla de referencia</div>
+      <h3 style="font-family:'Cinzel',serif;color:var(--dorado);margin-bottom:1.5rem">Alfabeto Español Codificado</h3>
+      <div class="alfa-grid" id="alfa-tabla"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- REDES -->
+<section id="redes">
+  <div class="container" style="text-align:center">
+    <div class="section-label">Síguenos</div>
+    <h2>Encuéntranos en redes</h2>
+    <div class="redes-grid">
+      <a href="https://chat.whatsapp.com/KyK1oNQ0hjJEIpxfzYOAdC" target="_blank" rel="noopener" class="red-card">
+        <span class="icon">💬</span>
+        <span class="platform">WhatsApp</span>
+        <span class="handle">Grupo CE·19</span>
+        <span class="stat">Únete al grupo</span>
+      </a>
+      <a href="https://www.tiktok.com/@hiddencode.19" target="_blank" rel="noopener" class="red-card">
+        <span class="icon">🎵</span>
+        <span class="platform">TikTok</span>
+        <span class="handle">@hiddencode.19</span>
+        <span class="stat">60.2K seguidores</span>
+      </a>
+      <a href="https://www.facebook.com/codigoescondido19es" target="_blank" rel="noopener" class="red-card">
+        <span class="icon">📘</span>
+        <span class="platform">Facebook</span>
+        <span class="handle">Código Escondido 19 España</span>
+        <span class="stat">133 seguidores</span>
+      </a>
+      <a href="https://programadorcodigoescondido19.github.io/ce19/" target="_blank" rel="noopener" class="red-card">
+        <span class="icon">💻</span>
+        <span class="platform">App Web</span>
+        <span class="handle">GitHub Pages</span>
+        <span class="stat">Versión 1.9</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Decodificando la Verdad &nbsp;·&nbsp; #EspírituSanto #Jesucristo #ÚltimosTiempos</p>
+</footer>
+
+<script type="module" src="src/app.js"></script>
+<script src="src/tools.js"></script>
+<script src="src/pwa.js"></script>
+<script>
+// ── ARCOÍRIS ANIMADO ──
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const g = document.getElementById('arc-g');
+  if (!g) return;
+  let op = 0;
+  let dir = 1;
+  let fase = 0; // 0=subiendo, 1=espera visible, 2=bajando, 3=espera invisible
+
+  const MAX_OP   = 0.95;  // opacidad máxima
+  const STEP_UP  = 0.004; // velocidad de aparición
+  const STEP_DN  = 0.003; // velocidad de desaparición
+  const WAIT_ON  = 180;   // frames visible (~3s a 60fps)
+  const WAIT_OFF = 220;   // frames invisible (~3.6s)
+
+  let wait = 0;
+
+  function animar() {
+    if (fase === 0) {
+      op += STEP_UP;
+      if (op >= MAX_OP) { op = MAX_OP; fase = 1; wait = 0; }
+    } else if (fase === 1) {
+      wait++;
+      if (wait >= WAIT_ON) fase = 2;
+    } else if (fase === 2) {
+      op -= STEP_DN;
+      if (op <= 0) { op = 0; fase = 3; wait = 0; }
+    } else if (fase === 3) {
+      wait++;
+      if (wait >= WAIT_OFF) fase = 0;
+    }
+    g.setAttribute('opacity', op);
+    requestAnimationFrame(animar);
+  }
+  requestAnimationFrame(animar);
+})();
+</script>
+</body>
+</html>
