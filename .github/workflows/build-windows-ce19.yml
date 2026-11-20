@@ -46,20 +46,42 @@ jobs:
           EOF
 
           cat > electron-app/main.js << 'EOF'
-          const { app, BrowserWindow } = require('electron')
+          const { app, BrowserWindow, session } = require('electron')
+
+          app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+          app.commandLine.appendSwitch('ignore-certificate-errors')
 
           function createWindow() {
             const win = new BrowserWindow({
               width: 1280,
               height: 800,
               title: 'Codigo Escondido 19',
+              backgroundColor: '#1a0a00',
               webPreferences: {
                 nodeIntegration: false,
-                contextIsolation: true
+                contextIsolation: true,
+                webSecurity: false,
+                allowRunningInsecureContent: true
               }
             })
-            win.loadURL('https://codigoescondido19.web.app')
             win.setMenuBarVisibility(false)
+
+            session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+              const headers = { ...details.responseHeaders }
+              delete headers['content-security-policy']
+              delete headers['Content-Security-Policy']
+              delete headers['x-frame-options']
+              delete headers['X-Frame-Options']
+              callback({ responseHeaders: headers })
+            })
+
+            const URL = 'https://codigoescondido19.web.app'
+            win.loadURL(URL)
+
+            win.webContents.on('did-fail-load', (event, code, desc) => {
+              console.log('did-fail-load:', code, desc)
+              setTimeout(() => win.loadURL(URL), 2000)
+            })
           }
 
           app.whenReady().then(createWindow)
