@@ -16,11 +16,17 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Descargar archivos del sitio
+        shell: bash
+        run: |
+          mkdir -p electron-app/www
+          curl -L "https://codigoescondido19.web.app/apophis.html" -o electron-app/www/apophis.html
+          curl -L "https://codigoescondido19.web.app/three.min.js" -o electron-app/www/three.min.js
+          curl -L "https://codigoescondido19.web.app/" -o electron-app/www/index.html
+
       - name: Crear proyecto Electron
         shell: bash
         run: |
-          mkdir -p electron-app
-
           cat > electron-app/package.json << 'EOF'
           {
             "name": "codigoescondido19",
@@ -36,7 +42,10 @@ jobs:
               "directories": { "output": "dist" },
               "win": {
                 "target": [{ "target": "dir", "arch": ["x64"] }]
-              }
+              },
+              "extraResources": [
+                { "from": "www", "to": "www" }
+              ]
             },
             "devDependencies": {
               "electron": "^31.0.0",
@@ -45,11 +54,47 @@ jobs:
           }
           EOF
 
-          cat > electron-app/main.js << 'EOF'
-          const { app, BrowserWindow, session } = require('electron')
+          cat > electron-app/main.js << 'MAINEOF'
+          const { app, BrowserWindow } = require('electron')
+          const path = require('path')
+          const fs = require('fs')
+          const https = require('https')
 
-          app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
-          app.commandLine.appendSwitch('ignore-certificate-errors')
+          const FIREBASE = 'https://codigoescondido19.web.app'
+          const CACHE_DIR = path.join(app.getPath('userData'), 'cache')
+          const BUNDLED_DIR = path.join(process.resourcesPath, 'www')
+
+          function ensureCache() {
+            if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
+          }
+
+          function getCachedOrBundled(file) {
+            const cached = path.join(CACHE_DIR, file)
+            const bundled = path.join(BUNDLED_DIR, file)
+            return fs.existsSync(cached) ? cached : bundled
+          }
+
+          function downloadFile(url, dest, cb) {
+            const tmp = dest + '.tmp'
+            const file = fs.createWriteStream(tmp)
+            https.get(url, res => {
+              if (res.statusCode !== 200) { file.close(); cb(false); return }
+              res.pipe(file)
+              file.on('finish', () => { file.close(); fs.renameSync(tmp, dest); cb(true) })
+            }).on('error', () => { file.close(); cb(false) })
+          }
+
+          function tryUpdate(win) {
+            ensureCache()
+            const files = ['apophis.html', 'three.min.js', 'index.html']
+            files.forEach(f => {
+              downloadFile(FIREBASE + '/' + f, path.join(CACHE_DIR, f), ok => {
+                if (ok && f === 'index.html') {
+                  win.loadFile(getCachedOrBundled('index.html'))
+                }
+              })
+            })
+          }
 
           function createWindow() {
             const win = new BrowserWindow({
@@ -60,27 +105,16 @@ jobs:
               webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
-                webSecurity: false,
-                allowRunningInsecureContent: true
+                webSecurity: false
               }
             })
             win.setMenuBarVisibility(false)
 
-            session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-              const headers = { ...details.responseHeaders }
-              delete headers['content-security-policy']
-              delete headers['Content-Security-Policy']
-              delete headers['x-frame-options']
-              delete headers['X-Frame-Options']
-              callback({ responseHeaders: headers })
-            })
+            const indexFile = getCachedOrBundled('index.html')
+            win.loadFile(indexFile)
 
-            const URL = 'https://codigoescondido19.web.app'
-            win.loadURL(URL)
-
-            win.webContents.on('did-fail-load', (event, code, desc) => {
-              console.log('did-fail-load:', code, desc)
-              setTimeout(() => win.loadURL(URL), 2000)
+            win.webContents.on('did-finish-load', () => {
+              tryUpdate(win)
             })
           }
 
@@ -93,7 +127,7 @@ jobs:
           app.on('activate', () => {
             if (BrowserWindow.getAllWindows().length === 0) createWindow()
           })
-          EOF
+          MAINEOF
 
       - name: Instalar dependencias
         run: |
