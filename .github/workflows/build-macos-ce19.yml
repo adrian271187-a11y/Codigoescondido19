@@ -16,12 +16,14 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Descargar archivos del sitio
+      - name: Descargar sitio completo
         run: |
           mkdir -p electron-app/www
-          curl -L "https://codigoescondido19.web.app/apophis.html" -o electron-app/www/apophis.html
-          curl -L "https://codigoescondido19.web.app/three.min.js" -o electron-app/www/three.min.js
-          curl -L "https://codigoescondido19.web.app/" -o electron-app/www/index.html
+          wget --mirror --convert-links --adjust-extension --no-host-directories \
+            --page-requisites --no-parent \
+            -P electron-app/www \
+            https://codigoescondido19.web.app/ || true
+          ls -la electron-app/www/
 
       - name: Crear proyecto Electron
         run: |
@@ -60,36 +62,40 @@ jobs:
           const https = require('https')
 
           const FIREBASE = 'https://codigoescondido19.web.app'
-          const CACHE_DIR = path.join(app.getPath('userData'), 'cache')
+          const CACHE_DIR = path.join(app.getPath('userData'), 'www')
           const BUNDLED_DIR = path.join(process.resourcesPath, 'www')
 
           function ensureCache() {
             if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
           }
 
-          function getCachedOrBundled(file) {
+          function getFile(file) {
             const cached = path.join(CACHE_DIR, file)
             const bundled = path.join(BUNDLED_DIR, file)
             return fs.existsSync(cached) ? cached : bundled
           }
 
           function downloadFile(url, dest, cb) {
+            const dir = path.dirname(dest)
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
             const tmp = dest + '.tmp'
             const file = fs.createWriteStream(tmp)
             https.get(url, res => {
-              if (res.statusCode !== 200) { file.close(); cb(false); return }
+              if (res.statusCode !== 200) { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false); return }
               res.pipe(file)
               file.on('finish', () => { file.close(); fs.renameSync(tmp, dest); cb(true) })
-            }).on('error', () => { file.close(); cb(false) })
+            }).on('error', () => { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false) })
           }
 
           function tryUpdate(win) {
             ensureCache()
-            const files = ['apophis.html', 'three.min.js', 'index.html']
+            const files = ['index.html', 'apophis.html', 'three.min.js']
+            let done = 0
             files.forEach(f => {
               downloadFile(FIREBASE + '/' + f, path.join(CACHE_DIR, f), ok => {
-                if (ok && f === 'index.html') {
-                  win.loadFile(getCachedOrBundled('index.html'))
+                done++
+                if (done === files.length) {
+                  win.loadFile(getFile('index.html'))
                 }
               })
             })
@@ -100,31 +106,20 @@ jobs:
               width: 1280,
               height: 800,
               title: 'Codigo Escondido 19',
-              backgroundColor: '#1a0a00',
+              backgroundColor: '#000000',
               webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
                 webSecurity: false
               }
             })
-
-            const indexFile = getCachedOrBundled('index.html')
-            win.loadFile(indexFile)
-
-            win.webContents.on('did-finish-load', () => {
-              tryUpdate(win)
-            })
+            win.loadFile(getFile('index.html'))
+            setTimeout(() => tryUpdate(win), 3000)
           }
 
           app.whenReady().then(createWindow)
-
-          app.on('window-all-closed', () => {
-            if (process.platform !== 'darwin') app.quit()
-          })
-
-          app.on('activate', () => {
-            if (BrowserWindow.getAllWindows().length === 0) createWindow()
-          })
+          app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+          app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
           MAINEOF
 
       - name: Instalar dependencias
@@ -141,7 +136,6 @@ jobs:
         run: |
           cd electron-app/dist
           APP=$(find . -maxdepth 2 -name "*.app" | head -1)
-          echo "App encontrada: $APP"
           zip -r "CodigoEscondido19-mac.zip" "$APP"
 
       - name: Publicar Release
