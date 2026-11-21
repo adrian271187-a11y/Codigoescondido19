@@ -1,0 +1,150 @@
+name: Compilar app Windows CE19 (archivos locales)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Preparar archivos del sitio
+        shell: bash
+        run: |
+          mkdir -p electron-app/www
+          # Copiar archivos web del repo al bundle
+          cp *.html electron-app/www/ 2>/dev/null || true
+          cp *.js electron-app/www/ 2>/dev/null || true
+          cp *.json electron-app/www/ 2>/dev/null || true
+          cp -r src electron-app/www/ 2>/dev/null || true
+          cp -r assets electron-app/www/ 2>/dev/null || true
+          cp -r Icons electron-app/www/ 2>/dev/null || true
+          cp -r files electron-app/www/ 2>/dev/null || true
+          echo "Archivos copiados:"
+          ls electron-app/www/
+
+      - name: Crear proyecto Electron
+        shell: bash
+        run: |
+          cat > electron-app/package.json << 'EOF'
+          {
+            "name": "codigoescondido19",
+            "version": "1.0.0",
+            "description": "Codigo Escondido 19",
+            "main": "main.js",
+            "build": {
+              "appId": "com.codigoescondido19.app",
+              "productName": "Codigo Escondido 19",
+              "directories": { "output": "dist" },
+              "win": {
+                "target": [{ "target": "dir", "arch": ["x64"] }]
+              },
+              "extraResources": [
+                { "from": "www", "to": "www" }
+              ]
+            },
+            "devDependencies": {
+              "electron": "^31.0.0",
+              "electron-builder": "^24.0.0"
+            }
+          }
+          EOF
+
+          cat > electron-app/main.js << 'MAINEOF'
+          const { app, BrowserWindow } = require('electron')
+          const path = require('path')
+          const fs = require('fs')
+          const https = require('https')
+
+          const FIREBASE_BASE = 'https://codigoescondido19.web.app'
+          const CACHE_DIR = path.join(app.getPath('userData'), 'www')
+          const BUNDLED_DIR = path.join(process.resourcesPath, 'www')
+
+          function ensureCache() {
+            if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
+          }
+
+          function getFile(file) {
+            const cached = path.join(CACHE_DIR, file)
+            const bundled = path.join(BUNDLED_DIR, file)
+            return fs.existsSync(cached) ? cached : bundled
+          }
+
+          function downloadFile(url, dest, cb) {
+            const dir = path.dirname(dest)
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+            const tmp = dest + '.tmp'
+            const file = fs.createWriteStream(tmp)
+            https.get(url, res => {
+              if (res.statusCode !== 200) { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false); return }
+              res.pipe(file)
+              file.on('finish', () => { file.close(); fs.renameSync(tmp, dest); cb(true) })
+            }).on('error', () => { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false) })
+          }
+
+          function tryUpdate() {
+            ensureCache()
+            const files = [
+              'index.html', 'src/style.css', 'src/app.js', 'src/auth.js',
+              'apophis.html', 'three.min.js', 'Revelaciones.html',
+              'ensenanzas.html', 'login.html', 'perfil.html'
+            ]
+            files.forEach(f => {
+              downloadFile(FIREBASE_BASE + '/' + f, path.join(CACHE_DIR, f), () => {})
+            })
+          }
+
+          function createWindow() {
+            const win = new BrowserWindow({
+              width: 1280,
+              height: 900,
+              title: 'Código Escondido 19',
+              backgroundColor: '#8a4800',
+              webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                webSecurity: false
+              }
+            })
+            win.setMenuBarVisibility(false)
+            win.loadFile(getFile('index.html'))
+            setTimeout(tryUpdate, 5000)
+          }
+
+          app.whenReady().then(createWindow)
+          app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+          app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
+          MAINEOF
+
+      - name: Instalar dependencias
+        run: |
+          cd electron-app
+          npm install
+
+      - name: Compilar para Windows
+        run: |
+          cd electron-app
+          npx electron-builder --win --dir
+
+      - name: Comprimir app
+        shell: pwsh
+        run: |
+          $dir = Get-ChildItem -Path "electron-app/dist" -Directory | Where-Object { $_.Name -like "win-*" } | Select-Object -First 1
+          Compress-Archive -Path $dir.FullName -DestinationPath "electron-app/dist/CodigoEscondido19-windows.zip"
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-desktop
+          name: "Codigo Escondido 19 - Apps Desktop"
+          draft: false
+          prerelease: false
+          files: electron-app/dist/CodigoEscondido19-windows.zip
