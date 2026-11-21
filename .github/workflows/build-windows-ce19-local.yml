@@ -20,7 +20,6 @@ jobs:
         shell: bash
         run: |
           mkdir -p electron-app/www
-          # Copiar archivos web del repo al bundle
           cp *.html electron-app/www/ 2>/dev/null || true
           cp *.js electron-app/www/ 2>/dev/null || true
           cp *.json electron-app/www/ 2>/dev/null || true
@@ -28,8 +27,7 @@ jobs:
           cp -r assets electron-app/www/ 2>/dev/null || true
           cp -r Icons electron-app/www/ 2>/dev/null || true
           cp -r files electron-app/www/ 2>/dev/null || true
-          echo "Archivos copiados:"
-          ls electron-app/www/
+          echo "Archivos copiados:" && ls electron-app/www/
 
       - name: Crear proyecto Electron
         shell: bash
@@ -59,7 +57,7 @@ jobs:
           EOF
 
           cat > electron-app/main.js << 'MAINEOF'
-          const { app, BrowserWindow } = require('electron')
+          const { app, BrowserWindow, protocol } = require('electron')
           const path = require('path')
           const fs = require('fs')
           const https = require('https')
@@ -68,14 +66,15 @@ jobs:
           const CACHE_DIR = path.join(app.getPath('userData'), 'www')
           const BUNDLED_DIR = path.join(process.resourcesPath, 'www')
 
-          function ensureCache() {
-            if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
-          }
+          protocol.registerSchemesAsPrivileged([{
+            scheme: 'app',
+            privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true }
+          }])
 
-          function getFile(file) {
-            const cached = path.join(CACHE_DIR, file)
-            const bundled = path.join(BUNDLED_DIR, file)
-            return fs.existsSync(cached) ? cached : bundled
+          function getFilePath(relative) {
+            const cached = path.join(CACHE_DIR, relative)
+            const bundled = path.join(BUNDLED_DIR, relative)
+            return fs.existsSync(cached) ? cached : (fs.existsSync(bundled) ? bundled : null)
           }
 
           function downloadFile(url, dest, cb) {
@@ -84,55 +83,64 @@ jobs:
             const tmp = dest + '.tmp'
             const file = fs.createWriteStream(tmp)
             https.get(url, res => {
-              if (res.statusCode !== 200) { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false); return }
+              if (res.statusCode !== 200) { file.close(); try{fs.unlinkSync(tmp)}catch(e){} cb(false); return }
               res.pipe(file)
               file.on('finish', () => { file.close(); fs.renameSync(tmp, dest); cb(true) })
-            }).on('error', () => { file.close(); try { fs.unlinkSync(tmp) } catch(e){} cb(false) })
+            }).on('error', () => { file.close(); try{fs.unlinkSync(tmp)}catch(e){} cb(false) })
           }
 
           function tryUpdate() {
-            ensureCache()
+            if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
             const files = [
-              'index.html', 'src/style.css', 'src/app.js', 'src/auth.js',
-              'apophis.html', 'three.min.js', 'Revelaciones.html',
-              'ensenanzas.html', 'login.html', 'perfil.html'
+              'index.html','src/style.css','src/app.js','src/auth.js','src/firebase.js',
+              'src/tools.js','src/perfil.js','apophis.html','three.min.js',
+              'Revelaciones.html','ensenanzas.html','login.html','perfil.html',
+              'impacto.html','estudios.html','manifest.json','sw.js'
             ]
-            files.forEach(f => {
-              downloadFile(FIREBASE_BASE + '/' + f, path.join(CACHE_DIR, f), () => {})
-            })
+            files.forEach(f => downloadFile(FIREBASE_BASE+'/'+f, path.join(CACHE_DIR,f), ()=>{}))
           }
 
-          function createWindow() {
+          const MIME = {
+            '.html':'text/html','.css':'text/css','.js':'application/javascript',
+            '.json':'application/json','.png':'image/png','.jpg':'image/jpeg',
+            '.jpeg':'image/jpeg','.svg':'image/svg+xml','.gif':'image/gif',
+            '.ico':'image/x-icon','.webp':'image/webp','.woff':'font/woff',
+            '.woff2':'font/woff2','.ttf':'font/ttf','.pdf':'application/pdf'
+          }
+
+          app.whenReady().then(() => {
+            protocol.handle('app', (request) => {
+              const reqUrl = new URL(request.url)
+              let rel = reqUrl.pathname.replace(/^\//, '') || 'index.html'
+              const local = getFilePath(rel)
+              if (local) {
+                const ext = path.extname(local)
+                const data = fs.readFileSync(local)
+                return new Response(data, { status:200, headers:{'Content-Type': MIME[ext]||'application/octet-stream'} })
+              }
+              return new Response('Not found', { status: 404 })
+            })
+
             const win = new BrowserWindow({
-              width: 1280,
-              height: 900,
+              width: 1280, height: 900,
               title: 'Código Escondido 19',
               backgroundColor: '#8a4800',
-              webPreferences: {
-                nodeIntegration: false,
-                contextIsolation: true,
-                webSecurity: false
-              }
+              webPreferences: { nodeIntegration:false, contextIsolation:true, webSecurity:true }
             })
             win.setMenuBarVisibility(false)
-            win.loadFile(getFile('index.html'))
+            win.loadURL('app://localhost/index.html')
             setTimeout(tryUpdate, 5000)
-          }
+          })
 
-          app.whenReady().then(createWindow)
           app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
-          app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow() })
+          app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) app.emit('ready') })
           MAINEOF
 
       - name: Instalar dependencias
-        run: |
-          cd electron-app
-          npm install
+        run: cd electron-app && npm install
 
       - name: Compilar para Windows
-        run: |
-          cd electron-app
-          npx electron-builder --win --dir
+        run: cd electron-app && npx electron-builder --win --dir
 
       - name: Comprimir app
         shell: pwsh
