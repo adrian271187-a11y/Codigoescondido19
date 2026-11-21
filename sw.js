@@ -1,37 +1,17 @@
-const CACHE = 'ce19-v13';
+const CACHE = 'ce19-v10';
 const ARCHIVOS = [
-  './',
-  './index.html',
-  './ensenanzas.html',
-  './login.html',
-  './perfil.html',
-  './manifest.json',
-  './src/style.css',
-  './src/app.js',
-  './src/tools.js',
-  './src/auth.js',
-  './src/perfil.js',
-  './src/firebase.js',
-  './src/pwa.js',
-  './assets/ensenanzas/Icons/icon-192.png',
-  './assets/ensenanzas/Icons/icon-512.png',
-  './assets/ensenanzas/apocalipsis-tabla.jpg',
-  './assets/ensenanzas/los-11-testigos.jpg',
-  './assets/ensenanzas/mercaderias-01-palabras.jpg',
-  './assets/ensenanzas/mercaderias-02-lapalabra.jpg',
-  './assets/ensenanzas/mercaderias-03-lafe.jpg',
-  './assets/ensenanzas/mercaderias-04-no.jpg',
-  './assets/ensenanzas/mercaderias-05-no2.jpg',
-  './assets/ensenanzas/mercaderias-06-preguntas.jpg',
-  './assets/ensenanzas/mercaderias-07-preguntas2.jpg',
-  './assets/ensenanzas/bautismo.jpg',
-  './assets/ensenanzas/matrimonio-dios.jpg',
-  './assets/ensenanzas/oracion-padre-nuestro.jpg',
-  './assets/ensenanzas/numeros-significado.jpg',
-  './assets/ensenanzas/colores-arcoiris.jpg',
-  './assets/ensenanzas/pacto-noe.jpg',
-  './assets/ensenanzas/deidades-10-11-12.jpg',
-  './assets/ensenanzas/apocalipsis-10-planetas.jpg'
+  '/ensenanzas.html',
+  '/login.html',
+  '/perfil.html',
+  '/manifest.json',
+  '/src/style.css',
+  '/src/tools.js',
+  '/src/auth.js',
+  '/src/perfil.js',
+  '/src/firebase.js',
+  '/src/pwa.js',
+  '/assets/ensenanzas/Icons/icon-192.png',
+  '/assets/ensenanzas/Icons/icon-512.png'
 ];
 
 self.addEventListener('install', e => {
@@ -51,11 +31,42 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+
+  // index.html y páginas HTML — siempre red primero, caché como fallback
+  if (e.request.mode === 'navigate' ||
+      url.pathname === '/' ||
+      url.pathname.endsWith('.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request).then(r => r || caches.match('/index.html')))
+    );
+    return;
+  }
+
+  // JS y CSS — red primero también para reflejar cambios
+  if (url.pathname.startsWith('/src/')) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Assets (imágenes, iconos) — caché primero
   e.respondWith(
     caches.match(e.request).then(cached =>
-      cached || fetch(e.request).catch(() =>
-        caches.match('./index.html')
-      )
+      cached || fetch(e.request).catch(() => caches.match('/index.html'))
     )
   );
 });

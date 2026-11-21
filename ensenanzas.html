@@ -3,396 +3,322 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Enseñanzas — Código Escondido 19</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Preparcion para ultimos tiempos — Código Escondido 19</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#e85d04">
+  <link rel="apple-touch-icon" href="./assets/ensenanzas/Icons/icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/style.css">
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#e85d04">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CE19">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   <style>
-    /* ── HERO ENSEÑANZAS ── */
-    .ens-hero {
-      padding: 7rem 2rem 3rem;
-      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(90,63,160,.3) 0%, transparent 70%);
-      text-align: center;
-      border-bottom: 1px solid rgba(201,168,76,.15);
+    :root {
+      --negro:    #7a3d00;
+      --profundo: #8a4800;
+      --carbon:   #9a5500;
+      --panel:    #a86030;
+      --oscuro:   #7a3d00;
+      --cafe:     #b87040;
+      --cafe2:    #c07840;
+      --cafe3:    #cc8850;
+      --gris:     #ffe8cc;
+      --blanco:   #ffffff;
+      --dorado:   #ffcc44;
+      --dorado2:  #ffe066;
     }
+    body { background: #8a4800; color: #ffe8cc; }
+    .ens-hero { padding:7rem 2rem 3rem; text-align:center;
+      background:radial-gradient(ellipse 70% 60% at 50% 0%, rgba(232,93,4,.2) 0%, transparent 70%);
+      border-bottom:1px solid rgba(232,93,4,.15); }
     .ens-hero h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,4rem); color:var(--blanco); }
     .ens-hero p  { color:var(--gris); max-width:50ch; margin:.8rem auto 0; font-size:.95rem; }
-
-    /* ── FILTROS ── */
-    .filtros {
-      display:flex; flex-wrap:wrap; gap:.5rem;
-      justify-content:center; padding:2rem 1rem 0;
-    }
-    .filtro-btn {
-      background:var(--panel); border:1px solid rgba(201,168,76,.2);
+    .filtros { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; padding:2rem 1rem 0; }
+    .filtro-btn { background:var(--panel); border:1px solid rgba(232,93,4,.2);
       color:var(--gris); font-family:'Lato',sans-serif; font-size:.78rem;
-      letter-spacing:.08em; padding:.5rem 1.2rem; cursor:pointer;
-      transition:all .2s;
-    }
-    .filtro-btn:hover, .filtro-btn.active {
-      background:var(--dorado); color:var(--negro); border-color:var(--dorado);
-    }
-
-    /* ── CATEGORÍAS ── */
+      letter-spacing:.08em; padding:.5rem 1.2rem; cursor:pointer; transition:all .2s; }
+    .filtro-btn:hover, .filtro-btn.active { background:var(--dorado); color:var(--cafe); border-color:var(--dorado); }
     .cat-section { padding:3rem 2rem; }
     .cat-section + .cat-section { padding-top:0; }
-    .cat-title {
-      font-family:'Cinzel',serif; font-size:1.1rem; color:var(--dorado);
+    .cat-title { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--dorado);
       letter-spacing:.08em; margin-bottom:1.5rem;
-      display:flex; align-items:center; gap:.8rem;
-    }
-    .cat-title::after {
-      content:''; flex:1; height:1px; background:rgba(201,168,76,.2);
-    }
-
-    /* ── GRIDS ── */
-    .ens-grid {
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-      gap:1rem;
-    }
-    .ens-grid.wide {
-      grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
-    }
-
-    /* ── CARD ── */
-    .ens-card {
-      background:var(--panel); overflow:hidden; cursor:pointer;
-      transition:transform .2s;
-      border-top:2px solid transparent;
-    }
+      display:flex; align-items:center; gap:.8rem; }
+    .cat-title::after { content:''; flex:1; height:1px; background:rgba(232,93,4,.2); }
+    .ens-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; }
+    .ens-card { background:var(--panel); overflow:hidden; cursor:pointer;
+      transition:transform .2s; border-top:2px solid transparent; }
     .ens-card:hover { transform:translateY(-3px); border-top-color:var(--dorado); }
-    .ens-card img {
-      width:100%; display:block; aspect-ratio:4/3; object-fit:cover;
-      object-position:top;
-    }
-    .ens-card.tall img { aspect-ratio:3/4; object-position:center; }
+    .ens-card img { width:100%; display:block; aspect-ratio:4/3; object-fit:cover; object-position:top; }
     .ens-card-body { padding:1rem 1.2rem; }
-    .ens-card-cat  { font-size:.65rem; letter-spacing:.2em; color:var(--dorado); font-weight:700; margin-bottom:.3rem; }
-    .ens-card-title{ font-family:'Cinzel',serif; font-size:.88rem; color:var(--blanco); line-height:1.3; }
-
-    /* ── VIDEO CARD ── */
-    .video-card { background:var(--panel); overflow:hidden; border-top:2px solid var(--violeta2); }
-    .video-card video { width:100%; display:block; max-height:400px; background:#3b1a00; }
-    .video-card-body { padding:1rem 1.2rem; }
-    .video-card-title { font-family:'Cinzel',serif; font-size:.95rem; color:var(--blanco); }
-    .video-card p { font-size:.85rem; color:var(--gris); margin-top:.4rem; }
-
-    /* ── LIGHTBOX ── */
-    #lightbox {
-      display:none; position:fixed; inset:0; z-index:999;
-      background:rgba(42,15,0,.92); align-items:center; justify-content:center;
-      padding:1rem;
-    }
+    .ens-card-cat { font-size:.65rem; letter-spacing:.2em; color:var(--dorado); font-weight:700; margin-bottom:.3rem; }
+    .ens-card-title { font-family:'Cinzel',serif; font-size:.88rem; color:var(--blanco); line-height:1.3; }
+    .yt-embed-wrap { border:1px solid rgba(232,93,4,.2); }
+    #lightbox { display:none; position:fixed; inset:0; z-index:999;
+      background:rgba(0,0,0,.92); align-items:center; justify-content:center; padding:1rem; }
     #lightbox.open { display:flex; }
-    #lightbox img {
-      max-width:100%; max-height:90vh; object-fit:contain;
-      box-shadow:0 0 60px rgba(201,168,76,.2);
-    }
-    #lightbox-close {
-      position:absolute; top:1rem; right:1.5rem;
-      font-size:2rem; color:var(--dorado); cursor:pointer; line-height:1;
-      background:none; border:none;
-    }
-    #lightbox-caption {
-      position:absolute; bottom:1.5rem; left:50%; transform:translateX(-50%);
-      font-family:'Cinzel',serif; color:var(--dorado); font-size:.85rem;
-      text-align:center; max-width:60ch;
-    }
-
-    @media(max-width:600px) {
-      .ens-grid, .ens-grid.wide { grid-template-columns:1fr 1fr; gap:.6rem; }
-      .ens-card.tall img { aspect-ratio:3/4; }
-      .ens-card-body { padding:.6rem .8rem; }
-      .ens-card-title { font-size:.78rem; }
-      .filtros { gap:.4rem; padding:1.2rem .8rem 0; }
-      .filtro-btn { font-size:.72rem; padding:.4rem .8rem; }
-      /* Lightbox móvil: imagen ocupa toda la pantalla */
-      #lightbox { padding:.3rem; align-items:center; }
-      #lightbox img { max-height:85vh; border-radius:4px; }
-      #lightbox-caption { font-size:.72rem; bottom:.5rem; }
-      #lightbox-close { top:.5rem; right:.8rem; font-size:1.6rem; }
-    }
+    #lightbox img { max-width:100%; max-height:90vh; object-fit:contain; }
+    #lightbox-close { position:absolute; top:1rem; right:1.5rem;
+      font-size:2rem; color:var(--dorado); cursor:pointer; background:none; border:none; }
+    @media(max-width:600px) { .ens-grid { grid-template-columns:1fr 1fr; gap:.6rem; } }
   </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav id="navbar">
   <a href="index.html" class="logo">CE·19</a>
   <ul id="nav-links">
     <li><a href="index.html">Inicio</a></li>
-    <li><a href="ensenanzas.html" style="color:var(--dorado)">Enseñanzas</a></li>
-    <li><a href="index.html#herramientas">Herramientas</a></li>
+    <li><a href="ensenanzas.html" style="color:var(--dorado)">Preparcion para ultimos tiempos</a></li>
+    <li><a href="estudios.html">Estudios</a></li>
     <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
     <li id="nav-perfil" style="display:none"><a href="perfil.html" id="nav-usuario">Mi perfil</a></li>
-    <li id="nav-login"><a href="login.html" class="btn-nav">Ingresar</a></li>
     <li id="nav-logout" style="display:none"><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
 <div class="ens-hero">
   <div class="section-label">Material del ministerio</div>
-  <h1>Enseñanzas</h1>
-  <p>Láminas, diagramas y videos con los mensajes de Código Escondido 19 — decodificando la verdad por medio del Espíritu Santo.</p>
+  <h1>Preparcion para ultimos tiempos</h1>
+  <p>Láminas, diagramas y videos de Código Escondido 19.</p>
 </div>
 
-<!-- FILTROS -->
 <div class="filtros">
   <button class="filtro-btn active" onclick="filtrar('todo',this)">Todo</button>
   <button class="filtro-btn" onclick="filtrar('apocalipsis',this)">Apocalipsis</button>
-  <button class="filtro-btn" onclick="filtrar('mercaderias',this)">Mercaderías de Babilonia</button>
-  <button class="filtro-btn" onclick="filtrar('numeros',this)">Números Bíblicos</button>
+  <button class="filtro-btn" onclick="filtrar('mercaderias',this)">Mercaderías</button>
+  <button class="filtro-btn" onclick="filtrar('numeros',this)">Números</button>
   <button class="filtro-btn" onclick="filtrar('otros',this)">Otros temas</button>
   <button class="filtro-btn" onclick="filtrar('videos',this)">Videos</button>
 </div>
 
 <div class="container" style="padding-top:1rem">
 
-  <!-- ── APOCALIPSIS ── -->
+  <!-- APOCALIPSIS -->
   <div class="cat-section" data-cat="apocalipsis">
     <div class="cat-title">📖 Apocalipsis y Profecía</div>
-    <div class="ens-grid wide">
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/apocalipsis-tabla.jpg','Apocalipsis 13:18 — Tabla profética general')">
-        <img src="assets/ensenanzas/apocalipsis-tabla.jpg" alt="Apocalipsis 13:18 tabla profética" loading="lazy">
-        <div class="ens-card-body">
-          <div class="ens-card-cat">Apocalipsis · Profecía</div>
-          <div class="ens-card-title">Apocalipsis 13:18 — Tabla profética general</div>
-        </div>
-      </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/los-11-testigos.jpg','Los 11 Testigos — Apocalipsis 11:3, Daniel 12, Zacarías 4:3-6')">
-        <img src="assets/ensenanzas/los-11-testigos.jpg" alt="Los 11 Testigos" loading="lazy">
+    <div class="ens-grid">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Apocalipsis_13.jpg','Apocalipsis 13')">
+        <img src="assets/ensenanzas/Apocalipsis_13.jpg" alt="Apocalipsis 13" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Apocalipsis</div>
-          <div class="ens-card-title">Los 11 Testigos — Fuego, Agua y Olivo</div>
+          <div class="ens-card-title">Apocalipsis 13</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/deidades-10-11-12.jpg','Las tres Deidades: 10, 11 y 12 — Dios, Hombre y Satanás')">
-        <img src="assets/ensenanzas/deidades-10-11-12.jpg" alt="Deidades 10 11 12" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/apocalipsis-10-planetas.jpg','Apocalipsis 10 — Planetas')">
+        <img src="assets/ensenanzas/apocalipsis-10-planetas.jpg" alt="Apocalipsis 10 Planetas" loading="lazy">
+        <div class="ens-card-body">
+          <div class="ens-card-cat">Apocalipsis · Planetas</div>
+          <div class="ens-card-title">Apocalipsis 10 → Abril 13 2029</div>
+        </div>
+      </div>
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Los_dos_testigos.jpg','Los Dos Testigos')">
+        <img src="assets/ensenanzas/Los_dos_testigos.jpg" alt="Los Dos Testigos" loading="lazy">
+        <div class="ens-card-body">
+          <div class="ens-card-cat">Apocalipsis</div>
+          <div class="ens-card-title">Los Dos Testigos</div>
+        </div>
+      </div>
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/La_Marca.jpg','La Marca')">
+        <img src="assets/ensenanzas/La_Marca.jpg" alt="La Marca" loading="lazy">
+        <div class="ens-card-body">
+          <div class="ens-card-cat">Apocalipsis</div>
+          <div class="ens-card-title">La Marca</div>
+        </div>
+      </div>
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Codigo_escondido_19.jpg','Código Escondido 19')">
+        <img src="assets/ensenanzas/Codigo_escondido_19.jpg" alt="Código Escondido 19" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Apocalipsis · Números</div>
-          <div class="ens-card-title">Las tres Deidades: 10, 11 y 12 — Dios, Hombre y Satanás</div>
+          <div class="ens-card-title">Código Escondido 19</div>
         </div>
       </div>
-
-      <div class="ens-card wide" onclick="abrirLightbox('assets/ensenanzas/apocalipsis-10-planetas.jpg','Apocalipsis 10 → Abril 13 2029 — Los planetas y el significado de los números')">
-        <img src="assets/ensenanzas/apocalipsis-10-planetas.jpg" alt="Apocalipsis 10 planetas" loading="lazy" style="aspect-ratio:16/9;object-fit:cover;">
-        <div class="ens-card-body">
-          <div class="ens-card-cat">Apocalipsis · Planetas · Calendario</div>
-          <div class="ens-card-title">Apocalipsis 10 → Abril 13 2029 — Los planetas, Apocalipsis 13:18 y el Calendario de Juan 360 días</div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- ── MERCADERÍAS DE BABILONIA ── -->
+  <!-- MERCADERÍAS -->
   <div class="cat-section" data-cat="mercaderias">
     <div class="cat-title">🏛️ Derribando las Mercaderías de Babilonia</div>
     <div class="ens-grid">
-
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Derribando_Mercaderia_Babilonia.jpg','Derribando las Mercaderías de Babilonia')">
+        <img src="assets/ensenanzas/Derribando_Mercaderia_Babilonia.jpg" alt="Derribando Mercaderías de Babilonia" loading="lazy">
+        <div class="ens-card-body">
+          <div class="ens-card-cat">Mercaderías de Babilonia</div>
+          <div class="ens-card-title">Derribando las Mercaderías de Babilonia</div>
+        </div>
+      </div>
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Derribando_Mercaderia.jpg','Derribando la Mercadería')">
+        <img src="assets/ensenanzas/Derribando_Mercaderia.jpg" alt="Derribando Mercadería" loading="lazy">
+        <div class="ens-card-body">
+          <div class="ens-card-cat">Mercaderías de Babilonia</div>
+          <div class="ens-card-title">Derribando la Mercadería</div>
+        </div>
+      </div>
       <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-01-palabras.jpg','Mercaderías — Las Palabras que Generalizan')">
         <img src="assets/ensenanzas/mercaderias-01-palabras.jpg" alt="Palabras que generalizan" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Mercaderías de Babilonia · 1</div>
-          <div class="ens-card-title">Las Palabras que Generalizan: Siempre, Nunca, Todo, Nada</div>
+          <div class="ens-card-title">Las Palabras que Generalizan</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-02-lapalabra.jpg','Mercaderías — La Palabra sin hacer caer')">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-02-lapalabra.jpg','Mercaderías — La Palabra')">
         <img src="assets/ensenanzas/mercaderias-02-lapalabra.jpg" alt="La Palabra" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Mercaderías de Babilonia · 2</div>
-          <div class="ens-card-title">La Palabra — Cancelar palabras en el nombre de Jesucristo</div>
+          <div class="ens-card-title">La Palabra</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-03-lafe.jpg','Mercaderías — La Fe y el poder de la Palabra')">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-03-lafe.jpg','Mercaderías — La Fe')">
         <img src="assets/ensenanzas/mercaderias-03-lafe.jpg" alt="La Fe" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Mercaderías de Babilonia · 3</div>
-          <div class="ens-card-title">La Fe — Sembrar semillas y el poder de la Palabra</div>
+          <div class="ens-card-title">La Fe</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-04-no.jpg','Mercaderías — Cuando usamos NO sustituyendo ADEMÁS, TAMBIÉN')">
-        <img src="assets/ensenanzas/mercaderias-04-no.jpg" alt="Palabra NO" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-04-no.jpg','Mercaderías — Cuando Usamos NO')">
+        <img src="assets/ensenanzas/mercaderias-04-no.jpg" alt="Cuando Usamos NO" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Mercaderías de Babilonia · 4</div>
-          <div class="ens-card-title">Cuando usamos NO sustituyendo ADEMÁS y TAMBIÉN</div>
+          <div class="ens-card-title">Cuando Usamos NO</div>
         </div>
       </div>
-
       <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-05-no2.jpg','Mercaderías — Palabra Encubierta')">
-        <img src="assets/ensenanzas/mercaderias-05-no2.jpg" alt="Palabra encubierta" loading="lazy">
+        <img src="assets/ensenanzas/mercaderias-05-no2.jpg" alt="Palabra Encubierta" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Mercaderías de Babilonia · 5</div>
-          <div class="ens-card-title">La Palabra Encubierta — Prestar mucha atención</div>
+          <div class="ens-card-title">Palabra Encubierta</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-06-preguntas.jpg','Mercaderías — Cuando la Palabra es protegida al preguntar')">
-        <img src="assets/ensenanzas/mercaderias-06-preguntas.jpg" alt="Preguntas" loading="lazy">
+      <div class="ens-card" onclick="abrirLightboxGaleria(['assets/ensenanzas/Mercaderia_Jardin_del_Eden-A.jpg','assets/ensenanzas/Mercaderia_Jardin_del_Eden-B.jpg'], 0)">
+        <img src="assets/ensenanzas/Mercaderia_Jardin_del_Eden-A.jpg" alt="Mercadería Jardín del Edén" loading="lazy">
         <div class="ens-card-body">
-          <div class="ens-card-cat">Mercaderías de Babilonia · 6</div>
-          <div class="ens-card-title">Cuando la Palabra es protegida al preguntar</div>
-        </div>
-      </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/mercaderias-07-preguntas2.jpg','Mercaderías — Preguntas capciosas y léxico')">
-        <img src="assets/ensenanzas/mercaderias-07-preguntas2.jpg" alt="Preguntas capciosas" loading="lazy">
-        <div class="ens-card-body">
-          <div class="ens-card-cat">Mercaderías de Babilonia · 7</div>
-          <div class="ens-card-title">Preguntas capciosas y palabras de modismo</div>
+          <div class="ens-card-cat">Mercaderías de Babilonia · 2 láminas</div>
+          <div class="ens-card-title">Mercadería en el Jardín del Edén</div>
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- ── NÚMEROS BÍBLICOS ── -->
+  <!-- NÚMEROS -->
   <div class="cat-section" data-cat="numeros">
     <div class="cat-title">🔢 Números Bíblicos y Arcoíris</div>
     <div class="ens-grid">
-
-      <div class="ens-card tall" onclick="abrirLightbox('assets/ensenanzas/numeros-significado.jpg','Significado de los Números del 0 al 9 — Código Escondido 19')">
-        <img src="assets/ensenanzas/numeros-significado.jpg" alt="Números del 0 al 9" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/numeros-significado.jpg','Números Bíblicos')">
+        <img src="assets/ensenanzas/numeros-significado.jpg" alt="Números Bíblicos" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Números Bíblicos</div>
-          <div class="ens-card-title">Significado de los Números del 0 al 9</div>
+          <div class="ens-card-title">Números Bíblicos</div>
         </div>
       </div>
-
-      <div class="ens-card tall" onclick="abrirLightbox('assets/ensenanzas/colores-arcoiris.jpg','Colores del Arcoíris y su significado numérico')">
-        <img src="assets/ensenanzas/colores-arcoiris.jpg" alt="Colores del Arcoíris" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Colores_del_Arcoiris.jpg','Colores del Arcoíris')">
+        <img src="assets/ensenanzas/Colores_del_Arcoiris.jpg" alt="Colores del Arcoíris" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Números · Arcoíris</div>
-          <div class="ens-card-title">Colores del Arcoíris — Del 0 al 9</div>
+          <div class="ens-card-title">Colores del Arcoíris</div>
         </div>
       </div>
-
-      <div class="ens-card tall" onclick="abrirLightbox('assets/ensenanzas/pacto-noe.jpg','El Pacto de Dios con Noé — Génesis 9:13-17')">
-        <img src="assets/ensenanzas/pacto-noe.jpg" alt="Pacto con Noé" loading="lazy">
-        <div class="ens-card-body">
-          <div class="ens-card-cat">Números · Pacto</div>
-          <div class="ens-card-title">El Pacto de Dios con Noé — Génesis 9:13-17</div>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- ── OTROS TEMAS ── -->
+  <!-- OTROS TEMAS -->
   <div class="cat-section" data-cat="otros">
     <div class="cat-title">✦ Otros Temas</div>
     <div class="ens-grid">
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/bautismo.jpg','El Bautismo en las Aguas Azules — Al aire libre y con sol')">
-        <img src="assets/ensenanzas/bautismo.jpg" alt="Bautismo" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Bautismo_Real.jpg','Bautismo Real')">
+        <img src="assets/ensenanzas/Bautismo_Real.jpg" alt="Bautismo Real" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Bautismo</div>
-          <div class="ens-card-title">El Bautismo en las Aguas Azules — Al aire libre y con sol</div>
+          <div class="ens-card-title">Bautismo Real</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/matrimonio-dios.jpg','El Matrimonio de Dios Todopoderoso — ADN, Mateo 19:5-6')">
-        <img src="assets/ensenanzas/matrimonio-dios.jpg" alt="Matrimonio de Dios" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Matrimonio_Dios_Todopoderoso.jpg','Matrimonio Dios Todopoderoso')">
+        <img src="assets/ensenanzas/Matrimonio_Dios_Todopoderoso.jpg" alt="Matrimonio Dios Todopoderoso" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Matrimonio · ADN</div>
-          <div class="ens-card-title">El Matrimonio de Dios Todopoderoso — Fusión genética</div>
+          <div class="ens-card-title">Matrimonio Dios Todopoderoso</div>
         </div>
       </div>
-
-      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/oracion-padre-nuestro.jpg','Oración Padre Nuestro — Lucas 11:2-3 y Mateo 6:9-13')">
-        <img src="assets/ensenanzas/oracion-padre-nuestro.jpg" alt="Padre Nuestro" loading="lazy">
+      <div class="ens-card" onclick="abrirLightbox('assets/ensenanzas/Padre_Nuestro.jpg','Padre Nuestro')">
+        <img src="assets/ensenanzas/Padre_Nuestro.jpg" alt="Padre Nuestro" loading="lazy">
         <div class="ens-card-body">
           <div class="ens-card-cat">Oración</div>
-          <div class="ens-card-title">Oración Padre Nuestro — Lucas 11:2-3 · Mateo 6:9-13</div>
+          <div class="ens-card-title">Padre Nuestro</div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- ── VIDEOS ── -->
+  <!-- VIDEOS -->
   <div class="cat-section" data-cat="videos">
     <div class="cat-title">🎥 Videos</div>
-    <div class="ens-grid wide">
-
-      <div class="video-card">
-        <div class="post-video">
-          <iframe src="https://www.youtube.com/embed/CCVUZ1S15oQ" allowfullscreen loading="lazy"></iframe>
+    <div class="ens-grid wide" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr));">
+      <div class="video-card" style="background:var(--panel);overflow:hidden;border-top:2px solid var(--violeta2);">
+        <div class="post-video" style="position:relative;padding-top:56.25%;">
+          <iframe src="https://www.youtube.com/embed/CCVUZ1S15oQ" allowfullscreen loading="lazy"
+            style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>
         </div>
-        <div class="video-card-body">
-          <div class="ens-card-cat">Video · Enseñanza</div>
-          <div class="video-card-title">Enseñanza — Video 1</div>
-          <p>Código Escondido 19 — Decodificando la Verdad</p>
-        </div>
-      </div>
-
-      <div class="video-card">
-        <div class="post-video">
-          <iframe src="https://www.youtube.com/embed/fLrLsyAPBF8" allowfullscreen loading="lazy"></iframe>
-        </div>
-        <div class="video-card-body">
-          <div class="ens-card-cat">Video · Enseñanza</div>
-          <div class="video-card-title">Enseñanza — Video 2</div>
-          <p>Código Escondido 19 — Decodificando la Verdad</p>
+        <div style="padding:1rem 1.2rem;">
+          <div style="font-size:.65rem;letter-spacing:.2em;color:var(--dorado);font-weight:700;">Video · Enseñanza</div>
+          <div style="font-family:'Cinzel',serif;color:var(--blanco);font-size:.95rem;margin-top:.3rem;">Enseñanza — Video 1</div>
         </div>
       </div>
-
+      <div class="video-card" style="background:var(--panel);overflow:hidden;border-top:2px solid var(--violeta2);">
+        <div class="post-video" style="position:relative;padding-top:56.25%;">
+          <iframe src="https://www.youtube.com/embed/fLrLsyAPBF8" allowfullscreen loading="lazy"
+            style="position:absolute;inset:0;width:100%;height:100%;border:none;"></iframe>
+        </div>
+        <div style="padding:1rem 1.2rem;">
+          <div style="font-size:.65rem;letter-spacing:.2em;color:var(--dorado);font-weight:700;">Video · Enseñanza</div>
+          <div style="font-family:'Cinzel',serif;color:var(--blanco);font-size:.95rem;margin-top:.3rem;">Enseñanza — Video 2</div>
+        </div>
+      </div>
     </div>
   </div>
 
-</div><!-- /container -->
+</div>
 
 <footer>
-  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Decodificando la Verdad &nbsp;·&nbsp; #EspírituSanto #Jesucristo #ÚltimosTiempos</p>
+  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Decodificando la Verdad</p>
 </footer>
 
 <!-- LIGHTBOX -->
 <div id="lightbox" onclick="cerrarLightbox()">
   <button id="lightbox-close" onclick="cerrarLightbox()">✕</button>
-  <img id="lightbox-img" src="" alt="">
-  <div id="lightbox-caption"></div>
+  <button id="lb-prev" onclick="lbNav(-1,event)" style="display:none;position:absolute;left:1rem;top:50%;transform:translateY(-50%);font-size:2rem;background:none;border:none;color:var(--dorado);cursor:pointer;">&#8249;</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+  <button id="lb-next" onclick="lbNav(1,event)" style="display:none;position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:2rem;background:none;border:none;color:var(--dorado);cursor:pointer;">&#8250;</button>
 </div>
 
 <script type="module" src="src/app.js"></script>
-<script src="src/pwa.js"></script>
 <script>
-// ── LIGHTBOX ──
+var _galeria=[], _gIdx=0;
 function abrirLightbox(src, caption) {
+  _galeria=[src]; _gIdx=0;
   document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox-caption').textContent = caption;
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
+  document.getElementById('lb-prev').style.display='none';
+  document.getElementById('lb-next').style.display='none';
 }
+function abrirLightboxGaleria(imgs, idx) {
+  _galeria=imgs; _gIdx=idx;
+  document.getElementById('lightbox-img').src = imgs[idx];
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('lb-prev').style.display=imgs.length>1?'block':'none';
+  document.getElementById('lb-next').style.display=imgs.length>1?'block':'none';
+}
+function lbNav(dir,e){ e.stopPropagation(); _gIdx=(_gIdx+dir+_galeria.length)%_galeria.length; document.getElementById('lightbox-img').src=_galeria[_gIdx]; }
 function cerrarLightbox() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarLightbox(); });
-
-// ── FILTROS ──
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') cerrarLightbox();
+  if(e.key==='ArrowRight') lbNav(1,{stopPropagation:()=>{}});
+  if(e.key==='ArrowLeft')  lbNav(-1,{stopPropagation:()=>{}});
+});
 function filtrar(cat, btn) {
   document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.cat-section').forEach(s => {
-    if (cat === 'todo') {
-      s.style.display = 'block';
-    } else {
-      s.style.display = s.dataset.cat === cat ? 'block' : 'none';
-    }
+    s.style.display = (cat === 'todo' || s.dataset.cat === cat) ? 'block' : 'none';
   });
 }
 </script>

@@ -1,226 +1,825 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Apophis — 13 Abril 2029 · Código Escondido 19</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --cafe:    #3b1a00;
-      --cafe2:   #5a2800;
-      --cafe3:   #7a3800;
-      --naranja: #e85d04;
-      --naranja2:#f48c06;
-      --rojo:    #dc2626;
-      --blanco:  #fff8f0;
-      --gris:    #c9a98a;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--cafe);
-      color: var(--blanco);
-      font-family: 'Lato', sans-serif;
-      font-weight: 300;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Apophis — El Dios del Caos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --negro: #b04800;
+    --profundo: #b85000;
+    --carbon: #c05800;
+    --panel: #c86000;
+    --borde: rgba(220,120,0,0.7);
+    --oro: #ffdd00;
+    --oro2: #ffee40;
+    --naranja: #ffaa00;
+    --rojo-apophis: #ffffff;
+    --rojo2: #ffffff;
+    --blanco: #ffffff;
+    --gris: #fff0d0;
+    --cafe: #a84000;
+    --cafe2: #b85000;
+    --cafe3: #c86000;
+  }
 
-    /* NAV */
-    nav {
-      position: fixed; top:0; left:0; right:0; z-index:100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: .9rem 2rem;
-      background: rgba(59,26,0,.92);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(232,93,4,.2);
-    }
-    .logo { font-family:'Cinzel',serif; font-weight:900; font-size:.95rem;
-            letter-spacing:.12em; color:var(--naranja); text-decoration:none; }
-    nav a { color:var(--gris); text-decoration:none; font-size:.82rem;
-            letter-spacing:.06em; transition:color .2s; }
-    nav a:hover { color:var(--naranja2); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* HERO */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction:column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 5rem 1.5rem 2rem;
-      position: relative;
-      background: radial-gradient(ellipse 70% 60% at 50% 30%, rgba(220,38,38,.15) 0%, transparent 70%);
-    }
-    .hero-eyebrow {
-      font-size:.7rem; letter-spacing:.3em; color:var(--rojo);
-      font-weight:700; margin-bottom:1.2rem;
-    }
-    h1 {
-      font-family:'Cinzel',serif; font-weight:900;
-      font-size: clamp(3.5rem,10vw,8rem);
-      line-height:.9; color:var(--blanco);
-      text-shadow: 0 0 60px rgba(220,38,38,.4);
-    }
-    .hero-fecha {
-      font-family:'Cinzel',serif; font-size:clamp(1rem,3vw,1.6rem);
-      color:var(--naranja); margin-top:.8rem; letter-spacing:.1em;
-    }
-    .hero-versiculo {
-      margin-top:1.5rem; color:var(--gris); font-size:.9rem;
-      max-width:48ch; line-height:1.7; font-style:italic;
-    }
+  html { scroll-behavior: smooth; }
 
-    /* CUENTA REGRESIVA */
-    #countdown {
-      display: flex; gap:1rem; flex-wrap:wrap;
-      justify-content:center; margin-top:2.5rem;
-    }
-    .cd-item {
-      background: rgba(90,40,0,.6);
-      border: 1px solid rgba(232,93,4,.3);
-      padding:1rem 1.4rem; min-width:90px; text-align:center;
-    }
-    .cd-num {
-      font-family:'Cinzel',serif; font-size:clamp(1.8rem,5vw,3rem);
-      font-weight:900; color:var(--naranja); line-height:1; display:block;
-    }
-    .cd-label {
-      font-size:.65rem; letter-spacing:.2em; color:var(--gris);
-      margin-top:.3rem; display:block;
-    }
+  body {
+    background: var(--negro);
+    color: var(--blanco);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
 
-    /* CANVAS 3D */
-    #canvas-wrap {
-      width:100%; max-width:900px; margin:0 auto;
-      position:relative;
-    }
-    #three-canvas {
-      width:100% !important; height:500px;
-      display:block; cursor:grab;
-    }
-    #three-canvas:active { cursor:grabbing; }
-    .canvas-label {
-      text-align:center; color:var(--gris); font-size:.75rem;
-      margin-top:.5rem; letter-spacing:.08em;
-    }
+  /* ── ESTRELLAS FONDO ── */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-    /* SECCIONES */
-    section { padding:4rem 2rem; }
-    #datos  { background: var(--cafe2); }
-    #profecia { background: var(--cafe); }
-    .container { max-width:900px; margin:0 auto; }
-    h2 { font-family:'Cinzel',serif; font-weight:700;
-         font-size:clamp(1.4rem,3.5vw,2.2rem); color:var(--blanco);
-         margin-bottom:1.5rem; }
-    .divider { width:3rem; height:2px; background:var(--naranja);
-               margin-bottom:2rem; opacity:.7; }
+  /* ── NAVEGACIÓN ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.4rem, 2vw, 2rem);
+    padding: 0.75rem clamp(0.5rem, 2vw, 2rem);
+    background: linear-gradient(to bottom, rgba(60,20,0,0.97), rgba(80,30,0,0.85), transparent);
+    backdrop-filter: blur(4px);
+  }
+  nav a {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.48rem, 1.5vw, 0.65rem);
+    letter-spacing: 0.08em;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  nav a:hover { color: var(--oro2); }
 
-    /* GRID DATOS */
-    .datos-grid {
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-      gap:1px;
-    }
-    .dato-card {
-      background:var(--cafe3); padding:1.5rem;
-      border-top:2px solid var(--naranja);
-    }
-    .dato-label { font-size:.7rem; letter-spacing:.18em; color:var(--naranja); font-weight:700; }
-    .dato-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--blanco);
-                margin:.4rem 0 .2rem; }
-    .dato-sub { font-size:.8rem; color:var(--gris); }
+  /* ── SECCIONES ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
 
-    /* DISTANCIA EN VIVO */
-    #live-dist {
-      background: rgba(220,38,38,.1);
-      border: 1px solid rgba(220,38,38,.3);
-      padding:2rem; text-align:center; margin-bottom:2.5rem;
-    }
-    .live-dot {
-      display:inline-block; width:8px; height:8px;
-      background:var(--rojo); border-radius:50%;
-      animation: pulse 1.5s ease-in-out infinite;
-      margin-right:.5rem; vertical-align:middle;
-    }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
-    .dist-num { font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.5rem);
-                color:var(--rojo); display:block; margin:.6rem 0;
-                letter-spacing:.03em; transition:color .5s; }
-    .dist-sub  { color:var(--gris); font-size:.85rem; }
-    .dist-badge {
-      display:inline-block; background:rgba(232,93,4,.15);
-      border:1px solid rgba(232,93,4,.3); color:var(--naranja);
-      font-size:.75rem; padding:.3rem .8rem; margin:.5rem .3rem 0;
-      letter-spacing:.08em;
-    }
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    overflow: hidden;
+  }
 
-    /* VERSÍCULOS */
-    .vers-grid { display:flex; flex-direction:column; gap:1rem; }
-    .vers-card {
-      background:var(--cafe2); border-left:3px solid var(--naranja);
-      padding:1.2rem 1.5rem;
-    }
-    .vers-ref  { font-size:.72rem; letter-spacing:.15em; color:var(--naranja); font-weight:700; margin-bottom:.4rem; }
-    .vers-text { color:var(--gris); font-size:.9rem; line-height:1.7; font-style:italic; }
+  .serpiente-svg {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 2rem;
+    animation: serp-pulse 4s ease-in-out infinite;
+  }
 
-    /* FOOTER */
-    footer { background:var(--cafe2); border-top:1px solid rgba(232,93,4,.2);
-             padding:2rem; text-align:center; }
-    footer p { font-size:.78rem; color:var(--gris); }
-    footer strong { color:var(--naranja); font-family:'Cinzel',serif; }
+  @keyframes serp-pulse {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(200,80,40,0.4)); transform: scale(1); }
+    50% { filter: drop-shadow(0 0 30px rgba(200,80,40,0.8)); transform: scale(1.04); }
+  }
 
-    @media(max-width:600px) {
-      .datos-grid { grid-template-columns:1fr 1fr; }
-      #three-canvas { height:320px; }
+  .hero-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--oro);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    line-height: 0.95;
+    color: var(--blanco);
+    margin-bottom: 0.4rem;
+  }
+
+  h1 .sub {
+    display: block;
+    font-size: clamp(1.1rem, 3vw, 1.8rem);
+    font-weight: 400;
+    color: var(--oro);
+    letter-spacing: 0.08em;
+    margin-top: 0.6rem;
+  }
+
+  .hero-desc {
+    max-width: 55ch;
+    margin: 2rem auto 0;
+    color: #ffffff;
+    font-size: 1rem;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .countdown-hero {
+    display: flex;
+    gap: 1.5rem;
+    margin: 3rem auto 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cd-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .cd-num {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    color: var(--oro2);
+    line-height: 1;
+    min-width: 2.5ch;
+    text-align: center;
+  }
+
+  .cd-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .cd-sep {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--oro);
+    align-self: flex-start;
+    margin-top: 0.3rem;
+  }
+
+  .fecha-badge {
+    display: inline-block;
+    margin-top: 2rem;
+    background: rgba(180,30,0,0.35);
+    border: 1px solid rgba(255,215,0,0.5);
+    color: #ffd700;
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 0.5rem 1.4rem;
+    border-radius: 2px;
+    text-shadow: 0 0 8px rgba(255,200,0,0.6);
+  }
+
+  /* ── DIVISOR ── */
+  .divisor {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--oro), transparent);
+    margin: 0 auto;
+    max-width: 800px;
+    opacity: 0.9;
+  }
+
+  /* ── SECCIONES INTERNAS ── */
+  .seccion {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+  }
+
+  .sec-titulo {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--blanco);
+    margin-bottom: 0.5rem;
+  }
+
+  .sec-subtitulo {
+    color: #ffe8c0;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+    max-width: 60ch;
+    font-weight: 400;
+  }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--borde);
+    border: 1px solid var(--borde);
+    margin-bottom: 3rem;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    padding: 1.8rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .stat-valor {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 600;
+    color: var(--oro2);
+    line-height: 1.1;
+  }
+
+  .stat-etiqueta {
+    font-size: 0.72rem;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  .stat-nota {
+    font-size: 0.72rem;
+    color: #ffe060;
+    margin-top: 0.2rem;
+    font-weight: 600;
+  }
+
+  .stat-alerta .stat-valor { color: #ffffff; }
+
+  /* ── DISTANCIA COMPARATIVA ── */
+  .distancia-visual {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    padding: 2rem;
+    margin-bottom: 3rem;
+    overflow: hidden;
+  }
+
+  .dist-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  .dist-linea {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .dist-item {
+    display: grid;
+    grid-template-columns: 160px 1fr 80px;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dist-nombre {
+    font-size: 0.8rem;
+    color: #ffffff;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .dist-barra-wrap {
+    height: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .dist-barra {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .dist-km {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--oro);
+    white-space: nowrap;
+  }
+
+  /* ── MAPA VISIBILIDAD ── */
+  .vis-mapa {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    padding: 2rem;
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .vis-globo {
+    flex: 0 0 auto;
+    width: 200px;
+    height: 200px;
+  }
+
+  .vis-info {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .vis-tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    border-radius: 2px;
+    margin: 0.2rem;
+    font-weight: 400;
+  }
+
+  .vis-si { background: rgba(42,107,58,0.3); border: 1px solid rgba(42,107,58,0.6); color: #6ee77a; }
+  .vis-no { background: rgba(59,26,0,0.4); border: 1px solid rgba(59,26,0,0.5); color: var(--gris); }
+
+  /* ── SERPIENTE / MITOLOGÍA ── */
+  #mitologia {
+    background: linear-gradient(to bottom, transparent, rgba(10,0,0,0.6), transparent);
+  }
+
+  .mito-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 700px) {
+    .mito-grid { grid-template-columns: 1fr; }
+    .dist-item { grid-template-columns: 100px 1fr 70px; }
+  }
+
+  .mito-card {
+    background: var(--panel);
+    border: 1px solid var(--borde);
+    padding: 2rem;
+  }
+
+  .mito-icono {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .mito-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--oro2);
+    margin-bottom: 0.8rem;
+  }
+
+  .mito-texto {
+    font-size: 0.88rem;
+    color: #ffffff;
+    line-height: 1.8;
+  }
+
+  .mito-verso {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(200,144,42,0.12);
+    border-left: 2px solid var(--oro);
+    font-size: 0.82rem;
+    font-style: italic;
+    color: rgba(245,240,232,1);
+    line-height: 1.7;
+  }
+
+  .mito-ref {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--oro);
+    font-style: normal;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* ── TROMPETAS ── */
+  .trompetas {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--borde);
+    overflow: hidden;
+  }
+
+  .trompeta-item {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .trompeta-item:last-child { border-bottom: none; }
+
+  .trump-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--panel);
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gris);
+    border-right: 1px solid var(--borde);
+  }
+
+  .trump-num.activo { color: var(--oro2); background: rgba(200,144,42,0.1); }
+
+  .trump-cuerpo {
+    padding: 1.4rem 1.6rem;
+    background: var(--carbon);
+  }
+
+  .trump-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--blanco);
+    margin-bottom: 0.4rem;
+  }
+
+  .trump-desc {
+    font-size: 0.82rem;
+    color: #ffffff;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+  }
+
+  .trump-verso {
+    font-size: 0.78rem;
+    color: rgba(245,240,232,0.95);
+    font-style: italic;
+    padding: 0.6rem 0.8rem;
+    background: rgba(200,144,42,0.06);
+    border-left: 2px solid var(--oro);
+  }
+
+  .trump-apophis {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    padding: 0.2rem 0.6rem;
+    background: rgba(155,28,28,0.3);
+    border: 1px solid rgba(155,28,28,0.5);
+    color: #ffffff;
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* ── FECHA 13/4/2029 ── */
+  #fecha {
+    background: linear-gradient(to bottom, transparent, rgba(100,10,10,0.15), transparent);
+  }
+
+  .fecha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--borde);
+    border: 1px solid var(--borde);
+  }
+
+  .fecha-item {
+    background: var(--panel);
+    padding: 2rem 1.5rem;
+  }
+
+  .fecha-dato {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900;
+    color: var(--rojo2);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+  }
+
+  .fecha-nom {
+    font-size: 0.85rem;
+    color: var(--blanco);
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+  }
+
+  .fecha-exp {
+    font-size: 0.78rem;
+    color: #ffffff;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .coincidencia-box {
+    background: rgba(155,28,28,0.1);
+    border: 1px solid rgba(155,28,28,0.4);
+    padding: 2rem;
+    margin-top: 2rem;
+  }
+
+  .coinc-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin-bottom: 1rem;
+  }
+
+  .coinc-texto {
+    font-size: 0.88rem;
+    color: #ffffff;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .coinc-texto strong {
+    color: var(--blanco);
+    font-weight: 500;
+  }
+
+  /* ── MISIONES ── */
+  .misiones-timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .misiones-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, var(--oro), var(--oro2), transparent);
+  }
+
+  .mision-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .mision-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 0.5rem;
+    width: 8px; height: 8px;
+    background: var(--oro);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--oro);
+  }
+
+  .mision-fecha {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--oro);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .mision-nombre {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--blanco);
+    margin-bottom: 0.5rem;
+  }
+
+  .mision-agencia {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(200,144,42,0.15);
+    border: 1px solid rgba(200,144,42,0.3);
+    color: var(--oro2);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    font-family: 'Cinzel', serif;
+  }
+
+  .mision-desc {
+    font-size: 0.85rem;
+    color: #ffffff;
+    line-height: 1.7;
+    max-width: 55ch;
+    font-weight: 400;
+  }
+
+  /* ── CAMBIO ORBITAL ── */
+  .orbital-comparativa {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1px;
+    background: var(--borde);
+    border: 1px solid var(--borde);
+    align-items: center;
+  }
+
+  .orb-antes, .orb-despues {
+    background: var(--panel);
+    padding: 2rem;
+  }
+
+  .orb-flecha {
+    background: var(--carbon);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    color: var(--oro);
+    font-size: 1.5rem;
+  }
+
+  .orb-titulo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--gris);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .orb-dato {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(180,120,40,0.1);
+    gap: 1rem;
+  }
+
+  .orb-dato:last-child { border-bottom: none; }
+
+  .orb-clave {
+    font-size: 0.75rem;
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .orb-val {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--oro2);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--borde);
+  }
+
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: var(--oro);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-texto {
+    font-size: 0.72rem;
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  /* ── UTILIDADES ── */
+  .text-oro { color: var(--oro2); }
+  .text-rojo { color: #ffffff; }
+
+  @media (max-width: 600px) {
+    .orbital-comparativa { grid-template-columns: 1fr; }
+    .vis-globo { width: 150px; height: 150px; }
+    .dist-item { grid-template-columns: 90px 1fr 65px; }
+  }
+  /* En móvil el panel de planeta sale del canvas y va fijo abajo */
+  @media (max-width: 600px) {
+    #planet-panel {
+      position: fixed !important;
+      bottom: 60px !important;
+      top: auto !important;
+      right: .5rem !important;
+      left: .5rem !important;
+      max-width: none !important;
+      z-index: 999;
     }
-  </style>
+  }
+</style>
 </head>
 <body>
 
+<!-- Fondo estrellado -->
+<canvas id="starfield"></canvas>
+
+
 <nav>
-  <a href="index.html" class="logo">CE·19</a>
-  <a href="index.html">← Inicio</a>
+  <a href="#ciencia">Ciencia</a>
+  <a href="#mitologia">Mitología</a>
+  <a href="#profecia">Profecía</a>
+  <a href="#fecha">La Fecha</a>
+  <a href="#misiones">Misiones</a>
+  <style>@keyframes pulse-rojo{0%,100%{box-shadow:0 0 0 0 rgba(255,0,0,0);opacity:1}50%{box-shadow:0 0 24px 8px rgba(255,0,0,.8);opacity:.3}}</style>
 </nav>
 
-<!-- HERO -->
+<!-- ══ HERO ══ -->
 <section id="hero">
-  <div class="hero-eyebrow">Apocalipsis 10 · Señal del Tiempo</div>
+  <!-- Serpiente SVG -->
+  <svg class="serpiente-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="sg" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ff6600"/>
+        <stop offset="100%" stop-color="#8b1a00"/>
+      </radialGradient>
+    </defs>
+    <!-- Cuerpo serpiente estilizado como ouroboros -->
+    <circle cx="60" cy="60" r="44" fill="none" stroke="#6b3200" stroke-width="1" opacity="0.5"/>
+    <path d="M 60 16 C 90 16, 104 40, 104 60 C 104 85, 85 104, 60 104 C 35 104, 16 85, 16 60 C 16 35, 35 16, 60 16" 
+          fill="none" stroke="url(#sg)" stroke-width="10" stroke-linecap="round" opacity="0.9"/>
+    <!-- Cabeza -->
+    <ellipse cx="60" cy="18" rx="10" ry="7" fill="#ff6600"/>
+    <!-- Ojos -->
+    <circle cx="56" cy="16" r="2.5" fill="#f48c06"/>
+    <circle cx="64" cy="16" r="2.5" fill="#f48c06"/>
+    <circle cx="56" cy="16" r="1" fill="#1a0800"/>
+    <circle cx="64" cy="16" r="1" fill="#1a0800"/>
+    <!-- Lengua -->
+    <path d="M 60 25 L 57 30 M 60 25 L 63 30" stroke="#ffcc00" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Número 99942 -->
+    <text x="60" y="65" text-anchor="middle" font-family="Cinzel, serif" font-size="9" fill="#cc0000" letter-spacing="1">99942</text>
+    <text x="60" y="78" text-anchor="middle" font-family="Cinzel, serif" font-size="7" fill="#ffcc40" letter-spacing="0.5">APOPHIS</text>
+  </svg>
+
+  <p class="hero-eyebrow">Asteroide 99942</p>
   <h1>APOPHIS</h1>
-  <div class="hero-fecha">13 · Abril · 2029</div>
-  <p class="hero-versiculo">
-    "Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza..."
-    <br><strong style="color:var(--naranja);font-style:normal;">Apocalipsis 10:1</strong>
+  <p class="hero-desc">
+    El 13 de abril de 2029, un asteroide del tamaño de la Torre Eiffel pasará más cerca de la Tierra que los satélites geoestacionarios — visible a simple vista para más de 2,000 millones de personas.
   </p>
 
-  <!-- CUENTA REGRESIVA -->
-  <div id="countdown">
-    <div class="cd-item"><span class="cd-num" id="cd-dias">---</span><span class="cd-label">Días</span></div>
-    <div class="cd-item"><span class="cd-num" id="cd-horas">--</span><span class="cd-label">Horas</span></div>
-    <div class="cd-item"><span class="cd-num" id="cd-min">--</span><span class="cd-label">Minutos</span></div>
-    <div class="cd-item"><span class="cd-num" id="cd-seg">--</span><span class="cd-label">Segundos</span></div>
+  <div class="countdown-hero">
+    <div class="cd-unit"><span class="cd-num" id="cd-d">000</span><span class="cd-label">días</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-h">00</span><span class="cd-label">horas</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-m">00</span><span class="cd-label">min</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-unit"><span class="cd-num" id="cd-s">00</span><span class="cd-label">seg</span></div>
   </div>
+
+  <div class="fecha-badge">Viernes · 13 Abril 2029 · 21:46 UTC</div>
 </section>
 
-<!-- SISTEMA SOLAR 3D -->
-<section style="background:var(--cafe);padding:3rem 2rem;">
-  <div class="container">
-    <h2>Órbita en tiempo real</h2>
-    <div class="divider"></div>
-    <div id="canvas-wrap">
-      <canvas id="three-canvas"></canvas>
+<!-- ══ FECHA + VERSÍCULO ══ -->
+<section style="position:relative;z-index:1;background:linear-gradient(to bottom,var(--negro),var(--cafe));padding:3rem 2rem;">
+  <div style="max-width:700px;margin:0 auto;text-align:center;">
+    <p style="font-family:'Cinzel',serif;font-size:clamp(1.3rem,4vw,2rem);font-weight:700;color:var(--naranja);letter-spacing:.12em;margin-bottom:1.5rem;">
+      13 · Abril · 2029
+    </p>
+    <p style="color:var(--gris);font-size:.95rem;font-style:italic;line-height:1.8;max-width:52ch;margin:0 auto .8rem;">
+      "Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza..."
+    </p>
+    <p style="font-family:'Cinzel',serif;font-size:.82rem;color:var(--naranja);letter-spacing:.1em;">Apocalipsis 10:1</p>
+    <div style="margin-top:2rem;">
+      <a href="impacto.html" style="display:inline-block;font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.12em;color:#ffffff;font-weight:700;background:#cc0000;border:2px solid #ff0000;padding:.6rem 1.4rem;border-radius:3px;text-decoration:none;text-shadow:0 0 8px rgba(255,0,0,.7);animation:pulse-rojo 1s ease-in-out infinite;">💥 SIMULACIÓN DE IMPACTO</a>
     </div>
-    <p class="canvas-label">Sistema Solar — Sol · Tierra · Apophis · Arrastra para rotar · Scroll para zoom</p>
   </div>
 </section>
 
-<!-- DATOS -->
-<section id="datos">
-  <div class="container">
-    <h2>Datos del Asteroide</h2>
-    <div class="divider"></div>
+<!-- ══ SISTEMA SOLAR 3D ══ -->
+<section id="solar3d" style="position:relative; z-index:1;">
 
-    <!-- Distancia en vivo -->
-    <div id="live-dist">
-      <span style="font-size:.78rem;letter-spacing:.15em;color:var(--gris);">
+  <!-- Panel de distancia — idéntico al original apophis.html -->
+  <div style="max-width:900px; margin:0 auto; padding:4rem 2rem 0;">
+    <div id="live-dist" style="background:rgba(204,0,0,.1); border:1px solid rgba(204,0,0,.3); padding:2rem; text-align:center; margin-bottom:0;">
+      <span style="font-size:.78rem;letter-spacing:.15em;color:#ffffff;font-weight:700;">
         <span class="live-dot"></span>DISTANCIA ACTUAL DE LA TIERRA
       </span>
       <span class="dist-num" id="dist-km">Calculando...</span>
@@ -228,447 +827,1557 @@
         <span class="dist-badge" id="dist-ld-badge">--- lunar distances</span>
         <span class="dist-badge" id="dist-au-badge">--- AU</span>
       </div>
-      <span class="dist-sub" id="dist-ld" style="display:none;"></span>
       <div style="margin-top:.8rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
         <span id="dist-tend" style="font-size:.78rem;font-weight:700;letter-spacing:.1em;">—</span>
-        <span style="font-size:.78rem;color:var(--gris);">Actualización: cada segundo</span>
+        <span style="font-size:.78rem;color:#ffffff;font-weight:600;">Actualización: cada segundo</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas 3D -->
+  <div style="position:relative; width:100%; height:520px; margin-top:1rem;">
+    <canvas id="solarCanvas" style="width:100%; height:100%; display:block;"></canvas>
+
+    <!-- Panel info planeta seleccionado -->
+    <div id="planet-panel" style="display:none; position:absolute; top:1rem; right:1rem;
+         background:rgba(10,0,0,0.88); border:1px solid rgba(255,120,0,0.5);
+         padding:.7rem 1rem; min-width:160px; font-family:Cinzel,serif;
+         max-width:calc(100% - 2rem);">
+      <div id="pp-name" style="font-size:.85rem; color:#ffcc00; font-weight:700; margin-bottom:.4rem;"></div>
+      <div id="pp-dist" style="font-size:.72rem; color:#ffaa88; margin:.2rem 0;"></div>
+      <div id="pp-period" style="font-size:.72rem; color:#ffaa88; margin:.2rem 0;"></div>
+      <div id="pp-size" style="font-size:.72rem; color:#ffaa88; margin:.2rem 0;"></div>
+      <div id="pp-extra" style="font-size:.72rem; color:#88ccff; margin:.2rem 0; display:none;"></div>
+    </div>
+
+  </div>
+
+  <!-- Controles fuera del canvas -->
+  <div style="display:flex; gap:.45rem; flex-wrap:wrap; justify-content:center; align-items:center;
+       padding:.5rem .8rem; background:rgba(10,4,0,0.92); border-top:1px solid rgba(220,100,0,0.3);">
+    <!-- Info stats — ahora aquí, fuera del canvas -->
+    <span style="font-family:Cinzel,serif;font-size:.6rem;color:#fff;background:rgba(80,30,0,0.7);padding:.2rem .55rem;border:1px solid rgba(220,120,0,0.5);font-weight:600;border-radius:3px;">
+      ☀ <strong id="inf-sol" style="color:#ffcc00;">—</strong>
+    </span>
+    <span style="font-family:Cinzel,serif;font-size:.6rem;color:#fff;background:rgba(80,30,0,0.7);padding:.2rem .55rem;border:1px solid rgba(220,120,0,0.5);font-weight:600;border-radius:3px;">
+      📅 <strong id="inf-fecha" style="color:#ffee88;">—</strong>
+    </span>
+    <span style="font-family:Cinzel,serif;font-size:.6rem;color:#fff;background:rgba(80,30,0,0.7);padding:.2rem .55rem;border:1px solid rgba(220,120,0,0.5);font-weight:600;border-radius:3px;">
+      🌍 <strong id="inf-gap" style="color:#ff6644;">—</strong>
+    </span>
+    <button id="btn-follow" style="font-family:Cinzel,serif;font-size:.6rem;color:#fff;background:rgba(200,80,0,0.9);padding:.2rem .6rem;border:1px solid rgba(255,160,0,0.7);cursor:pointer;font-weight:600;border-radius:3px;">
+      🎯 Seguir
+    </button>
+    <button id="btn-approach" style="font-family:Cinzel,serif;font-size:.65rem;color:#fff;background:rgba(180,0,0,0.9);padding:.3rem .9rem;border:1px solid rgba(255,80,0,0.7);cursor:pointer;font-weight:600;">
+      ⚡ Ir al 2029
+    </button>
+    <button id="btn-reset" style="font-family:Cinzel,serif;font-size:.65rem;color:#fff;background:rgba(0,80,160,0.9);padding:.3rem .9rem;border:1px solid rgba(0,160,255,0.7);cursor:pointer;font-weight:600;">
+      ↺ Hoy
+    </button>
+    <input id="date-jump" type="date" value="2026-11-20"
+      style="font-family:Cinzel,serif;font-size:.62rem;background:rgba(20,10,0,0.9);color:#ffcc00;border:1px solid rgba(255,160,0,0.7);padding:.25rem .4rem;cursor:pointer;border-radius:3px;">
+    <button id="btn-date-jump" style="font-family:Cinzel,serif;font-size:.65rem;color:#fff;background:rgba(80,60,0,0.9);padding:.3rem .7rem;border:1px solid rgba(255,200,0,0.7);cursor:pointer;font-weight:600;">
+      → Ir
+    </button>
+    <label style="font-family:Cinzel,serif;font-size:.65rem;color:#ffcc00;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;">
+      Vel:
+      <button id="speed-dn" style="background:rgba(255,100,0,.25);border:1px solid #ff6600;color:#ffcc00;font-size:.8rem;width:1.4rem;height:1.4rem;border-radius:4px;cursor:pointer;padding:0;line-height:1;">−</button>
+      <input id="speed-slider" type="range" min="0" max="5" step="0.1" value="0.1"
+             style="width:70px; vertical-align:middle; accent-color:#ff6600;">
+      <button id="speed-up" style="background:rgba(255,100,0,.25);border:1px solid #ff6600;color:#ffcc00;font-size:.8rem;width:1.4rem;height:1.4rem;border-radius:4px;cursor:pointer;padding:0;line-height:1;">+</button>
+      <span id="speed-val">0.1×</span>
+    </label>
+  </div>
+</section>
+
+<style>
+.live-dot {
+  display:inline-block; width:8px; height:8px;
+  background:#ff6600; border-radius:50%;
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-right:.5rem; vertical-align:middle;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.4)} }
+.dist-num {
+  font-family:'Cinzel',serif; font-size:clamp(2rem,5vw,3.5rem);
+  color:#ffffff; display:block; margin:.6rem 0;
+  letter-spacing:.03em; transition:color .5s;
+}
+.dist-badge {
+  display:inline-block; background:rgba(255,180,0,.15);
+  border:1px solid rgba(255,200,0,.4); color:#ffee80;
+  font-size:.75rem; padding:.3rem .8rem; margin:.5rem .3rem 0;
+  letter-spacing:.08em; font-weight:600;
+}
+</style>
+
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+<!-- ══ CIENCIA ══ -->
+<section id="ciencia">
+  <div class="seccion">
+    <h2 class="sec-titulo">Datos del Acercamiento</h2>
+    <p class="sec-subtitulo">Parámetros confirmados por NASA/JPL para el flyby del 13 de abril de 2029</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-valor">~340 m</span>
+        <span class="stat-etiqueta">Diámetro estimado</span>
+        <span class="stat-nota">Comparable a la Torre Eiffel / Empire State</span>
+      </div>
+      <div class="stat-card stat-alerta">
+        <span class="stat-valor">31,600 km</span>
+        <span class="stat-etiqueta">Distancia mínima a la superficie</span>
+        <span class="stat-nota">¡Más cerca que los satélites geoestacionarios!</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-valor">7.42 km/s</span>
+        <span class="stat-etiqueta">Velocidad de acercamiento</span>
+        <span class="stat-nota">~26,700 km/h</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-valor">21:46 UTC</span>
+        <span class="stat-etiqueta">Hora exacta de máximo acercamiento</span>
+        <span class="stat-nota">13 de Abril de 2029</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-valor">0.1 LD</span>
+        <span class="stat-etiqueta">Distancia en Distancias Lunares</span>
+        <span class="stat-nota">La Luna está 384,400 km — Apophis pasa a ~38,011 km del centro</span>
       </div>
     </div>
 
-    <div class="datos-grid">
-      <div class="dato-card">
-        <div class="dato-label">Nombre oficial</div>
-        <div class="dato-val">99942</div>
-        <div class="dato-sub">Apophis — dios del caos egipcio</div>
+    <!-- Comparativa de tamaño: Torre Eiffel vs Apophis -->
+    <div style="margin:0 0 3rem;background:var(--panel);border:1px solid var(--borde);border-top:3px solid var(--oro);padding:2rem 1.5rem;text-align:center;">
+      <div style="font-size:.7rem;letter-spacing:.2em;color:var(--oro);font-weight:700;margin-bottom:.5rem;">COMPARATIVA DE TAMAÑO</div>
+      <div style="font-family:'Cinzel',serif;color:#ffffff;font-size:1rem;margin-bottom:1.5rem;font-weight:600;">99942 Apophis · Del tamaño de la Torre Eiffel</div>
+      <svg viewBox="0 0 820 390" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;">
+        <defs>
+          <linearGradient id="torreGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ffdd60"/>
+            <stop offset="50%" stop-color="#d08020"/>
+            <stop offset="100%" stop-color="#a06010"/>
+          </linearGradient>
+          <!-- Roca oscura con textura feTurbulence -->
+          <radialGradient id="aphGrad" cx="42%" cy="38%" r="62%">
+            <stop offset="0%"   stop-color="#6a6a6a"/>
+            <stop offset="30%"  stop-color="#3a3a3a"/>
+            <stop offset="62%"  stop-color="#1e1e1e"/>
+            <stop offset="100%" stop-color="#080808"/>
+          </radialGradient>
+          <!-- Tono cálido sobre la roca (calor que penetra) -->
+          <radialGradient id="aphWarm" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ff6600" stop-opacity="0"/>
+            <stop offset="60%"  stop-color="#ff4400" stop-opacity="0"/>
+            <stop offset="80%"  stop-color="#ff5500" stop-opacity="0.4"/>
+            <stop offset="92%"  stop-color="#ff8800" stop-opacity="0.75"/>
+            <stop offset="100%" stop-color="#ffaa00" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Anillo de fuego brillante -->
+          <radialGradient id="aphRing" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ff8800" stop-opacity="0"/>
+            <stop offset="56%"  stop-color="#ff5500" stop-opacity="0"/>
+            <stop offset="70%"  stop-color="#ff6600" stop-opacity="0.6"/>
+            <stop offset="80%"  stop-color="#ffcc00" stop-opacity="1"/>
+            <stop offset="88%"  stop-color="#ff4400" stop-opacity="0.9"/>
+            <stop offset="96%"  stop-color="#ff2200" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#ff0000" stop-opacity="0"/>
+          </radialGradient>
+          <!-- Corona exterior -->
+          <radialGradient id="aphCorona" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#ff5500" stop-opacity="0"/>
+            <stop offset="62%"  stop-color="#ff4400" stop-opacity="0"/>
+            <stop offset="78%"  stop-color="#ff6600" stop-opacity="0.3"/>
+            <stop offset="88%"  stop-color="#ff8800" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#ffaa00" stop-opacity="0"/>
+          </radialGradient>
+
+          <!-- Filtro textura rocosa -->
+          <filter id="rock-texture" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+            <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="5" seed="3" result="noise"/>
+            <feColorMatrix type="saturate" values="0" in="noise" result="grayNoise"/>
+            <feBlend in="SourceGraphic" in2="grayNoise" mode="multiply" result="rocky"/>
+            <feComposite in="rocky" in2="SourceGraphic" operator="in"/>
+          </filter>
+          <!-- Filtro llamas blur -->
+          <filter id="blur-flame" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="8"/>
+          </filter>
+          <filter id="blur-corona" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="22"/>
+          </filter>
+          <filter id="blur-ring" x="-35%" y="-35%" width="170%" height="170%">
+            <feGaussianBlur stdDeviation="5"/>
+          </filter>
+          <filter id="blur-spark" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="1.8"/>
+          </filter>
+          <style>
+            @keyframes fl1{0%,100%{opacity:0.85;transform:scale(1)}
+              25%{opacity:1;transform:scale(1.1,0.92) translate(2px,-5px)}
+              55%{opacity:0.72;transform:scale(0.95,1.08) translate(-1px,3px)}
+              78%{opacity:0.95;transform:scale(1.06,0.96) translate(1px,-3px)}}
+            @keyframes fl2{0%,100%{opacity:0.78;transform:scale(1)}
+              32%{opacity:1;transform:scale(0.92,1.18) translate(-2px,-7px)}
+              62%{opacity:0.65;transform:scale(1.08,0.9) translate(2px,4px)}
+              84%{opacity:0.9;transform:scale(0.96,1.1) translate(-1px,-4px)}}
+            @keyframes fl3{0%,100%{opacity:0.88;transform:scale(1)}
+              38%{opacity:1;transform:scale(1.12,0.88) translate(0,-8px)}
+              68%{opacity:0.62;transform:scale(0.9,1.12) translate(0,5px)}}
+            @keyframes ring-pulse{0%,100%{opacity:0.8} 50%{opacity:1}}
+            @keyframes corona-pulse{0%,100%{opacity:0.5} 50%{opacity:0.95}}
+            .fl1{animation:fl1 0.88s ease-in-out infinite}
+            .fl2{animation:fl2 1.08s ease-in-out infinite}
+            .fl3{animation:fl3 0.72s ease-in-out infinite}
+            .rp{animation:ring-pulse 0.95s ease-in-out infinite}
+            .cp{animation:corona-pulse 1.4s ease-in-out infinite}
+          </style>
+        </defs>
+        <rect width="820" height="390" fill="transparent"/>
+
+        <!-- ── PANEL CARACTERÍSTICAS (izquierda) ── -->
+        <rect x="8" y="20" width="210" height="338" rx="8" fill="rgba(0,0,0,0.5)" stroke="rgba(255,200,0,0.4)" stroke-width="1.2"/>
+        <rect x="8" y="20" width="5" height="338" rx="2" fill="#c8960a"/>
+        <!-- Título -->
+        <text x="24" y="44" fill="#c8960a" font-family="Cinzel,serif" font-size="9" font-weight="700" letter-spacing="1">⬡ (99942) APOPHIS</text>
+        <text x="24" y="58" fill="#c8960a" font-family="Cinzel,serif" font-size="8" font-weight="700" letter-spacing="1.5">TIPO Sq · NEO</text>
+        <line x1="24" y1="66" x2="206" y2="66" stroke="rgba(255,200,0,0.3)" stroke-width="1"/>
+        <!-- Tamaño -->
+        <text x="24" y="84" fill="#c8960a" font-family="Cinzel,serif" font-size="8.5" font-weight="700" letter-spacing="2">TAMAÑO</text>
+        <text x="24" y="104" fill="#ffffff" font-family="Cinzel,serif" font-size="17" font-weight="700">340 m diám.</text>
+        <text x="24" y="120" fill="#ffe8cc" font-family="Inter,sans-serif" font-size="10.5">hasta 450 m (eje largo)</text>
+        <line x1="24" y1="130" x2="206" y2="130" stroke="rgba(255,200,0,0.25)" stroke-width="1"/>
+        <!-- Masa -->
+        <text x="24" y="148" fill="#c8960a" font-family="Cinzel,serif" font-size="8.5" font-weight="700" letter-spacing="2">MASA</text>
+        <text x="24" y="168" fill="#ffffff" font-family="Cinzel,serif" font-size="17" font-weight="700">6.1 × 10¹⁰ kg</text>
+        <text x="24" y="184" fill="#ffe8cc" font-family="Inter,sans-serif" font-size="10.5">~61 millones de toneladas</text>
+        <line x1="24" y1="194" x2="206" y2="194" stroke="rgba(255,200,0,0.25)" stroke-width="1"/>
+        <!-- Composición -->
+        <text x="24" y="212" fill="#c8960a" font-family="Cinzel,serif" font-size="8.5" font-weight="700" letter-spacing="2">COMPOSICIÓN</text>
+        <text x="24" y="232" fill="#ffffff" font-family="Cinzel,serif" font-size="17" font-weight="700">Silicatos · Fe · Ni</text>
+        <text x="24" y="248" fill="#ffe8cc" font-family="Inter,sans-serif" font-size="10.5">densidad 3.2 g/cm³</text>
+        <line x1="24" y1="258" x2="206" y2="258" stroke="rgba(255,200,0,0.25)" stroke-width="1"/>
+        <!-- Vel. Orbital -->
+        <text x="24" y="276" fill="#c8960a" font-family="Cinzel,serif" font-size="8.5" font-weight="700" letter-spacing="2">VEL. ORBITAL</text>
+        <text x="24" y="296" fill="#ffffff" font-family="Cinzel,serif" font-size="17" font-weight="700">30.98 km/s</text>
+        <text x="24" y="312" fill="#ffe8cc" font-family="Inter,sans-serif" font-size="10.5">111 500 km/h</text>
+
+        <line x1="230" y1="338" x2="808" y2="338" stroke="#ffcc40" stroke-width="1" stroke-opacity="0.35"/>
+        <!-- APOPHIS canvas meteoro -->
+        <foreignObject x="230" y="10" width="320" height="360">
+          <canvas id="meteorCanvas" width="320" height="360" xmlns="http://www.w3.org/1999/xhtml" style="display:block;"></canvas>
+        </foreignObject>
+        <!-- Medida Apophis -->
+        <line x1="250" y1="55" x2="250" y2="336" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.9"/>
+        <line x1="246" y1="55" x2="254" y2="55" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="246" y1="336" x2="254" y2="336" stroke="#ffffff" stroke-width="1.5"/>
+        <text x="240" y="196" fill="#ffffff" font-size="11" font-family="Inter,sans-serif" transform="rotate(-90,240,196)" text-anchor="middle" font-weight="700">~340 m</text>
+        <!-- TORRE EIFFEL -->
+        <g transform="translate(640,338)" fill="url(#torreGrad)" opacity="0.97">
+          <rect x="-1.5" y="-248" width="3" height="22" rx="1"/>
+          <polygon points="0,-226 -3,-210 3,-210"/>
+          <polygon points="-3,-210 3,-210 5,-185 -5,-185"/>
+          <rect x="-8" y="-187" width="16" height="3" rx="1"/>
+          <polygon points="-5,-184 5,-184 9,-155 -9,-155"/>
+          <rect x="-12" y="-157" width="24" height="4" rx="1"/>
+          <polygon points="-9,-153 9,-153 14,-118 -14,-118"/>
+          <rect x="-18" y="-120" width="36" height="5" rx="1.5"/>
+          <rect x="-14" y="-116" width="28" height="2" rx="1" opacity="0.6"/>
+          <polygon points="-14,-114 14,-114 22,-78 -22,-78"/>
+          <rect x="-25" y="-80" width="50" height="5" rx="1.5"/>
+          <polygon points="-22,-75 22,-75 32,-38 -32,-38"/>
+          <rect x="-36" y="-40" width="72" height="6" rx="2"/>
+          <path d="M-32,-34 Q-38,-16 -42,0 L-36,0 Q-32,-16 -27,-34Z"/>
+          <path d="M32,-34 Q38,-16 42,0 L36,0 Q32,-16 27,-34Z"/>
+        </g>
+        <!-- Medida Torre -->
+        <line x1="700" y1="90" x2="700" y2="336" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.9"/>
+        <line x1="696" y1="90" x2="704" y2="90" stroke="#ffffff" stroke-width="1.5"/>
+        <line x1="696" y1="336" x2="704" y2="336" stroke="#ffffff" stroke-width="1.5"/>
+        <text x="712" y="214" fill="#ffffff" font-size="11" font-family="Inter,sans-serif" transform="rotate(90,712,214)" text-anchor="middle" font-weight="700">324 m</text>
+        <!-- Etiquetas -->
+        <text x="390" y="358" fill="#ff6644" font-size="12" font-family="Cinzel,serif" text-anchor="middle" font-weight="700">99942 Apophis</text>
+        <text x="390" y="373" fill="#ffffff" font-size="10" font-family="Inter,sans-serif" text-anchor="middle" font-weight="600">~340 m de diámetro</text>
+        <text x="640" y="358" fill="#ffdd00" font-size="12" font-family="Cinzel,serif" text-anchor="middle" font-weight="700">Tour Eiffel</text>
+        <text x="640" y="373" fill="#ffffff" font-size="10" font-family="Inter,sans-serif" text-anchor="middle" font-weight="600">324 m de altura</text>
+        <text x="520" y="210" fill="#ffee40" font-size="28" font-family="Cinzel,serif" text-anchor="middle" font-weight="900" opacity="0.7">VS</text>
+      </svg>
+    </div>
+
+    <!-- Comparativa visual de distancias -->
+    <div class="distancia-visual">
+      <p class="dist-titulo">Comparativa de distancias — 13 Abril 2029</p>
+      <div class="dist-linea">
+        <div class="dist-item">
+          <span class="dist-nombre">Luna</span>
+          <div class="dist-barra-wrap"><div class="dist-barra" style="width:100%; background: linear-gradient(to right,#3b1a00,#6b3200);"></div></div>
+          <span class="dist-km">384,400 km</span>
+        </div>
+        <div class="dist-item">
+          <span class="dist-nombre">Sat. Geoestacionarios</span>
+          <div class="dist-barra-wrap"><div class="dist-barra" style="width:9.3%; background: linear-gradient(to right,#c8902a,#e8b84b);"></div></div>
+          <span class="dist-km">35,786 km</span>
+        </div>
+        <div class="dist-item">
+          <span class="dist-nombre" style="color:#ffffff; font-weight:500;">★ APOPHIS</span>
+          <div class="dist-barra-wrap"><div class="dist-barra" style="width:8.2%; background: linear-gradient(to right,#ffffff,#ff0000); box-shadow:0 0 8px rgba(204,0,0,0.6);"></div></div>
+          <span class="dist-km" style="color:#ffffff;">31,600 km</span>
+        </div>
+        <div class="dist-item">
+          <span class="dist-nombre">ISS</span>
+          <div class="dist-barra-wrap"><div class="dist-barra" style="width:0.11%; background:#4e2300; min-width:3px;"></div></div>
+          <span class="dist-km">408 km</span>
+        </div>
       </div>
-      <div class="dato-card">
-        <div class="dato-label">Diámetro</div>
-        <div class="dato-val">375 m</div>
-        <div class="dato-sub">≈ altura de la Torre Eiffel</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Distancia mínima</div>
-        <div class="dato-val">38,011 km</div>
-        <div class="dato-sub">0.1 distancias lunares — más cerca que satélites</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Velocidad</div>
-        <div class="dato-val">7.4 km/s</div>
-        <div class="dato-sub">En el acercamiento del 2029</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Período orbital</div>
-        <div class="dato-val">323 días</div>
-        <div class="dato-sub">0.89 años — órbita tipo Aten</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Descubierto</div>
-        <div class="dato-val">2004</div>
-        <div class="dato-sub">Observatorio Kitt Peak, Arizona</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Fecha clave</div>
-        <div class="dato-val" style="color:var(--rojo)">13·04·2029</div>
-        <div class="dato-sub">Fin del año 2000 — Calendario Sumerio</div>
-      </div>
-      <div class="dato-card">
-        <div class="dato-label">Misión NASA</div>
-        <div class="dato-val">OSIRIS</div>
-        <div class="dato-sub">OSIRIS-APEX rendezvouz post-2029</div>
+    </div>
+
+    <!-- Visibilidad -->
+    <div class="vis-mapa">
+      <svg class="vis-globo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="globo-g" cx="40%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#2a1000"/>
+            <stop offset="100%" stop-color="#0d0400"/>
+          </radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="90" fill="url(#globo-g)" stroke="#3b1a00" stroke-width="1"/>
+        <!-- Europa/África iluminados -->
+        <ellipse cx="105" cy="80" rx="22" ry="20" fill="rgba(200,144,42,0.5)" opacity="0.8"/>
+        <!-- África -->
+        <ellipse cx="108" cy="115" rx="18" ry="28" fill="rgba(200,144,42,0.4)" opacity="0.8"/>
+        <!-- Asia -->
+        <ellipse cx="145" cy="85" rx="28" ry="22" fill="rgba(200,144,42,0.35)" opacity="0.7"/>
+        <!-- Américas oscuras -->
+        <ellipse cx="55" cy="100" rx="20" ry="30" fill="rgba(59,26,0,0.5)" opacity="0.6"/>
+        <!-- Australia ligera -->
+        <ellipse cx="158" cy="130" rx="12" ry="10" fill="rgba(200,144,42,0.25)" opacity="0.6"/>
+        <!-- Brillo zona visible -->
+        <circle cx="105" cy="80" r="8" fill="rgba(240,180,60,0.6)" filter="blur(4px)"/>
+        <!-- Texto -->
+        <text x="100" y="186" text-anchor="middle" font-family="Cinzel,serif" font-size="8" fill="#ffe8c0" letter-spacing="1">HEMISFERIO ESTE</text>
+      </svg>
+      <div class="vis-info">
+        <p class="sec-subtitulo" style="margin-bottom:1.2rem;">Regiones con visibilidad a simple vista</p>
+        <div>
+          <span class="vis-tag vis-si">✓ Europa</span>
+          <span class="vis-tag vis-si">✓ África</span>
+          <span class="vis-tag vis-si">✓ Oriente Medio</span>
+          <span class="vis-tag vis-si">✓ Asia Central</span>
+          <span class="vis-tag vis-si">✓ Sur de Asia</span>
+          <span class="vis-tag vis-no">✗ América</span>
+          <span class="vis-tag vis-no">✗ Pacífico Este</span>
+        </div>
+        <p style="font-size:0.78rem; color:var(--gris); margin-top:1rem; line-height:1.7;">
+          Apophis aparecerá como una estrella brillante en movimiento lento cruzando el cielo nocturno. Será el mayor objeto astronómico visible a simple vista en la historia moderna.
+        </p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROFECÍA -->
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+<!-- ══ MITOLOGÍA ══ -->
+<section id="mitologia">
+  <div class="seccion">
+    <h2 class="sec-titulo">El Nombre y Su Significado</h2>
+    <p class="sec-subtitulo">Apophis — el nombre que conecta la astronomía con la profecía bíblica</p>
+
+    <div class="mito-grid">
+      <div class="mito-card">
+        <span class="mito-icono">📖</span>
+        <h3 class="mito-titulo">Apophis en las Escrituras</h3>
+        <p class="mito-texto">
+          La conexión bíblica es directa: la serpiente de Apophis es la misma imagen que usa el Apocalipsis para Satanás. <strong style="color:var(--blanco)">En griego, "Apophis" significa "El Destructor"</strong> — el mismo título que tiene el ángel del abismo en Apocalipsis 9:11.
+        </p>
+        <div class="mito-verso">
+          "Y el nombre del ángel del abismo en hebreo es Abadón, y en griego, <strong>Apolión</strong> — el Destructor."
+          <span class="mito-ref">— Apocalipsis 9:11</span>
+        </div>
+        <div class="mito-verso" style="margin-top:0.8rem;">
+          "Prendió al dragón, la serpiente antigua, que es el Diablo y Satanás, y lo encadenó por mil años."
+          <span class="mito-ref">— Apocalipsis 20:2</span>
+        </div>
+      </div>
+
+      <div class="mito-card">
+        <span class="mito-icono">☀️</span>
+        <h3 class="mito-titulo">Juicio sobre Egipto — Segunda vez</h3>
+        <p class="mito-texto">
+          Cuando Dios juzgó a Egipto en el Éxodo, estuvo juzgando a los dioses egipcios. Las plagas estaban dirigidas directamente contra sus deidades. El primer juicio fue sobre <em>Apis</em> (el buey), <em>Ra</em> (oscuridad de 3 días), etc.
+        </p>
+        <p class="mito-texto" style="margin-top:0.8rem;">
+          Ahora, en los tiempos finales, el asteroide que lleva el nombre de <strong style="color:var(--blanco)">la serpiente caótica de Egipto</strong> regresa como señal — como si Dios usara el mismo símbolo que el enemigo utilizó para engañar a las naciones.
+        </p>
+        <div class="mito-verso">
+          "Entraré en juicio contra Egipto y ejecutaré mis juicios..."
+          <span class="mito-ref">— Éxodo 12:12</span>
+        </div>
+      </div>
+
+      <div class="mito-card">
+        <span class="mito-icono">⭐</span>
+        <h3 class="mito-titulo">Apolión = Apophis = Destructor</h3>
+        <p class="mito-texto">
+          La conexión lingüística es asombrosa:
+        </p>
+        <div style="margin: 1rem 0; display:flex; flex-direction:column; gap:0.6rem;">
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <span style="font-family:Cinzel,serif; color:var(--oro); font-size:0.8rem;">APEP</span>
+            <span style="color:var(--gris); font-size:0.75rem;">→ Egipcio antiguo: la serpiente del caos</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <span style="font-family:Cinzel,serif; color:var(--oro); font-size:0.8rem;">APOPHIS</span>
+            <span style="color:var(--gris); font-size:0.75rem;">→ Griego: "El Destructor" (del mismo Apep)</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <span style="font-family:Cinzel,serif; color:var(--oro); font-size:0.8rem;">APOLIÓN</span>
+            <span style="color:var(--gris); font-size:0.75rem;">→ Ap. 9:11: Ángel del abismo, el Destructor</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.8rem;">
+            <span style="font-family:Cinzel,serif; color:var(--oro); font-size:0.8rem;">99942</span>
+            <span style="color:var(--gris); font-size:0.75rem;">→ El asteroide nombrado por los astrónomos</span>
+          </div>
+        </div>
+        <p class="mito-texto">Los astrónomos que lo nombraron en 2004 lo hicieron porque su potencial de impacto lo hacía sentir como el "fin del mundo" — sin saber que el nombre resonaría tan profundamente con la profecía bíblica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+<!-- ══ PROFECÍA ══ -->
 <section id="profecia">
-  <div class="container">
-    <h2>La Señal Profética</h2>
-    <div class="divider"></div>
-    <p style="color:var(--gris);margin-bottom:2rem;max-width:60ch;line-height:1.8;">
-      Según la enseñanza de Código Escondido 19, el 13 de abril de 2029 marca el fin de los 2000 años de Gracia según el Calendario Sumerio de 360 días. Apophis — el asteroide que rozará la Tierra ese mismo día — es señalado como la confirmación astronómica de Apocalipsis 10.
-    </p>
-    <div class="vers-grid">
-      <div class="vers-card">
-        <div class="vers-ref">Apocalipsis 10:1</div>
-        <div class="vers-text">"Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza; y su rostro era como el sol, y sus pies como columnas de fuego."</div>
+  <div class="seccion">
+    <h2 class="sec-titulo">Las Siete Trompetas</h2>
+    <p class="sec-subtitulo">Apocalipsis 8 
+
+    <div class="trompetas">
+      <div class="trompeta-item">
+        <div class="trump-num">1ª</div>
+        <div class="trump-cuerpo">
+          <h4 class="trump-titulo">Granizo y fuego mezclado con sangre</h4>
+          <p class="trump-desc">Una tercera parte de la tierra fue quemada, una tercera parte de los árboles y toda la hierba verde.</p>
+          <p class="trump-verso">"El primer ángel tocó la trompeta, y hubo granizo y fuego mezclados con sangre..." — Ap. 8:7</p>
+        </div>
       </div>
-      <div class="vers-card">
-        <div class="vers-ref">Apocalipsis 10:3</div>
-        <div class="vers-text">"Y clamó a gran voz, como ruge un león; y cuando hubo clamado, siete truenos emitieron sus voces."</div>
+      <div class="trompeta-item">
+        <div class="trump-num">2ª</div>
+        <div class="trump-cuerpo">
+          <h4 class="trump-titulo">Gran montaña ardiendo lanzada al mar</h4>
+          <p class="trump-desc">Una tercera parte del mar se convirtió en sangre. Una tercera parte de los seres del mar murieron y una tercera parte de los barcos fueron destruidos.</p>
+          <p class="trump-verso">"Algo semejante a una gran montaña ardiendo en fuego fue precipitada en el mar..." — Ap. 8:8–9</p>
+          <span class="trump-apophis">⚠ Posible conexión Apophis</span>
+        </div>
       </div>
-      <div class="vers-card">
-        <div class="vers-ref">Apocalipsis 10:6</div>
-        <div class="vers-text">"Y juró por el que vive por los siglos de los siglos, que creó el cielo y las cosas que están en él, y la tierra y las cosas que están en ella, y el mar y las cosas que están en él, que el tiempo no sería más."</div>
+      <div class="trompeta-item">
+        <div class="trump-num activo">3ª</div>
+        <div class="trump-cuerpo">
+          <h4 class="trump-titulo" style="color:var(--oro2);">★ AJENJO — Estrella ardiente cae sobre los ríos</h4>
+          <p class="trump-desc">Una gran estrella ardiendo como antorcha cae sobre la tercera parte de los ríos y fuentes de aguas. Las aguas se vuelven amargas y muchos hombres mueren.</p>
+          <p class="trump-verso">"Del cielo cayó una gran estrella ardiendo como una antorcha... El nombre de la estrella es <strong>Ajenjo</strong>." — Ap. 8:10–11</p>
+          <span class="trump-apophis">⚠ Principal conexión Apophis / Wormwood</span>
+        </div>
       </div>
-      <div class="vers-card">
-        <div class="vers-ref">2 Pedro 3:8</div>
-        <div class="vers-text">"Mas, oh amados, no ignoréis esto: que para con el Señor un día es como mil años, y mil años como un día."</div>
+      <div class="trompeta-item">
+        <div class="trump-num">4ª</div>
+        <div class="trump-cuerpo">
+          <h4 class="trump-titulo">El sol, la luna y las estrellas oscurecidos</h4>
+          <p class="trump-desc">Una tercera parte del sol, de la luna y de las estrellas fue golpeada para que se oscureciera una tercera parte de ellos.</p>
+          <p class="trump-verso">"La cuarta parte del día no tuvo luz, e igualmente la noche." — Ap. 8:12</p>
+        </div>
+      </div>
+      <div class="trompeta-item">
+        <div class="trump-num">5ª</div>
+        <div class="trump-cuerpo">
+          <h4 class="trump-titulo">La llave del abismo — Apolión</h4>
+          <p class="trump-desc">Una estrella cae del cielo con la llave del pozo del abismo. Sale humo como de un gran horno. Del humo salen langostas con poder de escorpiones.</p>
+          <p class="trump-verso">"El nombre del ángel del abismo... en griego, <strong>Apolión</strong>." — Ap. 9:11</p>
+          <span class="trump-apophis" style="background:rgba(155,28,28,0.5);">⚠ Apolión = Apophis = Destructor</span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+<!-- ══ LA FECHA ══ -->
+<section id="fecha">
+  <div class="seccion">
+    <h2 class="sec-titulo">Viernes 13 · Abril · 2029</h2>
+    <p class="sec-subtitulo">Cada elemento de esta fecha tiene peso bíblico y simbólico</p>
+
+    <div class="fecha-grid">
+      <div class="fecha-item">
+        <div class="fecha-dato">Viernes</div>
+        <div class="fecha-nom">El Día del Juicio</div>
+        <p class="fecha-exp">En la tradición bíblica, el viernes es el sexto día — día de la obra humana. El Mesías fue crucificado un viernes. Es el día asociado históricamente al juicio y la entrega.</p>
+      </div>
+      <div class="fecha-item">
+        <div class="fecha-dato">13</div>
+        <div class="fecha-nom">El Número de la Rebelión</div>
+        <p class="fecha-exp">En Génesis 14:4 los reyes sirvieron 12 años y en el año 13 se rebelaron. El 13 aparece consistentemente asociado a la rebelión contra Dios en las Escrituras. También: Nimrod fue el 13° descendiente de Noé.</p>
+      </div>
+      <div class="fecha-item">
+        <div class="fecha-dato">Abril</div>
+        <div class="fecha-nom">Mes de la Pascua / Pésaj</div>
+        <p class="fecha-exp">El mes de Nisán (Abib) — el mes de la liberación de Egipto, el mes del juicio sobre los dioses de Egipto, el mes de la muerte y resurrección del Mesías. Apophis — nombrado por el dios caótico de Egipto — pasa en el mes del juicio sobre Egipto.</p>
+      </div>
+      <div class="fecha-item">
+        <div class="fecha-dato">2029</div>
+        <div class="fecha-nom">Fin del Período de Gracia</div>
+        <p class="fecha-exp">Según el Calendario Biblico de 360 días que enseña este ministerio, el 11 de abril de 2029 marca el fin del período de gracia. Apophis pasa el 13 de abril — solo 2 días después. Una convergencia imposible de ignorar.</p>
+      </div>
+    </div>
+
+    <div class="coincidencia-box">
+      <p class="coinc-titulo">⚡ La Convergencia</p>
+      <p class="coinc-texto">
+        <strong>El 13 de abril de 2029</strong> es la intersección de múltiples señales: un asteroide nombrado por la serpiente caótica de Egipto, en el mes de la Pascua (juicio sobre Egipto), en viernes (día del juicio), con el número 13 (rebelión), 
+        a solo <strong>2 días del fin del período de gracia según el Calendario Biblico</strong> (11 abril 2029), 
+       Impactando a la Tierra. — 
+        <strong>Una señal en el cielo, una calamidad</strong> — tal como lo anunció el Señor: "Habrá señales en el sol, en la luna y en las estrellas." — Lucas 21:25
+      </p>
+    </div>
+  </div>
+</section>
+
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+<!-- ══ MISIONES ══ -->
+<section id="misiones">
+  <div class="seccion">
+    <h2 class="sec-titulo">Misiones al Dios del Caos</h2>
+    <p class="sec-subtitulo">Múltiples agencias espaciales enviarán naves para estudiar el flyby histórico</p>
+
+    <div class="misiones-timeline">
+      <div class="mision-item">
+        <p class="mision-fecha">2004</p>
+        <h3 class="mision-nombre">Descubrimiento</h3>
+        <span class="mision-agencia">Kitt Peak Observatory · NASA</span>
+        <p class="mision-desc">Roy Tucker, David Tholen y Fabrizio Bernardi descubren el asteroide el 19 de junio de 2004. Las primeras proyecciones indicaban 2.7% de probabilidad de impacto en 2029 — el Torino Scale 4 más alto jamás registrado. El nombre Apophis fue elegido por el potencial apocalíptico.</p>
+      </div>
+
+      <div class="mision-item">
+        <p class="mision-fecha">2023 → 2029</p>
+        <h3 class="mision-nombre">OSIRIS-APEX</h3>
+        <span class="mision-agencia">NASA</span>
+        <p class="mision-desc">La nave OSIRIS-REx, que trajo muestras del asteroide Bennu a la Tierra en septiembre 2023, fue renombrada OSIRIS-APEX y redirigida hacia Apophis. Viaja aproximadamente una hora detrás del asteroide. 
+      </div>
+
+      <div class="mision-item">
+        <p class="mision-fecha">2028 → 2029</p>
+        <h3 class="mision-nombre">RAMSES</h3>
+        <span class="mision-agencia">ESA — Agencia Espacial Europea</span>
+        <p class="mision-desc">Rapid Apophis Mission for Space Safety — aprobada con financiamiento en noviembre de 2025. Lanzamiento programado en 2028 para rendezvous con Apophis antes del flyby, acompañándolo en su acercamiento histórico a la Tierra. Será la primera misión en observar en tiempo real cómo la gravedad terrestre afecta la estructura interna de un asteroide.</p>
+      </div>
+
+      <div class="mision-item">
+        <p class="mision-fecha">13 Abril 2029</p>
+        <h3 class="mision-nombre">El Flyby Histórico</h3>
+        <span class="mision-agencia">Toda la humanidad</span>
+        <p class="mision-desc">La mayor red de telescopios, radares y observatorios en la historia convergirá para registrar el acercamiento. Más de 2,000 millones de personas en el Hemisferio Este podrán verlo a simple vista. Después de este evento, la órbita de Apophis cambiará permanentemente — su período orbital aumentará de 323 días a ~1.2 años y pasará del grupo Aten al grupo Apolo.</p>
       </div>
     </div>
   </div>
 </section>
 
+<div style="padding:0 2rem;"><div class="divisor"></div></div>
+
+
+<!-- ══ LA SEÑAL PROFÉTICA ══ -->
+<section style="position:relative;z-index:1;background:var(--cafe);padding:4rem 2rem;">
+  <div style="max-width:900px;margin:0 auto;">
+    <h2 style="font-family:'Cinzel',serif;font-weight:700;font-size:clamp(1.4rem,3.5vw,2.2rem);color:var(--blanco);margin-bottom:1.2rem;">La Señal Profética</h2>
+    <div style="width:3rem;height:2px;background:var(--naranja);margin-bottom:2rem;opacity:.7;"></div>
+    <p style="color:var(--gris);margin-bottom:2rem;max-width:60ch;line-height:1.8;font-size:.92rem;">
+      Según la enseñanza de Código Escondido 19, el 13 de abril de 2029 marca el fin de los 2000 años de Gracia según el Calendario Biblico de 360 días. Apophis — el asteroide que rozará la Tierra ese mismo día — es señalado como la confirmación astronómica de Apocalipsis 10.
+    </p>
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <div style="background:var(--cafe2);border-left:3px solid var(--naranja);padding:1.2rem 1.5rem;">
+        <div style="font-size:.72rem;letter-spacing:.15em;color:var(--naranja);font-weight:700;margin-bottom:.4rem;">Apocalipsis 10:1</div>
+        <div style="color:var(--gris);font-size:.9rem;line-height:1.7;font-style:italic;">"Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza; y su rostro era como el sol, y sus pies como columnas de fuego."</div>
+      </div>
+      <div style="background:var(--cafe2);border-left:3px solid var(--naranja);padding:1.2rem 1.5rem;">
+        <div style="font-size:.72rem;letter-spacing:.15em;color:var(--naranja);font-weight:700;margin-bottom:.4rem;">Apocalipsis 10:3</div>
+        <div style="color:var(--gris);font-size:.9rem;line-height:1.7;font-style:italic;">"Y clamó a gran voz, como ruge un león; y cuando hubo clamado, siete truenos emitieron sus voces."</div>
+      </div>
+      <div style="background:var(--cafe2);border-left:3px solid var(--naranja);padding:1.2rem 1.5rem;">
+        <div style="font-size:.72rem;letter-spacing:.15em;color:var(--naranja);font-weight:700;margin-bottom:.4rem;">Apocalipsis 10:6</div>
+        <div style="color:var(--gris);font-size:.9rem;line-height:1.7;font-style:italic;">"Y juró por el que vive por los siglos de los siglos, que creó el cielo y las cosas que están en él, y la tierra y las cosas que están en ella, y el mar y las cosas que están en él, que el tiempo no sería más."</div>
+      </div>
+      <div style="background:var(--cafe2);border-left:3px solid var(--naranja);padding:1.2rem 1.5rem;">
+        <div style="font-size:.72rem;letter-spacing:.15em;color:var(--naranja);font-weight:700;margin-bottom:.4rem;">2 Pedro 3:8</div>
+        <div style="color:var(--gris);font-size:.9rem;line-height:1.7;font-style:italic;">"Mas, oh amados, no ignoréis esto: que para con el Señor un día es como mil años, y mil años como un día."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
 <footer>
-  <p><strong>Código Escondido 19</strong> &nbsp;·&nbsp; Apophis · 13 Abril 2029 &nbsp;·&nbsp; Decodificando la Verdad</p>
+  <p class="footer-logo">Código Escondido 19</p>
+  <p class="footer-texto">Datos científicos: NASA/JPL · ESA · orbitalradar.com · Abril 2026</p>
+  <p class="footer-texto" style="margin-top:0.3rem;">Las conexiones proféticas son para estudio e interpretación bíblica</p>
 </footer>
 
-<!-- THREE.JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ── CUENTA REGRESIVA ──
-function actualizarCuentaRegresiva() {
-  const meta = new Date('2029-04-13T00:00:00Z');
-  const ahora = new Date();
-  const diff = meta - ahora;
-  if (diff <= 0) {
-    document.getElementById('cd-dias').textContent = '0';
-    document.getElementById('cd-horas').textContent = '00';
-    document.getElementById('cd-min').textContent = '00';
-    document.getElementById('cd-seg').textContent = '00';
-    return;
-  }
-  const dias  = Math.floor(diff / (1000*60*60*24));
-  const horas = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-  const min   = Math.floor((diff % (1000*60*60)) / (1000*60));
-  const seg   = Math.floor((diff % (1000*60)) / 1000);
-  document.getElementById('cd-dias').textContent  = dias.toLocaleString('es-ES');
-  document.getElementById('cd-horas').textContent = String(horas).padStart(2,'0');
-  document.getElementById('cd-min').textContent   = String(min).padStart(2,'0');
-  document.getElementById('cd-seg').textContent   = String(seg).padStart(2,'0');
-}
-actualizarCuentaRegresiva();
-setInterval(actualizarCuentaRegresiva, 1000);
+// ── ESTRELLAS ──
+(function(){
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
 
-// ── DISTANCIA APOPHIS — Elementos orbitales precisos JPL (epoch 2024-Mar-30) ──
-// Fuente: JPL Small-Body Database / Horizons
-// a=0.9227019 AU, e=0.19129073, i=3.33974°, OM=203.904°, om=126.672°, tp=2024-Mar-10
-function calcularDistanciaApophis() {
-  const AU = 149597870.7; // km por AU
-  const LD = 384400;      // km por distancia lunar
-
-  // ── Apophis parámetros JPL ──
-  const a_ap  = 0.9227019;
-  const e_ap  = 0.19129073;
-  const i_ap  = 3.33974  * Math.PI/180;
-  const OM_ap = 203.90395* Math.PI/180;
-  const om_ap = 126.67198* Math.PI/180;
-  const T_ap  = 323.606;  // días
-  const tp_ap = new Date('2023-05-13T00:00:00Z').getTime();
-
-  // ── Tierra parámetros JPL ──
-  const a_t  = 1.00000261;
-  const e_t  = 0.01671022;
-  const i_t  = 0.00005  * Math.PI/180;
-  const OM_t = -11.26064* Math.PI/180;
-  const om_t = 102.94719* Math.PI/180;
-  const T_t  = 365.25636;
-  const tp_t = new Date('2024-01-02T00:00:00Z').getTime();
-
-  const ahora = Date.now();
-
-  function kepler(M, e, iter=50) {
-    let E = M;
-    for(let i=0;i<iter;i++) E = E - (E-e*Math.sin(E)-M)/(1-e*Math.cos(E));
-    return E;
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
   }
 
-  function posicionEcliptica(a, e, inc, OM, om, T_dias, tp_ms) {
-    const M = ((ahora - tp_ms) / (T_dias*86400000) * 2*Math.PI) % (2*Math.PI);
-    const E = kepler(M < 0 ? M + 2*Math.PI : M, e);
-    const xOrb = a*(Math.cos(E)-e);
-    const yOrb = a*Math.sqrt(1-e*e)*Math.sin(E);
-    // Rotación orbital → eclíptica
-    const cosOM=Math.cos(OM), sinOM=Math.sin(OM);
-    const cosom=Math.cos(om), sinom=Math.sin(om);
-    const cosi=Math.cos(inc), sini=Math.sin(inc);
-    return {
-      x: (cosOM*cosom - sinOM*sinom*cosi)*xOrb + (-cosOM*sinom - sinOM*cosom*cosi)*yOrb,
-      y: (sinOM*cosom + cosOM*sinom*cosi)*xOrb + (-sinOM*sinom + cosOM*cosom*cosi)*yOrb,
-      z: (sinom*sini)*xOrb + (cosom*sini)*yOrb
-    };
-  }
-
-  const posAp = posicionEcliptica(a_ap, e_ap, i_ap, OM_ap, om_ap, T_ap, tp_ap);
-  const posT  = posicionEcliptica(a_t,  e_t,  i_t,  OM_t,  om_t,  T_t,  tp_t);
-
-  const distAU = Math.sqrt((posAp.x-posT.x)**2 + (posAp.y-posT.y)**2 + (posAp.z-posT.z)**2);
-  const distKm = distAU * AU;
-  const distLD = distKm / LD;
-
-  return { distKm, distLD, distAU, posAp, posT };
-}
-
-// Actualizar distancia cada segundo
-let prevDistKm = null;
-function actualizarDistancia() {
-  const { distKm, distLD, distAU } = calcularDistanciaApophis();
-
-  // Número animado — dígito a dígito
-  const elKm  = document.getElementById('dist-km');
-  const elLd  = document.getElementById('dist-ld');
-
-  const kmRedondeado = Math.round(distKm);
-  const kmStr = kmRedondeado.toLocaleString('es-ES') + ' km';
-
-  if (elKm.textContent !== kmStr) {
-    elKm.textContent = kmStr;
-    // Color: se pone más rojo conforme se acerca (< 10M km = rojo intenso)
-    const pct = Math.min(1, Math.max(0, 1 - distKm / 300000000));
-    const r = Math.round(220 + 35 * pct);
-    const g = Math.round(38 * (1 - pct));
-    elKm.style.color = `rgb(${r},${g},38)`;
-  }
-
-  const ldBadge = document.getElementById('dist-ld-badge');
-  const auBadge = document.getElementById('dist-au-badge');
-  if (ldBadge) ldBadge.textContent = distLD.toFixed(1) + ' lunar distances';
-  if (auBadge) auBadge.textContent = distAU.toFixed(4) + ' AU';
-  if (elLd) elLd.textContent = distLD.toFixed(2) + ' distancias lunares · ' + distAU.toFixed(4) + ' UA';
-
-  // Indicador de tendencia ↑ alejándose / ↓ acercándose
-  const tendEl = document.getElementById('dist-tend');
-  if (tendEl && prevDistKm !== null) {
-    if (distKm < prevDistKm) {
-      tendEl.textContent = '▼ Acercándose';
-      tendEl.style.color = '#dc2626';
-    } else {
-      tendEl.textContent = '▲ Alejándose';
-      tendEl.style.color = '#16a34a';
+  function initStars(){
+    stars = [];
+    for(let i=0; i<280; i++){
+      stars.push({
+        x: Math.random()*W,
+        y: Math.random()*H,
+        r: Math.random()*1.4+0.2,
+        a: Math.random(),
+        da: (Math.random()-0.5)*0.003,
+        speed: Math.random()*0.015
+      });
     }
   }
-  prevDistKm = distKm;
-}
 
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    stars.forEach(s=>{
+      s.a += s.da;
+      if(s.a < 0) s.a = 0, s.da *= -1;
+      if(s.a > 1) s.a = 1, s.da *= -1;
+      s.x -= s.speed;
+      if(s.x < 0) s.x = W;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,248,240,${s.a*0.95})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStars();
+  draw();
+  window.addEventListener('resize', ()=>{ resize(); initStars(); });
+})();
+
+// ── DISTANCIA APOPHIS — Elementos orbitales precisos JPL ──
+function calcularDistanciaApophis() {
+  const AU = 149597870.7;
+  const LD = 384400;
+  const a_ap=0.9227019, e_ap=0.19129073;
+  const i_ap=3.33974*Math.PI/180, OM_ap=203.90395*Math.PI/180, om_ap=126.67198*Math.PI/180;
+  const T_ap=323.606, tp_ap=new Date('2023-05-13T00:00:00Z').getTime();
+  const a_t=1.00000261, e_t=0.01671022;
+  const i_t=0.00005*Math.PI/180, OM_t=-11.26064*Math.PI/180, om_t=102.94719*Math.PI/180;
+  const T_t=365.25636, tp_t=new Date('2024-01-02T00:00:00Z').getTime();
+  const ahora=Date.now();
+  function kepler(M,e){let E=M;for(let i=0;i<50;i++)E=E-(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));return E;}
+  function posEcl(a,e,inc,OM,om,T_dias,tp_ms){
+    const M=((ahora-tp_ms)/(T_dias*86400000)*2*Math.PI)%(2*Math.PI);
+    const E=kepler(M<0?M+2*Math.PI:M,e);
+    const xO=a*(Math.cos(E)-e), yO=a*Math.sqrt(1-e*e)*Math.sin(E);
+    const cO=Math.cos(OM),sO=Math.sin(OM),co=Math.cos(om),so=Math.sin(om),ci=Math.cos(inc),si=Math.sin(inc);
+    return{x:(cO*co-sO*so*ci)*xO+(-cO*so-sO*co*ci)*yO,
+           y:(sO*co+cO*so*ci)*xO+(-sO*so+cO*co*ci)*yO,
+           z:(so*si)*xO+(co*si)*yO};
+  }
+  const pA=posEcl(a_ap,e_ap,i_ap,OM_ap,om_ap,T_ap,tp_ap);
+  const pT=posEcl(a_t,e_t,i_t,OM_t,om_t,T_t,tp_t);
+  const distAU=Math.sqrt((pA.x-pT.x)**2+(pA.y-pT.y)**2+(pA.z-pT.z)**2);
+  return{distKm:distAU*AU, distLD:distAU*AU/LD, distAU};
+}
+let prevDistKm=null;
+function actualizarDistancia(){
+  const{distKm,distLD,distAU}=calcularDistanciaApophis();
+  const elKm=document.getElementById('dist-km');
+  const kmStr=Math.round(distKm).toLocaleString('es-ES')+' km';
+  if(elKm&&elKm.textContent!==kmStr){
+    elKm.textContent=kmStr;
+    elKm.style.color='#ffffff';
+  }
+  const ldB=document.getElementById('dist-ld-badge');
+  const auB=document.getElementById('dist-au-badge');
+  if(ldB)ldB.textContent=distLD.toFixed(1)+' lunar distances';
+  if(auB)auB.textContent=distAU.toFixed(4)+' AU';
+  const tendEl=document.getElementById('dist-tend');
+  if(tendEl&&prevDistKm!==null){
+    if(distKm<prevDistKm){tendEl.textContent='▼ Acercándose';tendEl.style.color='#ffffff';}
+    else{tendEl.textContent='▲ Alejándose';tendEl.style.color='#ffdd00';}
+  }
+  prevDistKm=distKm;
+}
 actualizarDistancia();
-setInterval(actualizarDistancia, 1000);
+setInterval(actualizarDistancia,1000);
 
-// ── SISTEMA SOLAR 3D ──
-const canvas = document.getElementById('three-canvas');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias:true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setClearColor(0x1a0a00, 1);
+// ── CUENTA REGRESIVA ──
+(function(){
+  // 13 Abril 2029 21:46 UTC
+  const target = new Date('2029-04-13T21:46:00Z');
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(55, 2, 0.01, 100);
-camera.position.set(0, 2.5, 4);
-camera.lookAt(0,0,0);
+  function pad(n, len=2){ return String(Math.floor(n)).padStart(len,'0'); }
 
-function resizeRenderer() {
-  const wrap = document.getElementById('canvas-wrap');
-  const w = wrap ? wrap.clientWidth : window.innerWidth;
-  const h = Math.min(500, Math.max(300, window.innerHeight * 0.55));
-  canvas.style.height = h + 'px';
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-window.addEventListener('load', resizeRenderer);
-window.addEventListener('resize', resizeRenderer);
-setTimeout(resizeRenderer, 100);
-
-// Estrellas de fondo
-const starGeo = new THREE.BufferGeometry();
-const starPos = [];
-for (let i = 0; i < 2000; i++) {
-  starPos.push((Math.random()-0.5)*80, (Math.random()-0.5)*80, (Math.random()-0.5)*80);
-}
-starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color:0xfff0d0, size:.08})));
-
-// Luz ambiental + punto solar
-scene.add(new THREE.AmbientLight(0x3b1a00, 1.5));
-const sunLight = new THREE.PointLight(0xff8c00, 3, 20);
-scene.add(sunLight);
-
-// ── ETIQUETAS ──
-function makeLabel(text, color) {
-  const c = document.createElement('canvas'); c.width=256; c.height=64;
-  const ctx = c.getContext('2d');
-  ctx.font = 'bold 24px sans-serif';
-  ctx.fillStyle = color;
-  ctx.textAlign = 'center';
-  ctx.fillText(text, 128, 40);
-  const tex = new THREE.CanvasTexture(c);
-  const mat = new THREE.SpriteMaterial({map:tex, transparent:true});
-  const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(.7,.18,1);
-  return sprite;
-}
-
-// ── ÓRBITA CIRCULAR ──
-function makeOrbit(r, color, opacity=0.35) {
-  const geo = new THREE.BufferGeometry();
-  const pts = [];
-  for (let i=0;i<=128;i++) { const a=i/128*Math.PI*2; pts.push(r*Math.cos(a),0,r*Math.sin(a)); }
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
-  return new THREE.Line(geo, new THREE.LineBasicMaterial({color, opacity, transparent:true}));
-}
-
-// ── ÓRBITA ELÍPTICA ──
-function makeOrbitEllipse(a, e, color, opacity=0.4) {
-  const geo = new THREE.BufferGeometry();
-  const pts = [];
-  for (let i=0;i<=256;i++) {
-    const E = i/256*Math.PI*2;
-    pts.push(a*(Math.cos(E)-e), 0, a*Math.sqrt(1-e*e)*Math.sin(E));
+  function update(){
+    const now = new Date();
+    const diff = target - now;
+    if(diff <= 0){
+      document.getElementById('cd-d').textContent = '000';
+      document.getElementById('cd-h').textContent = '00';
+      document.getElementById('cd-m').textContent = '00';
+      document.getElementById('cd-s').textContent = '00';
+      return;
+    }
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const secs = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-d').textContent = pad(days, 3);
+    document.getElementById('cd-h').textContent = pad(hours);
+    document.getElementById('cd-m').textContent = pad(mins);
+    document.getElementById('cd-s').textContent = pad(secs);
   }
-  geo.setAttribute('position', new THREE.Float32BufferAttribute(pts,3));
-  return new THREE.Line(geo, new THREE.LineBasicMaterial({color, opacity, transparent:true}));
-}
 
-// ── PLANETA ──
-function makePlaneta(radio, color, emissive=0x000000) {
-  const geo = new THREE.SphereGeometry(radio, 24, 24);
-  const mat = new THREE.MeshPhongMaterial({color, emissive});
-  return new THREE.Mesh(geo, mat);
-}
+  update();
+  setInterval(update, 1000);
+})();
+</script>
 
-// SOL
-const sol = makePlaneta(0.22, 0xff8c00);
-sol.material = new THREE.MeshBasicMaterial({color:0xff8c00});
-scene.add(sol);
-scene.add(new THREE.Mesh(
-  new THREE.SphereGeometry(0.3,32,32),
-  new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.2})
-));
-const labelSol = makeLabel('SOL','#ff8c00');
-labelSol.position.set(0,.4,0);
-scene.add(labelSol);
+<!-- Three.js r128 -->
+<script>
+function _initSolar(){
+(function(){
+  const canvas = document.getElementById('solarCanvas');
+  if(!canvas) return;
 
-// Datos planetas: [nombre, a(AU), e, período(días), radio3D, color, colorLabel]
-const PLANETAS = [
-  { n:'MERCURIO', a:0.387, e:0.206, T:87.97,  r:0.025, c:0xaaaaaa, lc:'#aaaaaa' },
-  { n:'VENUS',    a:0.723, e:0.007, T:224.7,  r:0.040, c:0xffcc66, lc:'#ffcc66' },
-  { n:'TIERRA',   a:1.000, e:0.017, T:365.25, r:0.045, c:0x2255cc, lc:'#5588ff' },
-  { n:'MARTE',    a:1.524, e:0.093, T:686.97, r:0.030, c:0xcc4422, lc:'#ff6644' },
-  { n:'JÚPITER',  a:2.5,   e:0.049, T:4332,   r:0.12,  c:0xddaa77, lc:'#ddaa77' },
-  { n:'SATURNO',  a:3.3,   e:0.057, T:10759,  r:0.10,  c:0xccbb88, lc:'#ccbb88' },
-  { n:'URANO',    a:4.0,   e:0.046, T:30687,  r:0.07,  c:0x88ccdd, lc:'#88ccdd' },
-  { n:'NEPTUNO',  a:4.6,   e:0.010, T:60190,  r:0.065, c:0x3355cc, lc:'#5577ff' },
-];
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0x000005,1);
 
-const planetaMeshes = [];
-PLANETAS.forEach(p => {
-  const mesh = makePlaneta(p.r, p.c, 0x111111);
-  scene.add(mesh);
-  scene.add(makeOrbitEllipse(p.a, p.e, p.c, 0.25));
-  const lbl = makeLabel(p.n, p.lc);
-  scene.add(lbl);
-  planetaMeshes.push({ mesh, lbl, ...p });
-});
-
-// Anillo de Saturno
-const ringSat = new THREE.Mesh(
-  new THREE.RingGeometry(0.13, 0.22, 48),
-  new THREE.MeshBasicMaterial({color:0xccbb88, side:THREE.DoubleSide, transparent:true, opacity:.5})
-);
-ringSat.rotation.x = Math.PI/2.5;
-
-// APOPHIS
-const a_ap = 0.9227, e_ap = 0.1912;
-const apophis = makePlaneta(0.028, 0xdc2626, 0x440000);
-scene.add(apophis);
-scene.add(makeOrbitEllipse(a_ap, e_ap, 0xdc2626, 0.6));
-const labelApophis = makeLabel('APOPHIS','#ff3333');
-scene.add(labelApophis);
-
-// Tierra ref para cálculos
-const tierra = planetaMeshes.find(p=>p.n==='TIERRA').mesh;
-
-// GRID suelo
-const gridHelper = new THREE.GridHelper(6, 20, 0x3b1a00, 0x4a2200);
-gridHelper.position.y = -0.5;
-scene.add(gridHelper);
-
-// CONTROLES MOUSE / TOUCH
-let isDragging=false, prevX=0, prevY=0, rotX=0.3, rotY=0, zoom=4;
-canvas.addEventListener('mousedown', e=>{isDragging=true;prevX=e.clientX;prevY=e.clientY;});
-window.addEventListener('mouseup', ()=>isDragging=false);
-window.addEventListener('mousemove', e=>{
-  if (!isDragging) return;
-  rotY += (e.clientX-prevX)*0.005;
-  rotX += (e.clientY-prevY)*0.005;
-  rotX = Math.max(-1.2, Math.min(1.2, rotX));
-  prevX=e.clientX; prevY=e.clientY;
-});
-canvas.addEventListener('wheel', e=>{
-  zoom += e.deltaY*0.005;
-  zoom = Math.max(1.5, Math.min(8, zoom));
-  e.preventDefault();
-}, {passive:false});
-// Touch
-let lastTouchDist=0;
-canvas.addEventListener('touchstart', e=>{
-  if(e.touches.length===1){isDragging=true;prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;}
-  if(e.touches.length===2){lastTouchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
-  e.preventDefault();
-},{passive:false});
-canvas.addEventListener('touchend', ()=>isDragging=false,{passive:false});
-canvas.addEventListener('touchmove', e=>{
-  if(e.touches.length===1&&isDragging){
-    rotY+=(e.touches[0].clientX-prevX)*0.005;
-    rotX+=(e.touches[0].clientY-prevY)*0.005;
-    rotX=Math.max(-1.2,Math.min(1.2,rotX));
-    prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;
-  }
-  if(e.touches.length===2){
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    zoom-=(d-lastTouchDist)*0.01;
-    zoom=Math.max(1.5,Math.min(8,zoom));
-    lastTouchDist=d;
-  }
-  e.preventDefault();
-},{passive:false});
-
-// ── ANIMACIÓN ──
-let t = 0;
-const SAT_IDX = PLANETAS.findIndex(p=>p.n==='SATURNO');
-
-function kepler(M, e) {
-  let E = M;
-  for(let i=0;i<8;i++) E = M + e*Math.sin(E);
-  return E;
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  t += 0.004;
-
-  // Mover cada planeta
-  planetaMeshes.forEach(p => {
-    const M = t * (365.25 / p.T);
-    const E = kepler(M, p.e);
-    const x = p.a*(Math.cos(E)-p.e);
-    const z = p.a*Math.sqrt(1-p.e**2)*Math.sin(E);
-    p.mesh.position.set(x, 0, z);
-    p.lbl.position.set(x, p.r+0.14, z);
-  });
-
-  // Anillo de Saturno sigue al planeta
-  const sat = planetaMeshes[SAT_IDX];
-  ringSat.position.copy(sat.mesh.position);
-  if (!ringSat.parent) scene.add(ringSat);
-
-  // Apophis
-  const M_ap = t * (365.25/323.6);
-  const E_ap = kepler(M_ap, e_ap);
-  const x_ap = a_ap*(Math.cos(E_ap)-e_ap);
-  const z_ap = a_ap*Math.sqrt(1-e_ap**2)*Math.sin(E_ap);
-  apophis.position.set(x_ap, 0, z_ap);
-  labelApophis.position.set(x_ap, 0.12, z_ap);
-  const sc = 1 + 0.35*Math.sin(t*6);
-  apophis.scale.set(sc,sc,sc);
-
-  // Cámara
-  camera.position.x = zoom*Math.sin(rotY)*Math.cos(rotX);
-  camera.position.y = zoom*Math.sin(rotX);
-  camera.position.z = zoom*Math.cos(rotY)*Math.cos(rotX);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(52,2,0.01,200);
+  camera.position.set(0,2.8,4.5);
   camera.lookAt(0,0,0);
 
-  renderer.render(scene, camera);
-}
-animate();
+  function resizeRenderer(){
+    const w=canvas.parentElement.clientWidth;
+    const h=Math.min(520,Math.max(320,window.innerHeight*0.58));
+    canvas.style.height=h+'px';
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize',resizeRenderer);
+  resizeRenderer();
+  setTimeout(resizeRenderer,200);
+
+  // ── ESTRELLAS 3 capas ──
+  function makeStars(n,sz,col,opac){
+    const g=new THREE.BufferGeometry(), p=[];
+    for(let i=0;i<n;i++) p.push((Math.random()-.5)*180,(Math.random()-.5)*180,(Math.random()-.5)*180);
+    g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+    scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:col,size:sz,transparent:true,opacity:opac})));
+  }
+  makeStars(4000,0.06,0xffffff,0.9);
+  makeStars(1000,0.11,0xfff4e0,0.75);
+  makeStars(300,0.17,0xffe8b0,0.6);
+
+  // ── CINTURÓN DE ASTEROIDES ──
+  (function(){
+    const g=new THREE.BufferGeometry(), p=[];
+    for(let i=0;i<1800;i++){
+      const a=1.9+Math.random()*0.9, ang=Math.random()*Math.PI*2, y=(Math.random()-.5)*0.08;
+      p.push(Math.cos(ang)*a, y, Math.sin(ang)*a);
+    }
+    g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+    scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0x887766,size:0.025,transparent:true,opacity:0.5})));
+  })();
+
+  // ── LUCES ──
+  scene.add(new THREE.AmbientLight(0x111122,0.5));
+  const sunLight=new THREE.PointLight(0xfff5dd,5,80); scene.add(sunLight);
+
+  // ── LABEL helper ──
+  function makeLabel(text,color,scale=0.7){
+    const c=document.createElement('canvas'); c.width=256; c.height=64;
+    const ctx2=c.getContext('2d');
+    ctx2.font='bold 22px Cinzel,serif'; ctx2.fillStyle=color; ctx2.textAlign='center';
+    ctx2.shadowColor=color; ctx2.shadowBlur=8;
+    ctx2.fillText(text,128,40);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthWrite:false}));
+    sp.scale.set(scale,.18,1); return sp;
+  }
+
+  // ── ÓRBITA ELIPSE ──
+  function makeOrbit(a,e,color,opacity,dash=false){
+    const pts=[];
+    for(let i=0;i<=360;i++){const E=i/360*Math.PI*2; pts.push(new THREE.Vector3(a*(Math.cos(E)-e),0,a*Math.sqrt(1-e*e)*Math.sin(E)));}
+    const g=new THREE.BufferGeometry().setFromPoints(pts);
+    const mat=dash
+      ? new THREE.LineDashedMaterial({color,opacity,transparent:true,dashSize:.08,gapSize:.05,linewidth:1})
+      : new THREE.LineBasicMaterial({color,opacity,transparent:true});
+    const l=new THREE.Line(g,mat); if(dash) l.computeLineDistances();
+    return l;
+  }
+
+  // ── SOL animado — núcleo + 4 halos ──
+  const solCore=new THREE.Mesh(new THREE.SphereGeometry(0.22,48,48),new THREE.MeshBasicMaterial({color:0xffff99}));
+  scene.add(solCore);
+  const solHalos=[];
+  [[0.27,0xffee00,0.22],[0.34,0xffbb00,0.12],[0.44,0xff7700,0.07],[0.58,0xff3300,0.04]].forEach(([r,c,o])=>{
+    const h=new THREE.Mesh(new THREE.SphereGeometry(r,32,32),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,side:THREE.FrontSide,depthWrite:false}));
+    scene.add(h); solHalos.push({mesh:h,baseR:r,baseO:o});
+  });
+  const lblSol=makeLabel('SOL','#ffdd00',0.6); lblSol.position.set(0,.62,0); scene.add(lblSol);
+
+  // ── TEXTURAS PROCEDURALES HD ──
+  function mkTex(W,H,fn){
+    const c=document.createElement('canvas'); c.width=W; c.height=H;
+    const ctx=c.getContext('2d'); fn(ctx,W,H);
+    const t=new THREE.CanvasTexture(c); t.needsUpdate=true; return t;
+  }
+  // Noise helpers
+  function noise(x,y,s){return Math.sin(x*s*1.3+y*s*0.9)*Math.cos(x*s*0.7-y*s*1.1)*0.5+0.5;}
+  function fbm(x,y,oct){let v=0,a=0.5;for(let i=0;i<oct;i++){v+=noise(x,y,Math.pow(2,i))*a;a*=0.5;}return v;}
+
+  // MERCURIO — gris crateado
+  const texMercury=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      let v=fbm(nx*4,ny*4,6);
+      v=0.4+v*0.5;
+      // cráteres
+      const cx1=0.3,cy1=0.4; const d1=Math.hypot(nx-cx1,ny-cy1);
+      if(d1<0.05) v-=0.15*(1-d1/0.05);
+      const cx2=0.7,cy2=0.6; const d2=Math.hypot(nx-cx2,ny-cy2);
+      if(d2<0.04) v-=0.12*(1-d2/0.04);
+      const cx3=0.5,cy3=0.2; const d3=Math.hypot(nx-cx3,ny-cy3);
+      if(d3<0.035) v-=0.1*(1-d3/0.035);
+      v=Math.max(0.2,Math.min(1,v));
+      const g=Math.floor(v*180+40);
+      const i=(y*W+x)*4; id.data[i]=g+10; id.data[i+1]=g+5; id.data[i+2]=g; id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // VENUS — naranja/amarillo con bandas de nubes
+  const texVenus=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      let v=fbm(nx*5,ny*3,5);
+      let band=Math.sin(ny*Math.PI*8+fbm(nx*3,ny*3,4)*1.5)*0.3;
+      v=0.5+v*0.3+band*0.2;
+      v=Math.max(0,Math.min(1,v));
+      const r=Math.floor(200+v*55); const g=Math.floor(150+v*60); const b=Math.floor(60+v*40);
+      const i=(y*W+x)*4; id.data[i]=r; id.data[i+1]=g; id.data[i+2]=b; id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // TIERRA — azul con continentes verdes y nubes
+  const texEarth=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      // tierra vs océano
+      const land=fbm(nx*4+1.3,ny*4+0.7,7);
+      let r,g,b;
+      if(land>0.52){
+        // continente
+        const h=fbm(nx*8,ny*8,5);
+        r=Math.floor(80+h*100); g=Math.floor(100+h*80); b=Math.floor(40+h*40);
+        // polo norte/sur nevados
+        const lat=Math.abs(ny-0.5)*2;
+        if(lat>0.85){const s=((lat-0.85)/0.15);r=Math.floor(r+(255-r)*s);g=Math.floor(g+(255-g)*s);b=Math.floor(b+(255-b)*s);}
+      } else {
+        // océano
+        const deep=fbm(nx*6,ny*6,4);
+        r=Math.floor(10+deep*30); g=Math.floor(50+deep*80); b=Math.floor(130+deep*80);
+      }
+      // nubes
+      const cloud=fbm(nx*7+2,ny*5+1,5);
+      if(cloud>0.58){const c=(cloud-0.58)/0.42;r=Math.floor(r+(230-r)*c);g=Math.floor(g+(240-g)*c);b=Math.floor(b+(255-b)*c);}
+      const i=(y*W+x)*4; id.data[i]=r; id.data[i+1]=g; id.data[i+2]=b; id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // MARTE — rojo oxidado con cañones
+  const texMars=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      let v=fbm(nx*5,ny*5,6);
+      let r=Math.floor(170+v*70); let g=Math.floor(80+v*50); let b=Math.floor(40+v*30);
+      // Valles Marineris — franja oscura
+      const vm=Math.abs(ny-0.52)*H;
+      if(vm<8){const d=1-vm/8;r=Math.floor(r*(1-d*0.4));g=Math.floor(g*(1-d*0.4));b=Math.floor(b*(1-d*0.4));}
+      // polo norte helado
+      if(ny<0.1){const s=(0.1-ny)/0.1;r=Math.floor(r+(210-r)*s);g=Math.floor(g+(200-g)*s);b=Math.floor(b+(190-b)*s);}
+      const i=(y*W+x)*4; id.data[i]=Math.min(255,r); id.data[i+1]=Math.min(255,g); id.data[i+2]=Math.min(255,b); id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // JÚPITER — bandas marrones/naranja con GRS
+  const texJupiter=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      // bandas latitudinales
+      const band=Math.sin(ny*Math.PI*14)*0.5+0.5;
+      const turb=fbm(nx*8+band,ny*6,5)*0.4;
+      const v=band*0.6+turb;
+      let r,g,b;
+      if(v>0.65){r=220+Math.floor((v-0.65)*100);g=180+Math.floor((v-0.65)*60);b=120;}
+      else if(v>0.4){r=190+Math.floor(v*40);g=140+Math.floor(v*50);b=100+Math.floor(v*20);}
+      else{r=160+Math.floor(v*60);g=110+Math.floor(v*40);b=80+Math.floor(v*30);}
+      // Gran Mancha Roja
+      const gx=(nx-0.35)*6; const gy=(ny-0.55)*12;
+      const grs=gx*gx+gy*gy;
+      if(grs<1){const s=1-grs;r=Math.floor(r+(210-r)*s*0.8);g=Math.floor(g+(80-g)*s*0.5);b=Math.floor(b+(60-b)*s*0.5);}
+      const i=(y*W+x)*4; id.data[i]=Math.min(255,r); id.data[i+1]=Math.min(255,g); id.data[i+2]=Math.min(255,b); id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // SATURNO — dorado/amarillo con bandas suaves
+  const texSaturn=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      const band=Math.sin(ny*Math.PI*10)*0.3+fbm(nx*5,ny*4,4)*0.4+0.4;
+      let r=Math.floor(200+band*50); let g=Math.floor(170+band*50); let b=Math.floor(100+band*30);
+      // hexágono polar norte (zona azulada)
+      if(ny<0.12){const s=(0.12-ny)/0.12*0.5;r=Math.floor(r*(1-s)+120*s);g=Math.floor(g*(1-s)+150*s);b=Math.floor(b*(1-s)+200*s);}
+      const i=(y*W+x)*4; id.data[i]=Math.min(255,r); id.data[i+1]=Math.min(255,g); id.data[i+2]=Math.min(255,b); id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // URANO — celeste/verde pálido con bandas sutiles
+  const texUranus=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      const v=fbm(nx*3,ny*2,4)*0.2+0.7;
+      const band=Math.sin(ny*Math.PI*6)*0.05+1;
+      let r=Math.floor(80*v*band); let g=Math.floor(200*v*band); let b=Math.floor(220*v*band);
+      const i=(y*W+x)*4; id.data[i]=Math.min(255,r); id.data[i+1]=Math.min(255,g); id.data[i+2]=Math.min(255,b); id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  // NEPTUNO — azul profundo con tormenta
+  const texNeptune=mkTex(512,256,(ctx,W,H)=>{
+    const id=ctx.createImageData(W,H);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){
+      const nx=x/W,ny=y/H;
+      const v=fbm(nx*6,ny*4,5)*0.4+0.5;
+      const band=Math.sin(ny*Math.PI*8)*0.1+1;
+      let r=Math.floor(20*v); let g=Math.floor(80*v*band); let b=Math.floor(200*v*band);
+      // Gran Punto Oscuro
+      const gx=(nx-0.6)*8; const gy=(ny-0.45)*12;
+      const gnd=gx*gx+gy*gy;
+      if(gnd<1){const s=1-gnd;r=Math.floor(r*(1-s*0.6));g=Math.floor(g*(1-s*0.5));b=Math.floor(b*(1-s*0.3));}
+      // nubes blancas
+      const cloud=fbm(nx*9+3,ny*7+2,4);
+      if(cloud>0.62){const c=(cloud-0.62)/0.38*0.7;r=Math.floor(r+(200-r)*c);g=Math.floor(g+(220-g)*c);b=Math.floor(b+(255-b)*c);}
+      const i=(y*W+x)*4; id.data[i]=Math.min(255,r); id.data[i+1]=Math.min(255,g); id.data[i+2]=Math.min(255,b); id.data[i+3]=255;
+    }
+    ctx.putImageData(id,0,0);
+  });
+
+  const PLANETAS=[
+    {n:'MERCURIO',a:.387,e:.206,T:87.97, r:.022,tex:texMercury,em:0x060606,lc:'#ccccbb',info:{d:'0.39 AU',p:'88 días',  sz:'4,879 km'}},
+    {n:'VENUS',   a:.723,e:.007,T:224.7, r:.038,tex:texVenus,  em:0x0a0800,lc:'#f0d890',info:{d:'0.72 AU',p:'225 días', sz:'12,104 km'}},
+    {n:'TIERRA',  a:1.00,e:.017,T:365.25,r:.042,tex:texEarth,  em:0x000408,lc:'#88ccff',info:{d:'1.00 AU',p:'365 días', sz:'12,742 km'}},
+    {n:'MARTE',   a:1.524,e:.093,T:686.97,r:.028,tex:texMars,  em:0x080200,lc:'#ff8866',info:{d:'1.52 AU',p:'687 días', sz:'6,779 km'}},
+    {n:'JÚPITER',a:2.5,  e:.049,T:4332,  r:.115,tex:texJupiter,em:0x0c0800,lc:'#e8c890',info:{d:'5.2 AU',p:'12 años',  sz:'139,820 km'}},
+    {n:'SATURNO', a:3.3,  e:.057,T:10759, r:.095,tex:texSaturn, em:0x080600,lc:'#ddd090',info:{d:'9.5 AU',p:'29 años',  sz:'116,460 km',extra:'Hexágono azul en polo norte'}},
+    {n:'URANO',   a:4.0,  e:.046,T:30687, r:.065,tex:texUranus, em:0x001010,lc:'#99eeff',info:{d:'19.2 AU',p:'84 años', sz:'50,724 km'}},
+    {n:'NEPTUNO', a:4.6,  e:.010,T:60190, r:.060,tex:texNeptune,em:0x000408,lc:'#5577ff',info:{d:'30.1 AU',p:'165 años',sz:'49,244 km'}},
+  ];
+
+  const meshes=[];
+  PLANETAS.forEach(p=>{
+    const mat=new THREE.MeshPhongMaterial({map:p.tex,emissive:p.em,shininess:35,specular:0x111111});
+    const mesh=new THREE.Mesh(new THREE.SphereGeometry(p.r,32,32),mat);
+    scene.add(mesh);
+    // Órbitas Tierra y Apophis en colores destacados, resto gris
+    const orbitCol=(p.n==='TIERRA')?0x2288ff:(p.n==='MARTE'?0xff5533:0x334433);
+    const orbitOp=(p.n==='TIERRA')?0.7:0.3;
+    scene.add(makeOrbit(p.a,p.e,orbitCol,orbitOp));
+    const lbl=makeLabel(p.n,p.lc); scene.add(lbl);
+    meshes.push({mesh,lbl,...p});
+  });
+
+  // Anillo Saturno mejorado — 3 capas con degradado
+  const SAT_IDX=PLANETAS.findIndex(p=>p.n==='SATURNO');
+  const satRings=[];
+  [[.12,.22,0xd4c080,.5],[.22,.26,0xb09050,.35],[.26,.30,0x907040,.2]].forEach(([r1,r2,c,o])=>{
+    const r=new THREE.Mesh(new THREE.RingGeometry(r1,r2,64),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide,transparent:true,opacity:o,depthWrite:false}));
+    r.rotation.x=Math.PI/2.5; satRings.push(r); scene.add(r);
+  });
+
+  // Hexágono polar norte de Saturno — malla 3D plana sobre el polo
+  const hexShape=new THREE.Shape();
+  const hexR=meshes[SAT_IDX].r*0.72;
+  for(let i=0;i<6;i++){const a=Math.PI/6+i*Math.PI/3; i===0?hexShape.moveTo(hexR*Math.cos(a),hexR*Math.sin(a)):hexShape.lineTo(hexR*Math.cos(a),hexR*Math.sin(a));}
+  hexShape.closePath();
+  const hexMesh=new THREE.Mesh(
+    new THREE.ShapeGeometry(hexShape),
+    new THREE.MeshBasicMaterial({color:0x2255cc,transparent:true,opacity:0.45,side:THREE.DoubleSide,depthWrite:false})
+  );
+  hexMesh.rotation.x=-Math.PI/2;
+  hexMesh.position.y=meshes[SAT_IDX].r+0.001;
+  scene.add(hexMesh);
+  // Borde del hexágono
+  const hexEdge=new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(Array.from({length:7},(_,i)=>{const a=Math.PI/6+i*Math.PI/3;return new THREE.Vector3(hexR*Math.cos(a),0,hexR*Math.sin(a));})),
+    new THREE.LineBasicMaterial({color:0x88ccff,linewidth:2})
+  );
+  hexEdge.position.y=meshes[SAT_IDX].r+0.002;
+  scene.add(hexEdge);
+  const hexSprite=hexMesh; // alias para el animate
+
+
+  // ── APOPHIS ──
+  const a_ap=0.9227019, e_ap=0.19129073;
+  const aphMat=new THREE.MeshPhongMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:0.6,shininess:8});
+  const aphGroup=new THREE.Group();
+  // Lóbulos con deformación
+  function makeLobuloAph(r){
+    const g=new THREE.SphereGeometry(r,16,16);
+    const p=g.attributes.position;
+    for(let i=0;i<p.count;i++){
+      p.setX(i,p.getX(i)*(0.85+Math.random()*.3));
+      p.setY(i,p.getY(i)*(0.75+Math.random()*.25));
+      p.setZ(i,p.getZ(i)*(0.8+Math.random()*.3));
+    }
+    g.computeVertexNormals(); return g;
+  }
+  const m1=new THREE.Mesh(makeLobuloAph(.020),aphMat); m1.position.x=-.016;
+  const m2=new THREE.Mesh(makeLobuloAph(.015),aphMat); m2.position.x=.020;
+  const mcu=new THREE.Mesh(new THREE.CylinderGeometry(.008,.010,.016,12),aphMat); mcu.rotation.z=Math.PI/2; mcu.position.x=.003;
+  aphGroup.add(m1,m2,mcu); aphGroup.rotation.z=0.3;
+  scene.add(aphGroup);
+
+  // Órbita Apophis — naranja brillante punteada
+  scene.add(makeOrbit(a_ap,e_ap,0xff8800,0.85,true));
+  const lblAph=makeLabel('APOPHIS','#ffaa00',0.8); scene.add(lblAph);
+
+  // Línea Tierra↔Apophis
+  const lineGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
+  const lineMat=new THREE.LineBasicMaterial({color:0xff2200,opacity:0,transparent:true,linewidth:1});
+  const lineAph=new THREE.Line(lineGeo,lineMat); scene.add(lineAph);
+
+  // Flash de impacto
+  const IMPACT_T=10695;
+  const flashGeo=new THREE.CircleGeometry(1,48);
+  const flashMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,side:THREE.DoubleSide});
+  const flashMesh=new THREE.Mesh(flashGeo,flashMat);
+  flashMesh.rotation.x=-Math.PI/2;
+  scene.add(flashMesh);
+  const shockGeo=new THREE.RingGeometry(0.9,1,48);
+  const shockMat=new THREE.MeshBasicMaterial({color:0xff4400,transparent:true,opacity:0,side:THREE.DoubleSide});
+  const shockMesh=new THREE.Mesh(shockGeo,shockMat);
+  shockMesh.rotation.x=-Math.PI/2;
+  scene.add(shockMesh);
+  let impactFlash=0,impactTriggered=false;
+
+  // ── CONTROLES ──
+  let isDragging=false,prevX=0,prevY=0,rotX=0.3,rotY=0,zoom=4.5;
+  let followAph=false, goToApproach=false;
+  let simSpeed=0.1; // días sim / frame
+  let simT=0;     // días simulados desde J2000
+
+  canvas.style.cursor='grab';
+  canvas.addEventListener('mousedown',e=>{isDragging=true;prevX=e.clientX;prevY=e.clientY;canvas.style.cursor='grabbing';followAph=false;});
+  window.addEventListener('mouseup',()=>{isDragging=false;canvas.style.cursor='grab';});
+  window.addEventListener('mousemove',e=>{
+    if(!isDragging)return;
+    rotY+=(e.clientX-prevX)*.005; rotX+=(e.clientY-prevY)*.005;
+    rotX=Math.max(-1.4,Math.min(1.4,rotX));
+    prevX=e.clientX; prevY=e.clientY;
+  });
+  canvas.addEventListener('wheel',e=>{zoom+=e.deltaY*.005;zoom=Math.max(1,Math.min(10,zoom));e.preventDefault();},{passive:false});
+  let lastTD=0;
+  canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){isDragging=true;prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;followAph=false;}
+    if(e.touches.length===2) lastTD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchend',()=>isDragging=false,{passive:false});
+  canvas.addEventListener('touchmove',e=>{
+    if(e.touches.length===1&&isDragging){rotY+=(e.touches[0].clientX-prevX)*.005;rotX+=(e.touches[0].clientY-prevY)*.005;rotX=Math.max(-1.4,Math.min(1.4,rotX));prevX=e.touches[0].clientX;prevY=e.touches[0].clientY;}
+    if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);zoom-=(d-lastTD)*.01;zoom=Math.max(1,Math.min(10,zoom));lastTD=d;}
+    e.preventDefault();
+  },{passive:false});
+
+  // Click en planeta
+  const raycaster=new THREE.Raycaster();
+  const mouse=new THREE.Vector2();
+  const ppanel=document.getElementById('planet-panel');
+  const ppName=document.getElementById('pp-name');
+  const ppDist=document.getElementById('pp-dist');
+  const ppPer=document.getElementById('pp-period');
+  const ppSz=document.getElementById('pp-size');
+  const ppExtra=document.getElementById('pp-extra');
+  // Cámara bloqueada en planeta
+  let lockedPlanet=null;
+  function easeInOut(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+
+  function doRaycast(cx,cy){
+    const rect=canvas.getBoundingClientRect();
+    mouse.x=((cx-rect.left)/rect.width)*2-1;
+    mouse.y=-((cy-rect.top)/rect.height)*2+1;
+    raycaster.setFromCamera(mouse,camera);
+    const aphChildren=aphGroup.children;
+    const allMeshes=[...meshes.map(m=>m.mesh),...aphChildren];
+    const hits=raycaster.intersectObjects(allMeshes);
+    if(hits.length){
+      const hitObj=hits[0].object;
+      const isAph=aphChildren.includes(hitObj);
+      if(isAph){
+        ppName.textContent='APOPHIS'; ppDist.textContent='Dist al Sol: variable';
+        ppPer.textContent='Período: 323.6 días'; ppSz.textContent='Diámetro: ~370 m';
+        ppExtra.textContent='⚠ Acercamiento: 13 Abr 2029'; ppExtra.style.display='block';
+        ppanel.style.display='block';
+        lockedPlanet={mesh:aphGroup, r:0.025};
+        followAph=false;
+      } else {
+        const idx=meshes.findIndex(m=>m.mesh===hitObj);
+        if(idx>=0){
+          const p=meshes[idx];
+          ppName.textContent=p.n; ppDist.textContent='Dist al Sol: '+p.info.d;
+          ppPer.textContent='Período: '+p.info.p; ppSz.textContent='Diámetro: '+p.info.sz;
+          if(p.info.extra){ppExtra.textContent='⬡ '+p.info.extra; ppExtra.style.display='block';}
+          else{ppExtra.style.display='none';}
+          ppanel.style.display='block';
+          lockedPlanet=p;
+          followAph=false;
+        }
+      }
+    } else {
+      ppanel.style.display='none';
+      lockedPlanet=null;
+    }
+  }
+  canvas.addEventListener('click',e=>doRaycast(e.clientX,e.clientY));
+  // Touch tap en móvil
+  let touchStartX=0,touchStartY=0;
+  canvas.addEventListener('touchstart',e=>{if(e.touches.length===1){touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;}},{passive:true});
+  canvas.addEventListener('touchend',e=>{
+    if(e.changedTouches.length===1){
+      const dx=e.changedTouches[0].clientX-touchStartX;
+      const dy=e.changedTouches[0].clientY-touchStartY;
+      if(Math.abs(dx)<10&&Math.abs(dy)<10){ // tap sin movimiento
+        e.preventDefault();
+        doRaycast(e.changedTouches[0].clientX,e.changedTouches[0].clientY);
+      }
+    }
+  },{passive:false});
+
+  // Botones
+  document.getElementById('btn-follow').addEventListener('click',()=>{ followAph=!followAph; });
+  const j2000=new Date(2000,0,1,12);
+  document.getElementById('btn-reset').addEventListener('click',()=>{
+    const hoy=new Date();
+    simT=Math.round((hoy-j2000)/86400000);
+    setSpeed(0.1); lockedPlanet=null; followAph=false;
+    impactTriggered=false; impactFlash=0;
+    aphGroup.visible=true; lblAph.visible=true;
+  });
+  document.getElementById('btn-date-jump').addEventListener('click',()=>{
+    const val=document.getElementById('date-jump').value;
+    if(!val) return;
+    const d=new Date(val+'T12:00:00');
+    simT=Math.round((d-j2000)/86400000);
+    lockedPlanet=null; followAph=false;
+    impactTriggered=false; impactFlash=0;
+    aphGroup.visible=true; lblAph.visible=true;
+  });
+  document.getElementById('date-jump').addEventListener('keydown',e=>{
+    if(e.key==='Enter') document.getElementById('btn-date-jump').click();
+  });
+  document.getElementById('btn-approach').addEventListener('click',()=>{
+    // J2000 epoch: 1 Jan 2000. 13 Apr 2029 ≈ 10,695 days from J2000
+    simT=10680; goToApproach=true; simSpeed=0.5;
+    document.getElementById('speed-slider').value=0.5;
+    document.getElementById('speed-val').textContent='0.5×';
+  });
+  function setSpeed(v){
+    simSpeed=Math.max(0,Math.min(5,Math.round(v*10)/10));
+    document.getElementById('speed-slider').value=simSpeed;
+    document.getElementById('speed-val').textContent=simSpeed+'×';
+  }
+  document.getElementById('speed-slider').addEventListener('input',e=>setSpeed(parseFloat(e.target.value)));
+  document.getElementById('speed-up').addEventListener('click',()=>setSpeed(simSpeed+0.1));
+  document.getElementById('speed-dn').addEventListener('click',()=>setSpeed(simSpeed-0.1));
+
+  // Fecha desde días J2000
+  function simDate(days){
+    const ms=new Date(2000,0,1,12).getTime()+days*86400000;
+    const d=new Date(ms);
+    return d.toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'});
+  }
+
+  function kepler(M,e){let E=M;for(let i=0;i<10;i++)E=M+e*Math.sin(E);return E;}
+
+  function planetPos(a,e,T,days){
+    const M=(days/T)*Math.PI*2;
+    const E=kepler(M,e);
+    return {x:a*(Math.cos(E)-e), z:a*Math.sqrt(1-e*e)*Math.sin(E)};
+  }
+
+  const elSol=document.getElementById('inf-sol');
+  const elFecha=document.getElementById('inf-fecha');
+  const elGap=document.getElementById('inf-gap');
+  let frameT=0;
+
+  // Posición inicial: hoy (20 Nov 2026 ≈ J2000+9820) → corre hacia el 13 Abr 2029
+  simT=9820;
+
+  function animate(){
+    requestAnimationFrame(animate);
+    frameT++;
+    simT+=simSpeed;
+
+    // Sol pulso
+    const pulse=1+0.025*Math.sin(frameT*.04);
+    solCore.scale.setScalar(pulse);
+    solHalos.forEach((h,i)=>{
+      const p2=1+0.03*Math.sin(frameT*.04+i*.5);
+      h.mesh.scale.setScalar(p2);
+      h.mesh.material.opacity=h.baseO*(0.8+0.2*Math.sin(frameT*.04+i));
+    });
+
+    // Planetas
+    let tierraPos={x:0,z:0};
+    meshes.forEach((p,i)=>{
+      const pos=planetPos(p.a,p.e,p.T,simT);
+      p.mesh.position.set(pos.x,0,pos.z);
+      p.lbl.position.set(pos.x,p.r+0.13,pos.z);
+      p.mesh.rotation.y+=0.005;
+      if(p.n==='TIERRA') tierraPos=pos;
+      if(i===SAT_IDX){
+        satRings.forEach(r=>r.position.set(pos.x,0,pos.z));
+        hexMesh.position.set(pos.x, meshes[SAT_IDX].r+0.001, pos.z);
+        hexEdge.position.set(pos.x, meshes[SAT_IDX].r+0.002, pos.z);
+      }
+    });
+
+    // Apophis — impacto visual el 13 Abr 2029 (simT=10695)
+    let apPos=planetPos(a_ap,e_ap,323.6,simT);
+    // Acercamiento final: blend hacia Tierra en los últimos 15 días
+    if(simT>=IMPACT_T-15 && simT<=IMPACT_T){
+      const t=Math.max(0,Math.min(1,(simT-(IMPACT_T-15))/15));
+      const blend=t*t*(3-2*t); // smoothstep
+      apPos={x:apPos.x+(tierraPos.x-apPos.x)*blend, z:apPos.z+(tierraPos.z-apPos.z)*blend};
+    }
+    // Ocultar Apophis tras el impacto
+    if(simT>IMPACT_T){
+      aphGroup.visible=false; lblAph.visible=false;
+      if(!impactTriggered){
+        impactFlash=120; impactTriggered=true;
+        flashMesh.position.set(tierraPos.x,0,tierraPos.z);
+        shockMesh.position.set(tierraPos.x,0,tierraPos.z);
+      }
+    } else {
+      aphGroup.visible=true; lblAph.visible=true;
+      impactTriggered=false; // reset siempre que no haya pasado el impacto
+    }
+    aphGroup.position.set(apPos.x,0,apPos.z);
+    lblAph.position.set(apPos.x,.08,apPos.z);
+    aphGroup.rotation.y+=0.02;
+    // Animación flash
+    if(impactFlash>0){
+      const ft=impactFlash/120;
+      const sc=0.01+(1-ft)*0.3;
+      flashMesh.scale.setScalar(sc); flashMesh.material.opacity=ft*0.9;
+      shockMesh.scale.setScalar(sc*1.1); shockMesh.material.opacity=ft*0.7;
+      impactFlash--;
+    } else {
+      flashMesh.material.opacity=0; shockMesh.material.opacity=0;
+    }
+
+    // Dist
+    const dSol=Math.sqrt(apPos.x**2+apPos.z**2);
+    const dTierra=Math.sqrt((apPos.x-tierraPos.x)**2+(apPos.z-tierraPos.z)**2)*149597870.7;
+    if(elSol) elSol.textContent=dSol.toFixed(3)+' AU';
+    if(elFecha) elFecha.textContent=simDate(simT);
+    if(elGap){
+      const ld=(dTierra/384400).toFixed(1);
+      elGap.textContent=dTierra<1500000?`⚠️ ${ld} LD`:`${(dTierra/149597870.7).toFixed(3)} AU`;
+      elGap.style.color=dTierra<1500000?'#ff3300':'#ff9966';
+    }
+
+    // Línea Tierra↔Apophis — solo cuando cerca
+    const pts=[new THREE.Vector3(tierraPos.x,0,tierraPos.z),new THREE.Vector3(apPos.x,0,apPos.z)];
+    lineGeo.setFromPoints(pts);
+    lineMat.opacity=dTierra<5000000?0.8:0;
+
+    // Cámara
+    if(lockedPlanet){
+      const fp=lockedPlanet.mesh.position;
+      const dist=lockedPlanet.r*12+0.15;
+      const tx=camera.position.x+(fp.x+dist*0.5-camera.position.x)*0.06;
+      const ty=camera.position.y+(dist*0.4-camera.position.y)*0.06;
+      const tz=camera.position.z+(fp.z+dist-camera.position.z)*0.06;
+      camera.position.set(tx,ty,tz);
+      camera.lookAt(fp.x,fp.y,fp.z);
+    } else {
+      let targetX=0,targetZ=0;
+      if(followAph){targetX=apPos.x;targetZ=apPos.z;}
+      const cx2=targetX+zoom*Math.sin(rotY)*Math.cos(rotX);
+      const cy2=zoom*Math.sin(rotX);
+      const cz2=targetZ+zoom*Math.cos(rotY)*Math.cos(rotX);
+      camera.position.set(cx2,cy2,cz2);
+      camera.lookAt(targetX,0,targetZ);
+    }
+
+    renderer.render(scene,camera);
+  }
+  animate();
+})();
+} // fin _initSolar
+</script>
+
+<script>
+(function(){
+  function loadThree(src, cb){
+    var s=document.createElement('script');
+    s.src=src; s.onload=cb;
+    s.onerror=function(){
+      loadThree('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', cb);
+    };
+    document.head.appendChild(s);
+  }
+  loadThree('three.min.js', _initSolar);
+})();
+</script>
+
+<script>
+// ── CANVAS METEORO FOTORREALISTA ──
+(function(){
+  const canvas = document.getElementById('meteorCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2 + 10;
+  const R = 110; // radio de la roca
+
+  // Generador de ruido simple (Perlin-like con tabla aleatoria)
+  const perm = new Uint8Array(512);
+  const p = new Uint8Array(256);
+  for(let i=0;i<256;i++) p[i]=i;
+  for(let i=255;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [p[i],p[j]]=[p[j],p[i]]; }
+  for(let i=0;i<512;i++) perm[i]=p[i&255];
+
+  function fade(t){return t*t*t*(t*(t*6-15)+10);}
+  function lerp(a,b,t){return a+t*(b-a);}
+  function grad(h,x,y){
+    const H=h&3;
+    const u=H<2?x:y, v=H<2?y:x;
+    return ((H&1)?-u:u)+((H&2)?-v:v);
+  }
+  function noise2(x,y){
+    const X=Math.floor(x)&255, Y=Math.floor(y)&255;
+    x-=Math.floor(x); y-=Math.floor(y);
+    const u=fade(x),v=fade(y);
+    const a=perm[X]+Y,b=perm[X+1]+Y;
+    return lerp(
+      lerp(grad(perm[a],x,y),   grad(perm[b],x-1,y),   u),
+      lerp(grad(perm[a+1],x,y-1),grad(perm[b+1],x-1,y-1),u),v);
+  }
+  function fbm(x,y,oct){
+    let v=0,a=0.5,f=1;
+    for(let i=0;i<oct;i++){v+=a*noise2(x*f,y*f);a*=0.5;f*=2;}
+    return v;
+  }
+
+  // Textura pura rojo/naranja/amarillo — CERO café ni gris
+  function makeRockTexture(){
+    const oc=document.createElement('canvas'); oc.width=256; oc.height=256;
+    const ot=oc.getContext('2d');
+    const id=ot.createImageData(256,256);
+    const d=id.data;
+    for(let y=0;y<256;y++){
+      for(let x=0;x<256;x++){
+        const nx=x/256*5, ny=y/256*5;
+        const n=fbm(nx,ny,6)*0.5+0.5;
+        const heat=fbm(nx*2,ny*2,4)*0.5+0.5;
+        const lava=heat>0.55?(heat-0.55)*3.5:0;
+        // Rojo puro oscuro base + destellos naranja/amarillo
+        const r=Math.min(255, 80+n*120+lava*255);
+        const g=Math.min(255,  0+n*20 +lava*160);
+        const b=0;
+        const i=(y*256+x)*4;
+        d[i]=r; d[i+1]=g; d[i+2]=b; d[i+3]=255;
+      }
+    }
+    ot.putImageData(id,0,0);
+    return oc;
+  }
+
+  const rockTex = makeRockTexture();
+
+  // Forma CACAHUATE real — dos lóbulos conectados por un cuello estrecho
+  function peanutPath(ctx, cx, cy){
+    // lóbulo izquierdo grande, lóbulo derecho más pequeño, cuello estrecho
+    const lx=cx-38, rx=cx+42, ny=cy; // centros de cada lóbulo
+    const lr=72, rr=52; // radios de cada lóbulo
+    const nw=28; // ancho del cuello
+
+    ctx.beginPath();
+    // Parte superior: arco superior lóbulo izq → cuello → arco superior lóbulo der
+    ctx.moveTo(lx, ny-lr);
+    ctx.bezierCurveTo(lx+lr*0.6, ny-lr, rx-rr*0.6, ny-nw, rx, ny-rr);
+    // arco derecho
+    ctx.arc(rx, ny, rr, -Math.PI/2, Math.PI/2);
+    // Parte inferior: arco inferior der → cuello → arco inferior izq
+    ctx.bezierCurveTo(rx-rr*0.6, ny+nw, lx+lr*0.6, ny+lr, lx, ny+lr);
+    // arco izquierdo
+    ctx.arc(lx, ny, lr, Math.PI/2, -Math.PI/2);
+    ctx.closePath();
+  }
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    const f1 = 0.9+0.1*Math.sin(t*0.09);
+    const f2 = 0.93+0.07*Math.cos(t*0.13);
+    const f3 = 0.95+0.05*Math.sin(t*0.17+1);
+
+    // ── CORONA exterior enorme ──
+    const gCor=ctx.createRadialGradient(cx,cy,R*0.6,cx,cy,R*2.6);
+    gCor.addColorStop(0,  'rgba(255,200,0,0.6)');
+    gCor.addColorStop(0.2,'rgba(255,120,0,0.45)');
+    gCor.addColorStop(0.5,'rgba(255,40,0,0.25)');
+    gCor.addColorStop(0.8,'rgba(200,0,0,0.1)');
+    gCor.addColorStop(1,  'rgba(100,0,0,0)');
+    ctx.beginPath(); ctx.arc(cx,cy,R*2.6,0,Math.PI*2);
+    ctx.fillStyle=gCor; ctx.fill();
+
+    // ── LLAMAS grandes alrededor ──
+    for(let i=0;i<16;i++){
+      const a=(i/16)*Math.PI*2 + t*0.011;
+      const dist=R*0.82;
+      const lx2=cx+Math.cos(a)*dist, ly2=cy+Math.sin(a)*dist;
+      const len=R*(0.6+0.4*Math.sin(t*0.07+i*1.3));
+      ctx.save();
+      ctx.translate(lx2,ly2); ctx.rotate(a);
+      const fg=ctx.createLinearGradient(0,0,0,-len);
+      fg.addColorStop(0,'rgba(255,255,100,1)');
+      fg.addColorStop(0.2,'rgba(255,180,0,0.95)');
+      fg.addColorStop(0.5,'rgba(255,80,0,0.7)');
+      fg.addColorStop(0.8,'rgba(255,20,0,0.3)');
+      fg.addColorStop(1,'rgba(200,0,0,0)');
+      ctx.scale(f1,f2);
+      ctx.beginPath();
+      ctx.moveTo(-len*0.14,0);
+      ctx.quadraticCurveTo(len*0.08,-len*0.5,0,-len);
+      ctx.quadraticCurveTo(-len*0.08,-len*0.5,len*0.14,0);
+      ctx.closePath();
+      ctx.fillStyle=fg; ctx.fill();
+      ctx.restore();
+    }
+
+    // ── ROCA CACAHUATE ──
+    ctx.save();
+    peanutPath(ctx,cx,cy);
+    ctx.clip();
+
+    // Base: amarillo→naranja→rojo→rojo oscuro, iluminado centro-izq arriba
+    const gRock=ctx.createRadialGradient(cx-50,cy-45,5, cx+15,cy+15,170);
+    gRock.addColorStop(0,   '#ffff00');   // amarillo puro brillante
+    gRock.addColorStop(0.07,'#ffdd00');
+    gRock.addColorStop(0.18,'#ffaa00');   // naranja brillante
+    gRock.addColorStop(0.32,'#ff6600');   // naranja-rojo
+    gRock.addColorStop(0.5, '#ff2200');   // rojo vivo
+    gRock.addColorStop(0.68,'#cc0000');   // rojo puro
+    gRock.addColorStop(0.82,'#880000');   // rojo oscuro
+    gRock.addColorStop(1,   '#330000');   // rojo casi negro
+    ctx.fillStyle=gRock; ctx.fillRect(0,0,W,H);
+
+    // Textura rojo/naranja encima (screen para que sume color)
+    ctx.globalCompositeOperation='screen';
+    ctx.globalAlpha=0.4;
+    ctx.drawImage(rockTex, cx-R*1.2,cy-R*1.2, R*2.4,R*2.4);
+    ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over';
+
+    // Cráteres negros
+    [[cx-55,cy-30,20],[cx+38,cy-42,15],[cx+55,cy+28,13],[cx-70,cy+35,11],[cx+5,cy+15,9]].forEach(([ox,oy,cr])=>{
+      const gc=ctx.createRadialGradient(ox-cr*0.3,oy-cr*0.3,0,ox,oy,cr);
+      gc.addColorStop(0,'rgba(0,0,0,0.98)'); gc.addColorStop(0.5,'rgba(0,0,0,0.7)'); gc.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath(); ctx.arc(ox,oy,cr,0,Math.PI*2); ctx.fillStyle=gc; ctx.fill();
+    });
+
+    // Fisuras brillantes amarillo/naranja/rojo
+    ctx.lineCap='round';
+    [
+      {p:[[cx-30,cy-20],[cx+25,cy+5],[cx+65,cy+25]],  w:4,   c:'rgba(255,240,60,1)'},
+      {p:[[cx-55,cy+10],[cx-10,cy+45],[cx+22,cy+72]], w:3.2, c:'rgba(255,160,0,0.95)'},
+      {p:[[cx+8,cy-70],[cx+18,cy-25]],                w:3,   c:'rgba(255,220,80,1)'},
+      {p:[[cx+50,cy-15],[cx+35,cy+30]],               w:2.5, c:'rgba(255,100,0,0.9)'},
+      {p:[[cx-72,cy+5],[cx-50,cy+42]],                w:2.2, c:'rgba(255,120,0,0.85)'},
+    ].forEach(({p,w,c})=>{
+      ctx.beginPath(); p.forEach((pt,j)=>j===0?ctx.moveTo(pt[0],pt[1]):ctx.lineTo(pt[0],pt[1]));
+      ctx.strokeStyle=c; ctx.lineWidth=w; ctx.stroke();
+    });
+
+    ctx.restore();
+
+    // ── ANILLO de fuego sobre el borde ──
+    // Dibujamos el contorno brillante siguiendo la forma
+    ctx.save();
+    peanutPath(ctx,cx,cy);
+    ctx.strokeStyle=`rgba(255,220,50,${0.9*f1})`;
+    ctx.lineWidth=6; ctx.stroke();
+    ctx.strokeStyle=`rgba(255,120,0,${0.6*f3})`;
+    ctx.lineWidth=14; ctx.stroke();
+    ctx.restore();
+
+    // Glow extra sobre todo
+    const gOver=ctx.createRadialGradient(cx,cy,R*0.3,cx,cy,R*1.4);
+    gOver.addColorStop(0,  'rgba(255,200,0,0)');
+    gOver.addColorStop(0.65,'rgba(255,120,0,0)');
+    gOver.addColorStop(0.82,'rgba(255,180,0,0.35)');
+    gOver.addColorStop(0.92,'rgba(255,240,80,0.55)');
+    gOver.addColorStop(1,  'rgba(255,80,0,0)');
+    ctx.beginPath(); ctx.arc(cx,cy,R*1.4,0,Math.PI*2);
+    ctx.fillStyle=gOver; ctx.fill();
+
+    // ── CHISPAS volando ──
+    for(let i=0;i<26;i++){
+      const a=(i/26)*Math.PI*2+t*0.018*(i%2?1:-1);
+      const dist=R*(1.05+0.6*Math.abs(Math.sin(t*0.035+i*0.85)));
+      const sx=cx+Math.cos(a)*dist, sy=cy+Math.sin(a)*dist;
+      const alpha=(0.4+0.6*Math.sin(t*0.1+i*0.72)).toFixed(2);
+      const g2=180+Math.floor(75*Math.sin(i*1.4));
+      ctx.beginPath(); ctx.arc(sx,sy,2+Math.sin(t*0.09+i)*1,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,${g2},0,${alpha})`; ctx.fill();
+    }
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,1949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulación de Impacto — Apophis | CE-19</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:#2d1100;overflow:hidden;}
+#c{position:fixed;inset:0;width:100%;height:100%;cursor:grab;}
+#c.drag{cursor:grabbing;}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;
+  padding:.65rem 1.4rem;background:linear-gradient(to bottom,rgba(30,10,0,.97),rgba(30,10,0,.6),transparent);}
+.nl{font-family:'Cinzel',serif;font-size:clamp(.7rem,2.5vw,.95rem);letter-spacing:.18em;color:#ffcc00;font-weight:700;}
+.nr{display:flex;gap:1rem;}
+.nr a{font-family:'Cinzel',serif;font-size:clamp(.6rem,1.8vw,.75rem);letter-spacing:.1em;color:#99aabb;text-decoration:none;text-transform:uppercase;transition:color .3s;}
+.nr a:hover{color:#ffcc00;}
+
+#fase-tit{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:92%;
+  font-family:'Cinzel',serif;font-size:clamp(1.6rem,6vw,3.4rem);font-weight:900;letter-spacing:.08em;
+  opacity:0;transition:opacity .5s;pointer-events:none;z-index:60;text-shadow:0 0 80px currentColor;}
+#fase-sub{position:fixed;top:calc(50% + 3.5rem);left:50%;transform:translateX(-50%);width:85%;text-align:center;
+  font-size:clamp(.75rem,2.5vw,.9rem);letter-spacing:.18em;color:#aabbcc;
+  opacity:0;transition:opacity .5s;pointer-events:none;z-index:60;}
+
+#narrador{position:fixed;left:clamp(10px,1.5vw,18px);top:clamp(140px,18vh,180px);
+  text-align:left;width:min(230px,26vw);font-size:clamp(.74rem,1.5vw,.86rem);
+  color:#ddeeff;line-height:1.65;text-shadow:0 2px 14px rgba(0,0,0,1);
+  background:rgba(0,6,24,0.60);border-left:3px solid rgba(100,180,255,0.45);
+  padding:10px 13px;border-radius:0 8px 8px 0;
+  opacity:0;transition:opacity .7s;pointer-events:none;z-index:60;}
+
+#info-bab{position:fixed;left:0;right:0;bottom:clamp(5.5rem,12vh,7.5rem);
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding:0 clamp(.8rem,3vw,2rem);
+  background:none;border:none;
+  opacity:0;transition:opacity .8s;pointer-events:none;}
+#info-pac{display:block;}
+#info-bab .col-a{text-align:left;}
+#info-bab .col-b{text-align:right;}
+#info-bab .col-a, #info-bab .col-b{
+  font-size:clamp(.72rem,1.9vw,.85rem);line-height:1.9;
+  color:#ff9944;
+  text-shadow:0 1px 10px rgba(0,0,0,1),0 0 30px rgba(0,0,0,.8);}
+.ih{font-family:'Cinzel',serif;font-size:clamp(.65rem,1.8vw,.75rem);letter-spacing:.13em;font-weight:700;margin-bottom:.4rem;text-transform:uppercase;}
+.ib-h{color:#cc0000;}.ip-h{color:#ffcc00;}
+
+#prog-wrap{position:fixed;bottom:clamp(55px,9vh,80px);left:50%;transform:translateX(-50%);
+  width:min(500px,88vw);opacity:0;transition:opacity .5s;pointer-events:none;z-index:60;}
+#prog-lbl{font-size:clamp(.55rem,1.5vw,.65rem);letter-spacing:.2em;color:#667788;margin-bottom:.5rem;text-align:center;text-transform:uppercase;}
+#prog-bar{height:2px;background:rgba(255,255,255,.1);position:relative;}
+#prog-fill{height:100%;background:linear-gradient(to right,#cc0000,#ff8800,#ffcc00);width:0%;transition:width .5s;}
+.pd{position:absolute;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;border:2px solid;}
+#pd1{left:33%;border-color:#cc0000;}#pd2{left:66%;border-color:#ff8800;}#pd3{left:100%;border-color:#ffcc00;}
+
+#btn{position:fixed;bottom:clamp(.8rem,2.5vh,1.4rem);left:50%;transform:translateX(-50%);
+  font-family:'Cinzel',serif;font-size:clamp(.82rem,2.2vw,1rem);letter-spacing:.18em;
+  background:linear-gradient(135deg,#4a0000,#9b1800,#cc2200);color:#fff;
+  border:1px solid rgba(255,80,0,.4);padding:clamp(.75rem,2vh,1rem) clamp(1.8rem,6vw,3.5rem);cursor:pointer;
+  font-weight:700;text-transform:uppercase;z-index:100;white-space:nowrap;
+  box-shadow:0 0 50px rgba(200,40,0,.35);transition:all .3s;}
+#btn:hover{box-shadow:0 0 70px rgba(255,60,0,.6);letter-spacing:.23em;}
+#btn:disabled{opacity:.4;cursor:not-allowed;}
+
+#loading{position:fixed;inset:0;background:#2d1100;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;z-index:300;transition:opacity .6s;}
+#loading p{font-family:'Cinzel',serif;color:#886644;font-size:clamp(.75rem,2vw,.9rem);letter-spacing:.3em;margin-top:1rem;text-transform:uppercase;}
+.spinner{width:40px;height:40px;border:2px solid rgba(255,180,0,.12);border-top:2px solid #ff8800;border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:200;}
+#aviso{position:fixed;bottom:.35rem;right:.7rem;font-size:.44rem;color:#334;pointer-events:none;z-index:50;}
+
+#apophis-panel{
+  position:fixed;top:clamp(3.2rem,7.5vh,4.8rem);left:50%;transform:translateX(-50%);
+  z-index:90;width:min(96vw,900px);
+  background:transparent;border:none;padding:.4rem 0;
+  pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:.25rem;
+}
+#apophis-panel .ap-title{
+  font-family:'Cinzel',serif;font-size:clamp(.85rem,2vw,1.05rem);
+  letter-spacing:.22em;color:#ffaa00;font-weight:700;text-transform:uppercase;
+  text-shadow:0 0 16px #ff8800;margin-bottom:.25rem;
+}
+#apophis-panel .ap-row{
+  display:flex;flex-direction:row;align-items:center;justify-content:center;
+  gap:clamp(1rem,3.5vw,2.8rem);flex-wrap:wrap;
+}
+#apophis-panel .ap-cell{
+  display:flex;flex-direction:column;align-items:center;gap:.08rem;
+}
+#apophis-panel .ap-key{
+  font-family:'Cinzel',serif;font-size:clamp(.62rem,1.5vw,.78rem);
+  letter-spacing:.12em;color:#ff9933;text-transform:uppercase;white-space:nowrap;
+  text-shadow:0 0 10px rgba(255,150,0,.6);
+}
+#apophis-panel .ap-val{
+  font-size:clamp(.9rem,2.2vw,1.15rem);color:#ffffff;
+  text-align:center;line-height:1.2;font-weight:700;white-space:nowrap;
+  text-shadow:0 0 14px rgba(255,220,100,.5);
+}
+#apophis-panel .ap-sub{
+  font-size:clamp(.62rem,1.5vw,.75rem);color:#ffcc88;display:block;
+  text-align:center;white-space:nowrap;
+}
+#apophis-panel .ap-sep{
+  color:rgba(255,140,0,.4);font-size:1.1rem;align-self:center;
+}
+/* ── MÓVIL (≤600px) — sin afectar tablet/pc ── */
+@media(max-width:600px){
+  /* Navbar */
+  .nl{font-size:.65rem;letter-spacing:.1em;}
+  .nr a{font-size:.6rem;}
+
+  /* Panel datos asteroide — compacto en 2 columnas */
+  #apophis-panel{top:2.6rem;width:100vw;padding:.2rem .3rem;}
+  #apophis-panel .ap-title{font-size:.7rem;letter-spacing:.12em;margin-bottom:.1rem;}
+  #apophis-panel .ap-row{gap:.6rem;justify-content:space-around;}
+  #apophis-panel .ap-val{font-size:.85rem;}
+  #apophis-panel .ap-key{font-size:.5rem;letter-spacing:.07em;}
+  #apophis-panel .ap-sub{font-size:.48rem;}
+  #apophis-panel .ap-sep{display:none;}
+
+  /* Narrador — ancho completo abajo */
+  #narrador{
+    left:0!important;top:auto!important;bottom:5.5rem;
+    width:100vw!important;border-left:none;border-top:2px solid rgba(100,180,255,.4);
+    border-radius:0;padding:8px 14px;font-size:.8rem;
+  }
+
+  /* Título de fase — más pequeño */
+  #fase-tit{font-size:1.3rem!important;}
+  #fase-sub{font-size:.7rem!important;}
+
+  /* Info babilonia/pacifico — lados del globo */
+  #info-bab{
+    flex-direction:row;align-items:center;justify-content:space-between;
+    top:28%;bottom:auto;transform:translateY(-50%);
+    padding:0 4px;gap:0;
+  }
+  #info-bab .col-a{
+    text-align:left;
+    background:rgba(0,0,0,0.55);border-radius:6px;
+    padding:6px 7px;max-width:110px;
+  }
+  #info-bab .col-b{
+    text-align:right;
+    background:rgba(0,0,0,0.55);border-radius:6px;
+    padding:6px 7px;max-width:110px;
+  }
+  #info-bab .col-a, #info-bab .col-b{font-size:.64rem;line-height:1.55;}
+
+  /* Botón iniciar */
+  #btn{font-size:.72rem;padding:.7rem 2rem;letter-spacing:.12em;bottom:.5rem;}
+
+  /* Barra progreso */
+  #prog-wrap{bottom:3rem;width:92vw;}
+}
+</style>
+</head>
+<body>
+
+<div id="apophis-panel">
+  <div class="ap-title">⬡ (99942) Apophis — Tipo Sq</div>
+  <div class="ap-row">
+    <div class="ap-cell">
+      <span class="ap-key">Tamaño</span>
+      <span class="ap-val">340 m diám.</span>
+      <span class="ap-sub">hasta 450 m (eje largo)</span>
+    </div>
+    <span class="ap-sep">|</span>
+    <div class="ap-cell">
+      <span class="ap-key">Masa</span>
+      <span class="ap-val">6.1 × 10¹⁰ kg</span>
+      <span class="ap-sub">~61 millones de toneladas</span>
+    </div>
+    <span class="ap-sep">|</span>
+    <div class="ap-cell">
+      <span class="ap-key">Composición</span>
+      <span class="ap-val">Silicatos · Fe · Ni</span>
+      <span class="ap-sub">densidad 3.2 g/cm³</span>
+    </div>
+    <span class="ap-sep">|</span>
+    <div class="ap-cell">
+      <span class="ap-key">Velocidad Orbital</span>
+      <span class="ap-val">30.98 km/s</span>
+      <span class="ap-sub">111 500 km/h</span>
+    </div>
+  </div>
+</div>
+
+<canvas id="c"></canvas>
+<canvas id="fx"></canvas>
+<div id="flash"></div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Cargando simulación…</p>
+</div>
+
+<nav>
+  <div class="nl">CE · 19 — SIMULACIÓN DE IMPACTO</div>
+  <div class="nr">
+    <a href="index.html">Inicio</a>
+    <a href="apophis.html">Apophis 2029</a>
+  </div>
+</nav>
+
+<div id="fase-tit"></div>
+<div id="fase-sub"></div>
+<div id="narrador"></div>
+
+<div id="info-bab">
+  <div class="col-a">
+    <div class="ih ib-h">⬤ Impacto Alfa</div>
+    <div>Babilonia, Iraq</div>
+    <div>32.5425°N · 44.4211°E</div>
+    <div>~880 megatones TNT</div>
+    <div style="color:#cc0000;">Cráter: 5 km diám.</div>
+  </div>
+  <div class="col-b" id="info-pac">
+    <div class="ih ip-h">Impacto Beta ⬤</div>
+    <div>Pacífico Sur</div>
+    <div>32.5425°S · 135.5789°W</div>
+    <div>Tsunami: +500 m</div>
+    <div style="color:#ffcc00;">Oleaje: 2–8 horas</div>
+  </div>
+</div>
+
+<div id="prog-wrap">
+  <div id="prog-lbl">Progreso de Simulación</div>
+  <div id="prog-bar">
+    <div id="prog-fill"></div>
+    <div class="pd" id="pd1"></div>
+    <div class="pd" id="pd2"></div>
+    <div class="pd" id="pd3"></div>
+  </div>
+</div>
+
+<button id="btn" disabled onclick="window.iniciar()">▶ INICIAR SIMULACIÓN DE IMPACTO</button>
+
+<!-- D3 + TopoJSON -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+// ── CANVAS ──
+var cv = document.getElementById('c');
+var ctx= cv.getContext('2d');
+var fx = document.getElementById('fx');
+var fctx= fx.getContext('2d');
+var W,H,CX,CY,GY,R;
+
+function resize(){
+  W=cv.width=fx.width=window.innerWidth;
+  H=cv.height=fx.height=window.innerHeight;
+  CX=W/2; CY=H/2;
+  R=Math.min(W,H)*.32;
+  GY=CY+H*.06;
+  if(proj) proj.scale(R).translate([CX,GY]);
+}
+window.addEventListener('resize',resize);
+
+// ── D3 PROYECCIÓN ──
+var proj = d3.geoOrthographic().clipAngle(90).precision(.4);
+var geoPath;
+var sphere = {type:'Sphere'};
+var graticule = d3.geoGraticule()();
+var land, borders, countries, countriesData;
+
+// Todos los países con coordenadas centroidales
+var PAIS_LABELS = [
+  {name:'RUSIA',         lon: 90,   lat: 62},
+  {name:'CANADÁ',        lon:-96,   lat: 60},
+  {name:'EE.UU.',        lon:-100,  lat: 38},
+  {name:'BRASIL',        lon:-52,   lat:-12},
+  {name:'CHINA',         lon: 104,  lat: 36},
+  {name:'AUSTRALIA',     lon: 134,  lat:-25},
+  {name:'INDIA',         lon: 80,   lat: 22},
+  {name:'ARGENTINA',     lon:-64,   lat:-34},
+  {name:'MÉXICO',        lon:-102,  lat: 23},
+  {name:'ARABIA S.',     lon: 45,   lat: 24},
+  {name:'INDONESIA',     lon: 118,  lat: -2},
+  {name:'JAPÓN',         lon: 138,  lat: 36},
+  {name:'CHILE',         lon:-70,   lat:-30},
+  {name:'PERÚ',          lon:-76,   lat:-10},
+  {name:'N.ZELANDA',     lon: 172,  lat:-41},
+  {name:'FILIPINAS',     lon: 122,  lat: 13},
+  {name:'COLOMBIA',      lon:-74,   lat:  4},
+  {name:'IRAQ',          lon: 44,   lat: 33},
+  {name:'IRAN',          lon: 53,   lat: 32},
+  {name:'TURQUÍA',       lon: 35,   lat: 39},
+  {name:'SIRIA',         lon: 38,   lat: 35},
+  {name:'PAKIST.',       lon: 70,   lat: 30},
+  {name:'KAZAJIST.',     lon: 67,   lat: 48},
+  {name:'MONGOLIA',      lon:103,   lat: 46},
+  {name:'COREA',         lon:127,   lat: 36},
+  {name:'TAILANDIA',     lon:101,   lat: 15},
+  {name:'VIETNAM',       lon:106,   lat: 16},
+  {name:'MYANMAR',       lon: 96,   lat: 20},
+  {name:'MALASIA',       lon:110,   lat:  4},
+  {name:'CONGO',         lon: 24,   lat: -4},
+  {name:'SUDÁN',         lon: 30,   lat: 15},
+  {name:'NIGER',         lon:  8,   lat: 17},
+  {name:'MALI',          lon: -2,   lat: 17},
+  {name:'ANGOLA',        lon: 18,   lat:-12},
+  {name:'MOZAMBIQ.',     lon: 35,   lat:-18},
+  {name:'TANZANÍA',      lon: 35,   lat: -6},
+  {name:'ETIOPÍA',       lon: 40,   lat:  9},
+  {name:'SOMALIA',       lon: 46,   lat:  6},
+  {name:'SUDÁFRICA',     lon: 25,   lat:-29},
+  {name:'NIGERIA',       lon:  8,   lat: 10},
+  {name:'ARGELIA',       lon:  3,   lat: 28},
+  {name:'LIBIA',         lon: 17,   lat: 27},
+  {name:'EGIPTO',        lon: 30,   lat: 27},
+  {name:'UCRANIA',       lon: 32,   lat: 49},
+  {name:'POLONIA',       lon: 20,   lat: 52},
+  {name:'ALEMANIA',      lon: 10,   lat: 51},
+  {name:'FRANCIA',       lon:  2,   lat: 46},
+  {name:'ESPAÑA',        lon: -4,   lat: 40},
+  {name:'ITALIA',        lon: 12,   lat: 42},
+  {name:'ESCANDINAVIA',  lon: 15,   lat: 63},
+  {name:'REINO UNIDO',   lon: -2,   lat: 54},
+  {name:'VENEZUELA',     lon:-66,   lat:  8},
+  {name:'BOLIVIA',       lon:-65,   lat:-17},
+  {name:'PARAGUAY',      lon:-58,   lat:-23},
+  {name:'URUGUAY',       lon:-56,   lat:-33},
+  {name:'ECUADOR',       lon:-78,   lat: -2},
+  {name:'CUBA',          lon:-79,   lat: 22},
+  {name:'ALASKA',        lon:-153,  lat: 64},
+  {name:'GROENLANDIA',   lon:-42,   lat: 72},
+  {name:'MADAGASCAR',    lon: 47,   lat:-20},
+  {name:'NUEVA GUINEA',  lon:143,   lat: -6},
+  {name:'ARABIA',        lon: 50,   lat: 24},
+  {name:'AFGANIST.',     lon: 67,   lat: 33},
+  {name:'UZBEKIST.',     lon: 63,   lat: 41},
+  {name:'GUATEMALA',     lon:-90,   lat: 15},
+  {name:'BELICE',        lon:-88,   lat: 17},
+  {name:'HONDURAS',      lon:-87,   lat: 15},
+  {name:'EL SALVADOR',   lon:-89,   lat: 14},
+  {name:'NICARAGUA',     lon:-85,   lat: 13},
+  {name:'COSTA RICA',    lon:-84,   lat:  10},
+  {name:'PANAMÁ',        lon:-80,   lat:  9},
+  {name:'HAITÍ',         lon:-73,   lat: 19},
+  {name:'REP. DOM.',     lon:-70,   lat: 19},
+  {name:'PUERTO RICO',   lon:-66,   lat: 18},
+  {name:'JAMAICA',       lon:-77,   lat: 18},
+  {name:'TRINIDAD',      lon:-61,   lat: 11},
+  {name:'GUYANA',        lon:-59,   lat:  5},
+  {name:'SURINAM',       lon:-56,   lat:  4},
+  {name:'MAROC',         lon: -7,   lat: 32},
+  {name:'SENEGAL',       lon:-14,   lat: 14},
+  {name:'GHANA',         lon: -1,   lat:  8},
+  {name:'CAMERÚN',       lon: 12,   lat:  6},
+  {name:'KENIA',         lon: 38,   lat:  1},
+  {name:'ZIMBABUE',      lon: 30,   lat:-20},
+  {name:'ZAMBIA',        lon: 28,   lat:-14},
+  {name:'MYANMAR',       lon: 96,   lat: 20},
+  {name:'SRI LANKA',     lon: 81,   lat:  8},
+  {name:'NEPAL',         lon: 84,   lat: 28},
+  {name:'BANGLADESH',    lon: 90,   lat: 24},
+];
+
+// Países afectados por tsunami (Impacto Beta — Pacífico)
+var TSUNAMI_TARGETS = [
+  {name:'AUSTRALIA',   lon: 134, lat:-25, eta:'2h',  col:'#44aaff', ox:-32.5425, oy:-135.5789},
+  {name:'N.ZELANDA',   lon: 172, lat:-41, eta:'3h',  col:'#55bbff', ox:-32.5425, oy:-135.5789},
+  {name:'INDONESIA',   lon: 118, lat: -2, eta:'4h',  col:'#66ccff', ox:-32.5425, oy:-135.5789},
+  {name:'N.GUINEA',    lon: 144, lat: -6, eta:'3h',  col:'#55bbff', ox:-32.5425, oy:-135.5789},
+  {name:'JAPÓN',       lon: 138, lat: 36, eta:'5h',  col:'#77ddff', ox:-32.5425, oy:-135.5789},
+  {name:'FILIPINAS',   lon: 122, lat: 13, eta:'5h',  col:'#77ddff', ox:-32.5425, oy:-135.5789},
+  {name:'CHILE',       lon:-70,  lat:-30, eta:'7h',  col:'#aaeeff', ox:-32.5425, oy:-135.5789},
+  {name:'BOLIVIA',    lon:-68,  lat:-16, eta:'8h',  col:'#aaeeff', ox:-32.5425, oy:-135.5789},
+  {name:'ARGENTINA',  lon:-65,  lat:-38, eta:'9h',  col:'#bbf0ff', ox:-32.5425, oy:-135.5789},
+  {name:'PERÚ',        lon:-76,  lat:-10, eta:'8h',  col:'#bbf0ff', ox:-32.5425, oy:-135.5789},
+  {name:'COLOMBIA',    lon:-78,  lat:  4, eta:'9h',  col:'#ccf4ff', ox:-32.5425, oy:-135.5789},
+  {name:'MÉXICO',      lon:-110, lat: 20, eta:'10h', col:'#ddf7ff', ox:-32.5425, oy:-135.5789},
+  {name:'EE.UU.(CA)',  lon:-122, lat: 37, eta:'11h', col:'#eefaff', ox:-32.5425, oy:-135.5789},
+  {name:'GUATEMALA',   lon:-90,  lat: 15, eta:'9h',  col:'#ccf4ff', ox:-32.5425, oy:-135.5789},
+  {name:'EL SALVADOR', lon:-89,  lat: 14, eta:'9h',  col:'#ccf4ff', ox:-32.5425, oy:-135.5789},
+  {name:'HONDURAS',    lon:-87,  lat: 15, eta:'9h',  col:'#ddf7ff', ox:-32.5425, oy:-135.5789},
+  {name:'NICARAGUA',   lon:-85,  lat: 12, eta:'9h',  col:'#ddf7ff', ox:-32.5425, oy:-135.5789},
+  {name:'COSTA RICA',  lon:-84,  lat: 10, eta:'10h', col:'#ddf7ff', ox:-32.5425, oy:-135.5789},
+  {name:'PANAMÁ',      lon:-80,  lat:  9, eta:'10h', col:'#eefaff', ox:-32.5425, oy:-135.5789},
+  {name:'ECUADOR',     lon:-78,  lat: -1, eta:'8h',  col:'#bbf0ff', ox:-32.5425, oy:-135.5789},
+  {name:'HAWAII',      lon:-157, lat: 21, eta:'3h',  col:'#55bbff', ox:-32.5425, oy:-135.5789}
+];
+
+// Países afectados por Impacto Alfa (Babilonia — blast, calor, polvo)
+// angle en grados (0=derecha, 90=arriba, sentido antihorario)
+var ALFA_TARGETS = [
+  {name:'TURQUÍA',   lon: 35,  lat: 39, efecto:'⚠ Polvo y sismos',    col:'#ffaa00', angle: 112},
+  {name:'SIRIA',     lon: 38,  lat: 35, efecto:'🔥 Onda de choque',    col:'#ff5500', angle: 152},
+  {name:'JORDANIA',  lon: 36,  lat: 31, efecto:'⚠ Onda de presión',   col:'#ff7700', angle: 192},
+  {name:'EGIPTO',    lon: 30,  lat: 27, efecto:'⚠ Polvo atmosférico', col:'#ffcc00', angle: 232},
+  {name:'ARABIA S.', lon: 45,  lat: 24, efecto:'⚠ Polvo y ceniza',    col:'#ff9900', angle: 272},
+  {name:'KUWAIT',    lon: 48,  lat: 29, efecto:'🔥 Destrucción masiva',col:'#ff4400', angle: 312},
+  {name:'PAKIST.',   lon: 70,  lat: 30, efecto:'⚠ Polvo y oscuridad', col:'#ffdd44', angle: 352},
+  {name:'IRAN',      lon: 53,  lat: 32, efecto:'⚠ Calor extremo',     col:'#ff7700', angle:  32},
+  {name:'IRAQ',      lon: 44,  lat: 33, efecto:'💥 DESTRUCCIÓN TOTAL', col:'#ff2200', angle:  72}
+];
+
+var tsunamiLines = [];
+var alfaLines    = [];
+var showTsunami  = false;
+var showAlfa     = false;
+var tsunamiAge   = 0;
+var escombros    = [];
+var showBetaBlast = false;
+var betaBlastAge  = 0;
+var betaPx = 0, betaPy = 0;
+var alfaAge = 0;
+var showBabDevastada = false;
+var babDevAge = 0, babDevX = 0, babDevY = 0;
+
+// ── ESTRELLAS ──
+var stars=[];
+for(var i=0;i<400;i++){
+  stars.push({
+    x:Math.random(), y:Math.random(),
+    r:Math.random()*.0012+.0003,
+    b:Math.random()*.8+.2,
+    twinkle:Math.random()*6
+  });
+}
+
+// ── ESTADO ──
+var t=0, fase=0, simOK=false;
+var rotLon=0, rotLat=0;      // rotación actual del globo
+var tgtLon=0, tgtLat=0;      // rotación objetivo
+var aphX=0,aphY=0, aphRot=0;
+var aphTrail=[]; // estela de posiciones
+var particulas=[], ondas=[];
+var brillos=[];
+var eventos=[];
+var fragA={x:0,y:0,vx:0,vy:0,active:false};
+var fragB={x:0,y:0,vx:0,vy:0,active:false};
+var showCrateres=false, craterAge=0;
+var aphVisible=true;
+
+// ── UI ──
+var faseTit=document.getElementById('fase-tit');
+var faseSub=document.getElementById('fase-sub');
+var narrEl=document.getElementById('narrador');
+var flashEl=document.getElementById('flash');
+var progFill=document.getElementById('prog-fill');
+var progWrap=document.getElementById('prog-wrap');
+var infoBab=document.getElementById('info-bab');
+var infoPac=document.getElementById('info-pac');
+var btnEl=document.getElementById('btn');
+var loadEl=document.getElementById('loading');
+
+function titulo(txt,sub,col,dur){
+  faseTit.textContent=txt; faseTit.style.color=col||'#cc0000'; faseTit.style.opacity='1';
+  faseSub.textContent=sub||''; faseSub.style.opacity='1';
+  setTimeout(function(){faseTit.style.opacity='0';faseSub.style.opacity='0';},dur||2500);
+}
+function narrar(txt,dur){
+  narrEl.innerHTML=txt.replace(/\n/g,'<br>'); narrEl.style.opacity='1';
+  setTimeout(function(){narrEl.style.opacity='0';},dur||4000);
+}
+function doFlash(d){
+  d=d||400;
+  flashEl.style.transition='opacity '+(d*.2)+'ms';
+  flashEl.style.opacity='.95';
+  setTimeout(function(){flashEl.style.transition='opacity '+(d*.8)+'ms';flashEl.style.opacity='0';},d*.3);
+}
+function setP(p){progFill.style.width=Math.min(100,p)+'%';}
+function planear(ts,fn){eventos.push({ts:ts,fn:fn,done:false});}
+
+// ── EFECTOS ──
+function mkPart(x,y,vx,vy,col,vida,r,grav){
+  particulas.push({x:x,y:y,vx:vx,vy:vy,col:col,vida:vida,maxV:vida,r:r||2,g:grav||.03});
+}
+function explosion(cx,cy,n,cols,speed,r){
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2, s=speed*(.3+Math.random()*.7);
+    mkPart(cx,cy,Math.cos(a)*s,Math.sin(a)*s,cols[i%cols.length],50+Math.random()*70,r||2,.02);
+  }
+}
+function mkOnda(cx,cy,col,vel,maxR,lw){
+  ondas.push({x:cx,y:cy,r:0,col:col,vel:vel,maxR:maxR,op:1,lw:lw||2});
+}
+function mkBrillo(cx,cy,col,r){
+  brillos.push({x:cx,y:cy,col:col,r:r,op:1,pulse:Math.random()*Math.PI*2});
+}
+
+// ── GLOBO ──
+function drawGlobe(){
+  proj.rotate([-rotLon,-rotLat]);
+  geoPath = d3.geoPath().projection(proj).context(ctx);
+
+  // Atmósfera exterior
+  var atmO=ctx.createRadialGradient(CX,GY,R*.85,CX,GY,R*1.18);
+  atmO.addColorStop(0,'rgba(30,80,200,0)');
+  atmO.addColorStop(.55,'rgba(30,80,180,.07)');
+  atmO.addColorStop(1,'rgba(60,130,255,.28)');
+  ctx.beginPath(); ctx.arc(CX,GY,R*1.18,0,Math.PI*2);
+  ctx.fillStyle=atmO; ctx.fill();
+
+  // Océano
+  var oc=ctx.createRadialGradient(CX-R*.25,GY-R*.25,R*.05,CX,GY,R);
+  oc.addColorStop(0,'#1e5090'); oc.addColorStop(.4,'#0e2d60'); oc.addColorStop(.8,'#091a3a'); oc.addColorStop(1,'#040d20');
+  ctx.beginPath(); geoPath(sphere); ctx.fillStyle=oc; ctx.fill();
+
+  // Tierras
+  if(land){
+    // Sombra de relieve
+    ctx.beginPath(); geoPath(land);
+    ctx.fillStyle='#243818'; ctx.fill();
+    // Capa superior verde
+    ctx.beginPath(); geoPath(land);
+    var lg=ctx.createLinearGradient(CX-R,GY-R,CX+R,GY+R);
+    lg.addColorStop(0,'#3a7020'); lg.addColorStop(.5,'#2d5a18'); lg.addColorStop(1,'#1e3c10');
+    ctx.fillStyle=lg; ctx.globalAlpha=.9; ctx.fill(); ctx.globalAlpha=1;
+  }
+
+  // Graticule
+  if(borders){
+    ctx.beginPath(); geoPath(borders);
+    ctx.strokeStyle='rgba(0,0,0,.35)'; ctx.lineWidth=.6; ctx.stroke();
+  }
+
+  // Graticule sutil
+  ctx.beginPath(); geoPath(graticule);
+  ctx.strokeStyle='rgba(100,160,255,.04)'; ctx.lineWidth=.4; ctx.stroke();
+
+  // Iluminación solar (lado derecho-arriba más brillante)
+  var sunX=CX+R*.3, sunY=GY-R*.4;
+  var il=ctx.createRadialGradient(sunX,sunY,0,CX,GY,R);
+  il.addColorStop(0,'rgba(255,255,240,.12)');
+  il.addColorStop(.4,'rgba(255,240,200,.04)');
+  il.addColorStop(.7,'rgba(0,0,0,0)');
+  il.addColorStop(1,'rgba(0,0,10,.35)');
+  ctx.beginPath(); geoPath(sphere); ctx.fillStyle=il; ctx.fill();
+
+  // Atmósfera limb
+  var atmI=ctx.createRadialGradient(CX,GY,R*.88,CX,GY,R*1.02);
+  atmI.addColorStop(0,'rgba(50,120,255,0)');
+  atmI.addColorStop(.5,'rgba(50,120,255,.06)');
+  atmI.addColorStop(1,'rgba(80,160,255,.20)');
+  ctx.beginPath(); geoPath(sphere); ctx.strokeStyle='rgba(80,150,255,.5)'; ctx.lineWidth=1.8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(CX,GY,R*1.02,0,Math.PI*2); ctx.fillStyle=atmI; ctx.fill();
+
+  // Nombres de países
+  drawCountryLabels();
+
+  // Marcadores de impacto en el globo
+  if(showCrateres){
+    craterAge++;
+    drawCrater(32.5425, 44.4211,'#cc0000','Babilonia, Iraq','32.54°N · 44.42°E','L');
+    drawCrater(-32.5425,-135.5789,'#ff8800','Pacífico Sur','32.54°S · 135.58°O','R');
+  } else {
+    drawMarcador(32.5425, 44.4211, '#cc0000', '#ff8844');
+    drawMarcador(-32.5425,-135.5789,'#ff8800','#ffaa44');
+  }
+}
+
+function drawMarcador(lat,lon,col1,col2){
+  var p=proj([lon,lat]);
+  if(!p) return;
+  // ¿Está en la cara visible?
+  var rot=proj.rotate();
+  var latR=lat*Math.PI/180, lonR=lon*Math.PI/180;
+  var cLat=(-rot[1])*Math.PI/180, cLon=(-rot[0])*Math.PI/180;
+  var cz2=Math.sin(latR)*Math.sin(cLat)+Math.cos(latR)*Math.cos(cLat)*Math.cos(lonR-cLon);
+  if(cz2<0.05) return;
+
+  var pulsR=R*.04*(1+.3*Math.sin(t*5+lat));
+  var g=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],pulsR*2.5);
+  g.addColorStop(0,col2); g.addColorStop(.4,col1+'88'); g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath(); ctx.arc(p[0],p[1],pulsR*2.5,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+  ctx.beginPath(); ctx.arc(p[0],p[1],pulsR*.35,0,Math.PI*2); ctx.fillStyle=col2; ctx.fill();
+  ctx.beginPath(); ctx.arc(p[0],p[1],pulsR,0,Math.PI*2);
+  ctx.strokeStyle=col2; ctx.lineWidth=1; ctx.globalAlpha=.5+.3*Math.sin(t*5); ctx.stroke(); ctx.globalAlpha=1;
+}
+
+// ── APOPHIS ──
+function drawApophis(x,y,ang,sc,alpha){
+  if(alpha===undefined) alpha=1;
+  ctx.save(); ctx.translate(x,y); ctx.rotate(ang); ctx.globalAlpha=alpha;
+  var sz=R*.075*sc;
+  var now2=performance.now();
+  var pulse=0.6+0.4*Math.sin(now2*0.006);
+
+  // ══ COLUMNAS DE FUEGO (pies) — hacia abajo/detrás ══
+  var colLen = sz * 7;
+  for(var ci=0; ci<3; ci++){
+    var cOff = (ci-1)*sz*0.55;
+    var cWave = Math.sin(now2*0.005+ci*1.8)*sz*0.18;
+    var colFire = ctx.createLinearGradient(sz*0.3, cOff, sz*0.3+colLen, cOff);
+    colFire.addColorStop(0,   'rgba(255,255,200,0.95)');
+    colFire.addColorStop(0.08,'rgba(255,200,50,0.85)');
+    colFire.addColorStop(0.25,'rgba(255,100,10,0.70)');
+    colFire.addColorStop(0.55,'rgba(200,30,0,0.35)');
+    colFire.addColorStop(1,   'rgba(60,0,0,0)');
+    ctx.beginPath();
+    ctx.moveTo(sz*0.35, cOff-sz*0.22);
+    ctx.quadraticCurveTo(sz*0.3+colLen*0.45, cOff+cWave, sz*0.3+colLen, cOff+cWave*0.5);
+    ctx.quadraticCurveTo(sz*0.3+colLen*0.45, cOff-cWave, sz*0.35, cOff+sz*0.22);
+    ctx.closePath();
+    ctx.fillStyle=colFire; ctx.fill();
+  }
+
+  // ══ NUBE ENVOLVENTE ══
+  ctx.save();
+  ctx.globalAlpha = alpha*0.45;
+  var cloudR = sz*2.6;
+  for(var wi=0; wi<6; wi++){
+    var wa = wi/6*Math.PI*2 + now2*0.0005;
+    var wx = Math.cos(wa)*sz*0.9, wy = Math.sin(wa)*sz*0.65;
+    var cloudG = ctx.createRadialGradient(wx,wy,0,wx,wy,cloudR*0.55);
+    cloudG.addColorStop(0,'rgba(220,210,255,0.55)');
+    cloudG.addColorStop(0.5,'rgba(180,160,220,0.25)');
+    cloudG.addColorStop(1,'rgba(100,80,160,0)');
+    ctx.beginPath(); ctx.arc(wx,wy,cloudR*0.55,0,Math.PI*2);
+    ctx.fillStyle=cloudG; ctx.fill();
+  }
+  ctx.restore();
+
+  // ══ ROSTRO COMO EL SOL — halo solar brillantísimo ══
+  var sunR = sz*3.5;
+  var sun=ctx.createRadialGradient(0,0,0,0,0,sunR);
+  sun.addColorStop(0,  'rgba(255,255,220,0.95)');
+  sun.addColorStop(0.12,'rgba(255,240,100,0.80)');
+  sun.addColorStop(0.3, 'rgba(255,180,20,0.50)');
+  sun.addColorStop(0.6, 'rgba(255,80,0,0.20)');
+  sun.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.beginPath(); ctx.arc(0,0,sunR,0,Math.PI*2); ctx.fillStyle=sun; ctx.fill();
+
+  // Rayos solares
+  ctx.save();
+  ctx.globalAlpha = alpha*(0.4+0.3*pulse);
+  for(var ri2=0; ri2<12; ri2++){
+    var ra = ri2/12*Math.PI*2 + now2*0.0008;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(ra)*sz*1.1, Math.sin(ra)*sz*1.1);
+    ctx.lineTo(Math.cos(ra)*sz*(2.8+0.6*Math.sin(now2*0.004+ri2)), Math.sin(ra)*sz*(2.8+0.6*Math.sin(now2*0.004+ri2)));
+    ctx.strokeStyle='rgba(255,230,80,0.6)';
+    ctx.lineWidth=sz*0.12; ctx.stroke();
+  }
+  ctx.restore();
+
+  // ══ CUERPO — hierro/níquel fundido ══
+  var gA=ctx.createRadialGradient(-sz*.3,-sz*.25,0,-sz*.3,-sz*.25,sz*.9);
+  gA.addColorStop(0,'#ffffff');
+  gA.addColorStop(0.1,'#fff0a0');
+  gA.addColorStop(0.3,'#ffcc44');
+  gA.addColorStop(0.55,'#ff6600');
+  gA.addColorStop(0.8,'#cc2200');
+  gA.addColorStop(1,'#550800');
+  ctx.beginPath(); ctx.ellipse(-sz*.52,0,sz*.72,sz*.52,-.12,0,Math.PI*2);
+  ctx.fillStyle=gA; ctx.fill();
+
+  var gB=ctx.createRadialGradient(sz*.4,-sz*.2,0,sz*.4,-sz*.2,sz*.75);
+  gB.addColorStop(0,'#ffe080');
+  gB.addColorStop(0.2,'#ffaa20');
+  gB.addColorStop(0.5,'#ee4400');
+  gB.addColorStop(0.8,'#aa1800');
+  gB.addColorStop(1,'#3d0800');
+  ctx.beginPath(); ctx.ellipse(sz*.5,sz*.04,sz*.56,sz*.42,.1,0,Math.PI*2);
+  ctx.fillStyle=gB; ctx.fill();
+
+  // Núcleo incandescente
+  var glow=ctx.createRadialGradient(-sz*.3,-sz*.2,0,-sz*.3,-sz*.2,sz*.5);
+  glow.addColorStop(0,'rgba(255,255,220,'+(0.9*pulse)+')');
+  glow.addColorStop(0.4,'rgba(255,220,50,'+(0.6*pulse)+')');
+  glow.addColorStop(1,'rgba(255,180,0,0)');
+  ctx.beginPath(); ctx.arc(-sz*.3,-sz*.2,sz*.5,0,Math.PI*2);
+  ctx.fillStyle=glow; ctx.fill();
+
+  ctx.restore();
+}
+
+// ── CRÁTER / ETIQUETAS DE IMPACTO ──
+function drawCrater(lat,lon,col,label,coords,lado){
+  var p=proj([lon,lat]);
+  if(!p) return;
+  // Verificar cara visible via d3.geoContains en la proyección
+  var rot=proj.rotate();
+  var vLon=lon+rot[0], vLat=lat+rot[1];
+  // Dot product simplificado: punto visible si está dentro del clipAngle=90
+  var latR=lat*Math.PI/180, lonR=lon*Math.PI/180;
+  var cLat=(-rot[1])*Math.PI/180, cLon=(-rot[0])*Math.PI/180;
+  var cz=Math.sin(latR)*Math.sin(cLat)+Math.cos(latR)*Math.cos(cLat)*Math.cos(lonR-cLon);
+  if(cz<0.12) return;
+
+  var pulse=.7+.3*Math.sin(craterAge*.04);
+  var rc=R*.038*pulse;
+
+  // Resplandor del cráter
+  var glo=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],rc*3.5);
+  glo.addColorStop(0,col+'cc'); glo.addColorStop(.4,col+'55'); glo.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.beginPath(); ctx.arc(p[0],p[1],rc*3.5,0,Math.PI*2); ctx.fillStyle=glo; ctx.fill();
+
+  // Círculo cráter
+  ctx.beginPath(); ctx.arc(p[0],p[1],rc,0,Math.PI*2);
+  ctx.strokeStyle=col; ctx.lineWidth=2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(p[0],p[1],rc*.45,0,Math.PI*2);
+  ctx.fillStyle=col+'bb'; ctx.fill();
+
+  // Rayos de cráter
+  for(var i=0;i<8;i++){
+    var a=i/8*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(p[0]+Math.cos(a)*rc*.5, p[1]+Math.sin(a)*rc*.5);
+    ctx.lineTo(p[0]+Math.cos(a)*rc*1.3, p[1]+Math.sin(a)*rc*1.3);
+    ctx.strokeStyle=col+'88'; ctx.lineWidth=1; ctx.stroke();
+  }
+
+  // Línea + etiqueta
+  var offX = lado==='L' ? -rc*4 : rc*4;
+  var lx=p[0]+offX, ly=p[1]-rc*2.5;
+  ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(lx,ly);
+  ctx.strokeStyle=col+'99'; ctx.lineWidth=.8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(lx,ly,2,0,Math.PI*2); ctx.fillStyle=col; ctx.fill();
+
+  var align = lado==='L' ? 'right' : 'left';
+  var fs=Math.max(13, Math.round(R*.052));
+  var fsS=Math.max(11, Math.round(R*.038));
+  var tx=lx+(lado==='L'?-6:6);
+  // Fondo semitransparente detrás del texto
+  var labelW=ctx.measureText(label).width+16;
+  ctx.fillStyle='rgba(0,0,0,.55)';
+  ctx.fillRect(lado==='L'?tx-labelW:tx, ly-fs-4, labelW, fs+fsS+10);
+
+  ctx.font='bold '+fs+'px Cinzel,serif';
+  ctx.textAlign=align; ctx.textBaseline='bottom';
+  ctx.fillStyle=col; ctx.globalAlpha=1;
+  ctx.shadowColor=col; ctx.shadowBlur=12;
+  ctx.fillText(label, tx, ly-2);
+  ctx.shadowBlur=0;
+  ctx.font=fsS+'px Inter,sans-serif';
+  ctx.fillStyle='#eef4ff'; ctx.globalAlpha=.9;
+  ctx.fillText(coords, tx, ly+fsS+2);
+  ctx.globalAlpha=1; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+
+// ── ESCOMBROS DE ROCA ──
+function mkEscombro(cx, cy, count, speed){
+  for(var i=0; i<count; i++){
+    var a = Math.random()*Math.PI*2;
+    var s = speed*(0.2+Math.random()*0.8);
+    var sz = 1.5+Math.random()*4;
+    var rot = Math.random()*Math.PI*2;
+    var rotV = (Math.random()-0.5)*0.3;
+    var col = Math.random()<0.5 ? '#8a6040' : (Math.random()<0.5 ? '#a07050' : '#604030');
+    escombros.push({
+      x:cx, y:cy,
+      vx:Math.cos(a)*s, vy:Math.sin(a)*s - speed*0.3,
+      g: 0.04+Math.random()*0.04,
+      sz:sz, rot:rot, rotV:rotV,
+      col:col, glow:false,
+      vida:60+Math.random()*80, maxV:0
+    });
+    escombros[escombros.length-1].maxV = escombros[escombros.length-1].vida;
+  }
+}
+
+// ── FRAGMENTOS DE METEORITO INCANDESCENTES ──
+function mkFragMeteorito(cx, cy, count, speed){
+  for(var i=0; i<count; i++){
+    var a = Math.random()*Math.PI*2;
+    var s = speed*(0.4+Math.random()*1.2);
+    var sz = 3+Math.random()*7;
+    var rot = Math.random()*Math.PI*2;
+    var rotV = (Math.random()-0.5)*0.5;
+    // Colores de hierro/níquel fundido
+    var cols = ['#ff4400','#ff8800','#ffcc00','#cc2200','#ff6600','#ffdd44'];
+    var col = cols[Math.floor(Math.random()*cols.length)];
+    escombros.push({
+      x:cx, y:cy,
+      vx:Math.cos(a)*s, vy:Math.sin(a)*s - speed*0.5,
+      g: 0.025+Math.random()*0.03,
+      sz:sz, rot:rot, rotV:rotV,
+      col:col, glow:true,
+      vida:90+Math.random()*120, maxV:0
+    });
+    escombros[escombros.length-1].maxV = escombros[escombros.length-1].vida;
+  }
+}
+
+function drawEscombros(){
+  for(var i=escombros.length-1; i>=0; i--){
+    var e = escombros[i];
+    e.x += e.vx; e.y += e.vy; e.vy += e.g;
+    e.vx *= 0.994; e.rot += e.rotV;
+    e.vida--;
+    if(e.vida<=0){ escombros.splice(i,1); continue; }
+    var a = e.vida/e.maxV;
+    fctx.save();
+    fctx.translate(e.x, e.y);
+    fctx.rotate(e.rot);
+
+    if(e.glow){
+      // ── FRAGMENTO DE METEORITO INCANDESCENTE ──
+      // Halo de calor
+      fctx.globalAlpha = a*0.5;
+      var glowG = fctx.createRadialGradient(0,0,0,0,0,e.sz*2.2);
+      glowG.addColorStop(0, e.col+'ff');
+      glowG.addColorStop(0.4,'rgba(255,100,0,0.4)');
+      glowG.addColorStop(1,'rgba(0,0,0,0)');
+      fctx.beginPath(); fctx.arc(0,0,e.sz*2.2,0,Math.PI*2);
+      fctx.fillStyle=glowG; fctx.fill();
+
+      // Cuerpo del fragmento
+      fctx.globalAlpha = a*0.95;
+      fctx.fillStyle = e.col;
+      fctx.beginPath();
+      fctx.moveTo(-e.sz,   -e.sz*0.5);
+      fctx.lineTo(e.sz*0.3,-e.sz*0.9);
+      fctx.lineTo(e.sz,     e.sz*0.2);
+      fctx.lineTo(e.sz*0.1, e.sz*0.9);
+      fctx.lineTo(-e.sz*0.7,e.sz*0.4);
+      fctx.closePath();
+      fctx.fill();
+
+      // Núcleo brillante (metal fundido)
+      fctx.globalAlpha = a*0.8;
+      var coreG = fctx.createRadialGradient(-e.sz*0.2,-e.sz*0.2,0,-e.sz*0.2,-e.sz*0.2,e.sz*0.6);
+      coreG.addColorStop(0,'rgba(255,255,180,0.95)');
+      coreG.addColorStop(0.5,'rgba(255,180,0,0.6)');
+      coreG.addColorStop(1,'rgba(255,60,0,0)');
+      fctx.beginPath(); fctx.arc(-e.sz*0.2,-e.sz*0.2,e.sz*0.6,0,Math.PI*2);
+      fctx.fillStyle=coreG; fctx.fill();
+
+      // Estela de chispas
+      fctx.globalAlpha = a*0.6;
+      fctx.strokeStyle = '#ffcc44';
+      fctx.lineWidth = 1.2;
+      fctx.beginPath();
+      fctx.moveTo(e.sz*0.3, e.sz*0.1);
+      fctx.lineTo(e.sz*0.3 + (e.vx/e.sz)*8, e.sz*0.1 + (e.vy/e.sz)*8);
+      fctx.stroke();
+
+    } else {
+      // ── ESCOMBRO DE ROCA NORMAL ──
+      fctx.globalAlpha = a*0.9;
+      fctx.fillStyle = e.col;
+      fctx.beginPath();
+      fctx.moveTo(-e.sz, -e.sz*0.6);
+      fctx.lineTo(e.sz*0.4, -e.sz);
+      fctx.lineTo(e.sz, e.sz*0.3);
+      fctx.lineTo(e.sz*0.2, e.sz);
+      fctx.lineTo(-e.sz*0.8, e.sz*0.5);
+      fctx.closePath();
+      fctx.fill();
+      fctx.fillStyle = 'rgba(255,200,100,0.3)';
+      fctx.beginPath();
+      fctx.ellipse(-e.sz*0.2,-e.sz*0.3,e.sz*0.3,e.sz*0.2,-0.5,0,Math.PI*2);
+      fctx.fill();
+    }
+    fctx.restore();
+  }
+}
+
+// ── TSUNAMI: inicializar líneas hacia países ──
+function iniciarTsunami(){
+  showTsunami = true; tsunamiAge = 0; tsunamiLines = [];
+  // oLon/oLat = epicentro Pacífico
+  var oLon = -135.5789, oLat = -32.5425;
+  TSUNAMI_TARGETS.forEach(function(t){
+    tsunamiLines.push({
+      oLon:oLon, oLat:oLat,
+      lon:t.lon, lat:t.lat,
+      name:t.name, eta:t.eta, col:t.col,
+      prog:0, speed:0.0018+Math.random()*0.0008,
+      done:false
+    });
+  });
+}
+
+// ── OLA DE TSUNAMI GIGANTE ──
+var olasTsunami = [];
+function mkOlaTsunami(lon, lat){
+  var pt = proj([lon, lat]);
+  if(!pt) return;
+  olasTsunami.push({lon:lon, lat:lat, age:0, maxAge:140, x:pt[0], y:pt[1]});
+}
+function drawOlasTsunami(){
+  olasTsunami = olasTsunami.filter(function(o){ return o.age < o.maxAge; });
+  olasTsunami.forEach(function(o){
+    var pt = proj([o.lon, o.lat]);
+    if(!pt){ o.age++; return; }
+    o.x = pt[0]; o.y = pt[1];
+    o.age++;
+    var p = o.age / o.maxAge;           // 0→1
+    var rise   = Math.min(p / 0.18, 1); // sube rápido (primeros 18%)
+    var crash  = p > 0.18 ? Math.min((p-0.18)/0.25, 1) : 0; // rompe
+    var fade   = p > 0.5  ? 1-((p-0.5)/0.5) : 1;
+    var alpha  = rise * fade;
+    if(alpha <= 0) return;
+
+    var wW = R * 0.22 * rise;            // ancho de la pared
+    var wH = R * 0.30 * rise * (1 - crash*0.4); // altura (aplasta al romper)
+    var cx = o.x, cy = o.y;
+
+    fctx.save();
+    fctx.globalAlpha = alpha * 0.92;
+
+    // Cuerpo principal de la ola — gradiente vertical
+    var gBody = fctx.createLinearGradient(cx, cy - wH, cx, cy + wH*0.3);
+    gBody.addColorStop(0,   'rgba(180,240,255,0.95)'); // cresta blanca
+    gBody.addColorStop(0.15,'rgba(0,190,255,0.92)');   // azul brillante
+    gBody.addColorStop(0.5, 'rgba(0,100,220,0.88)');   // azul profundo
+    gBody.addColorStop(0.85,'rgba(0,50,160,0.75)');    // base oscura
+    gBody.addColorStop(1,   'rgba(0,20,80,0)');
+
+    fctx.beginPath();
+    // Forma de ola: curva superior con voluta al romper
+    var voluteX = crash * wW * 0.4;
+    fctx.moveTo(cx - wW, cy + wH*0.2);
+    fctx.bezierCurveTo(
+      cx - wW*0.5, cy - wH*1.1,
+      cx + wW*0.2 + voluteX, cy - wH*1.15,
+      cx + wW*0.6 + voluteX, cy - wH*0.6
+    );
+    fctx.bezierCurveTo(
+      cx + wW*0.9 + voluteX, cy - wH*0.1,
+      cx + wW, cy + wH*0.15,
+      cx + wW, cy + wH*0.3
+    );
+    fctx.bezierCurveTo(
+      cx + wW*0.3, cy + wH*0.5,
+      cx - wW*0.3, cy + wH*0.45,
+      cx - wW, cy + wH*0.2
+    );
+    fctx.closePath();
+    fctx.fillStyle = gBody;
+    fctx.fill();
+
+    // Cresta espumosa blanca
+    fctx.globalAlpha = alpha * 0.85 * (0.5 + 0.5*rise);
+    var gCrest = fctx.createLinearGradient(cx - wW, cy - wH, cx + wW, cy - wH*0.6);
+    gCrest.addColorStop(0, 'rgba(255,255,255,0.0)');
+    gCrest.addColorStop(0.4,'rgba(255,255,255,0.9)');
+    gCrest.addColorStop(0.7,'rgba(200,240,255,0.95)');
+    gCrest.addColorStop(1,  'rgba(255,255,255,0.4)');
+    fctx.beginPath();
+    fctx.moveTo(cx - wW*0.6, cy - wH*0.85);
+    fctx.bezierCurveTo(
+      cx - wW*0.1, cy - wH*1.25,
+      cx + wW*0.3 + voluteX, cy - wH*1.2,
+      cx + wW*0.65 + voluteX, cy - wH*0.65
+    );
+    fctx.lineWidth = 3.5 * rise;
+    fctx.strokeStyle = gCrest;
+    fctx.stroke();
+
+    // Spray/gotas en la cresta
+    fctx.globalAlpha = alpha * 0.7 * crash;
+    for(var s=0; s<8; s++){
+      var sx = cx + (Math.random()*2-1)*wW*0.8;
+      var sy = cy - wH*(0.9 + Math.random()*0.4);
+      var sr = 1.5 + Math.random()*3;
+      fctx.beginPath(); fctx.arc(sx, sy, sr, 0, Math.PI*2);
+      fctx.fillStyle = 'rgba(220,245,255,0.9)';
+      fctx.fill();
+    }
+
+    // Etiqueta altura "~ 500 m"
+    if(rise > 0.5 && fade > 0.4){
+      fctx.globalAlpha = alpha * 0.95;
+      fctx.font = 'bold 11px Cinzel,serif';
+      fctx.textAlign = 'center';
+      fctx.fillStyle = '#ffffff';
+      fctx.shadowColor = 'rgba(0,100,255,0.9)';
+      fctx.shadowBlur = 8;
+      fctx.fillText('~ 500 m', cx + voluteX*0.3, cy - wH*1.35);
+      fctx.shadowBlur = 0;
+    }
+
+    fctx.restore();
+  });
+}
+
+function drawTsunami(){
+  if(!showTsunami) return;
+  tsunamiAge++;
+
+  // ── Radio máximo en px que corresponde al país más lejano ──
+  // tsunamiLines tienen .prog avanzando 0→1; usamos el máximo de distancias
+  // en screen-space para escalar el radio de la ola global.
+  // Usamos una ola "maestra" cuyo radio crece al ritmo promedio de tl.prog.
+
+  var pacPt = proj([-135.5789, -32.5425]);
+
+  // Visibilidad del epicentro
+  var rot2 = proj.rotate();
+  var la2=-32.5425*Math.PI/180, lo2=-135.5789*Math.PI/180;
+  var cLa2=(-rot2[1])*Math.PI/180, cLo2=(-rot2[0])*Math.PI/180;
+  var pacViz = Math.sin(la2)*Math.sin(cLa2)+Math.cos(la2)*Math.cos(cLa2)*Math.cos(lo2-cLo2);
+
+  // Avanzar progreso de cada línea
+  tsunamiLines.forEach(function(tl){
+    if(!tl.done) tl.prog = Math.min(1, tl.prog + tl.speed);
+  });
+
+  // ── Ola global expansiva: radio proporcional al prog promedio ──
+  // Tomamos el primer tsunamiLine como referencia de ritmo
+  var refProg = tsunamiLines.length ? tsunamiLines[0].prog : 0;
+
+  if(pacPt && pacViz > 0){
+    // Punto epicentro brillante
+    var epGrad = fctx.createRadialGradient(pacPt[0],pacPt[1],0,pacPt[0],pacPt[1],R*0.07);
+    epGrad.addColorStop(0,'rgba(0,220,255,0.7)');
+    epGrad.addColorStop(1,'rgba(0,100,200,0)');
+    fctx.save(); fctx.fillStyle=epGrad;
+    fctx.beginPath(); fctx.arc(pacPt[0],pacPt[1],R*0.07,0,Math.PI*2); fctx.fill(); fctx.restore();
+
+    // 4 anillos de ola que viajan desde el epicentro
+    // Cada anillo desfasado; el radio crece hasta ~R*0.98 (cubre el globo)
+    for(var wi=0; wi<4; wi++){
+      // Desfase entre anillos: cada uno arranca un poco después
+      var ringProg = Math.max(0, refProg - wi*0.18);
+      if(ringProg <= 0) continue;
+      var wRadius = ringProg * R * 1.05;
+      var wAlpha  = (1 - ringProg) * 0.9 * (1 - wi*0.15);
+      if(wAlpha <= 0) continue;
+
+      fctx.save();
+      fctx.globalAlpha = wAlpha;
+      // Gradiente radial para dar volumen a la ola
+      var ringW = R * 0.045;
+      var gRing = fctx.createRadialGradient(pacPt[0],pacPt[1],Math.max(0,wRadius-ringW),
+                                             pacPt[0],pacPt[1],wRadius+ringW*0.3);
+      gRing.addColorStop(0,   'rgba(0,200,255,0)');
+      gRing.addColorStop(0.4, wi===0?'rgba(100,230,255,0.9)':'rgba(0,180,255,0.7)');
+      gRing.addColorStop(0.75,'rgba(180,245,255,'+(wi===0?'1.0':'0.6')+')');
+      gRing.addColorStop(1,   'rgba(255,255,255,0)');
+
+      fctx.strokeStyle = wi===0?'rgba(220,250,255,0.95)':'rgba(0,200,255,0.6)';
+      fctx.lineWidth = wi===0 ? 4 : (wi===1 ? 2.5 : 1.8);
+
+      // Clip al círculo del globo para no dibujar fuera
+      fctx.beginPath(); fctx.arc(W/2, H/2, R, 0, Math.PI*2); fctx.clip();
+      fctx.beginPath(); fctx.arc(pacPt[0], pacPt[1], wRadius, 0, Math.PI*2); fctx.stroke();
+
+      // Relleno interior degradado (da sensación de volumen de agua)
+      if(wi===0){
+        var gFill = fctx.createRadialGradient(pacPt[0],pacPt[1],0,pacPt[0],pacPt[1],wRadius);
+        gFill.addColorStop(0,   'rgba(0,60,120,0)');
+        gFill.addColorStop(0.7, 'rgba(0,100,180,0)');
+        gFill.addColorStop(0.88,'rgba(0,160,220,0.18)');
+        gFill.addColorStop(0.97,'rgba(0,200,255,0.35)');
+        gFill.addColorStop(1,   'rgba(255,255,255,0)');
+        fctx.fillStyle = gFill;
+        fctx.beginPath(); fctx.arc(pacPt[0],pacPt[1],wRadius+ringW*0.3,0,Math.PI*2); fctx.fill();
+      }
+      fctx.restore();
+    }
+  }
+
+  // ── Por cada país: ola viaja, llega → punto, país bajo el agua ──
+  tsunamiLines.forEach(function(tl){
+    var op = proj([tl.oLon, tl.oLat]);
+    var tp = proj([tl.lon, tl.lat]);
+    if(!op || !tp) return;
+
+    var rot = proj.rotate();
+    function visible(lon,lat){
+      var la=lat*Math.PI/180,lo=lon*Math.PI/180;
+      var cLa=(-rot[1])*Math.PI/180,cLo=(-rot[0])*Math.PI/180;
+      return Math.sin(la)*Math.sin(cLa)+Math.cos(la)*Math.cos(cLa)*Math.cos(lo-cLo);
+    }
+    if(visible(tl.oLon,tl.oLat)<0 && visible(tl.lon,tl.lat)<0.1) return;
+
+    var ox=op[0], oy=op[1], tx2=tp[0], ty2=tp[1];
+    var ang = Math.atan2(ty2-oy, tx2-ox);
+
+    if(!tl.done) tl.prog = Math.min(1, tl.prog + tl.speed);
+
+    // ── OLA VIAJANDO (solo si aun no llego) ──
+    if(!tl.done && tl.prog < 0.88){
+      var cx = ox + (tx2-ox)*tl.prog;
+      var cy = oy + (ty2-oy)*tl.prog;
+
+      // Estela de agua detras
+      fctx.save();
+      var gWake = fctx.createLinearGradient(ox,oy,cx,cy);
+      gWake.addColorStop(0,  'rgba(0,150,255,0)');
+      gWake.addColorStop(0.6,'rgba(0,180,255,0.15)');
+      gWake.addColorStop(1,  'rgba(0,220,255,0.5)');
+      fctx.strokeStyle=gWake; fctx.lineWidth=3; fctx.globalAlpha=0.75;
+      fctx.beginPath(); fctx.moveTo(ox,oy); fctx.lineTo(cx,cy); fctx.stroke();
+      fctx.restore();
+
+      // Cabeza de ola — pared de agua perpendicular al camino
+      var shoal = tl.prog > 0.72 ? 1+(tl.prog-0.72)/0.18*1.6 : 1;
+      var wW = R*0.052*shoal, wH = R*0.065*shoal;
+      var crash = tl.prog > 0.78 ? Math.min((tl.prog-0.78)/0.12,1) : 0;
+      var vX = crash*wW*0.45;
+
+      fctx.save();
+      fctx.translate(cx,cy); fctx.rotate(ang);
+      fctx.globalAlpha = Math.min(tl.prog/0.06,1);
+
+      var gBody = fctx.createLinearGradient(0,-wH,0,wH*0.3);
+      gBody.addColorStop(0,   'rgba(230,250,255,0.97)');
+      gBody.addColorStop(0.15,'rgba(60,210,255,0.93)');
+      gBody.addColorStop(0.5, 'rgba(0,140,225,0.88)');
+      gBody.addColorStop(0.85,'rgba(0,60,170,0.70)');
+      gBody.addColorStop(1,   'rgba(0,20,80,0)');
+
+      fctx.beginPath();
+      fctx.moveTo(-wW, wH*0.22);
+      fctx.bezierCurveTo(-wW*0.5+vX*0.3,-wH*1.08, wW*0.3+vX,-wH*1.12, wW*0.65+vX, wH*0.08);
+      fctx.bezierCurveTo(wW+vX*0.3, wH*0.3, wW*0.35, wH*0.48, -wW, wH*0.22);
+      fctx.closePath();
+      fctx.fillStyle=gBody; fctx.fill();
+
+      // Cresta blanca
+      fctx.beginPath();
+      fctx.moveTo(-wW*0.6,-wH*0.7);
+      fctx.bezierCurveTo(-wW*0.1+vX*0.4,-wH*1.2, wW*0.2+vX,-wH*1.2, wW*0.6+vX,-wH*0.6);
+      fctx.lineWidth=3; fctx.strokeStyle='rgba(255,255,255,0.95)'; fctx.stroke();
+
+      // Spray
+      for(var s=0;s<6;s++){
+        fctx.beginPath();
+        fctx.arc((Math.random()*2-1)*wW*0.7+vX*0.3, -wH*(0.85+Math.random()*0.45),
+                 1+Math.random()*2.5, 0, Math.PI*2);
+        fctx.fillStyle='rgba(220,250,255,0.9)'; fctx.fill();
+      }
+      fctx.restore();
+    }
+
+    // ── AL LLEGAR: particulas de impacto en costa ──
+    if(tl.prog >= 0.88 && !tl.olaDisparada){
+      tl.olaDisparada = true;
+      for(var ip=0;ip<22;ip++){
+        mkPart(tx2+(Math.random()*2-1)*R*0.05, ty2+(Math.random()*2-1)*R*0.05,
+               (Math.random()*2-1)*3, -Math.random()*4-0.5,
+               ip%3===0?'#ffffff':'#88ddff',
+               50+Math.random()*50, 1.5+Math.random()*3, 0.07);
+      }
+    }
+
+    // ── AL LLEGAR: marcar done ──
+    if(tl.prog >= 0.88 && !tl.done){
+      tl.done = true;
+    }
+
+    // ── INUNDACION PERMANENTE — primero (debajo de etiqueta) ──
+    if(tl.done){
+      if(!tl.floodAge) tl.floodAge=0;
+      tl.floodAge++;
+      var floodT = Math.min(tl.floodAge/80, 1);
+      var fp = proj([tl.lon, tl.lat]);
+      if(!fp) return;
+      var floodR = R*0.17*Math.min(floodT*2,1);
+      fctx.save();
+
+      var gBase = fctx.createRadialGradient(fp[0],fp[1],0, fp[0],fp[1],floodR);
+      gBase.addColorStop(0,   'rgba(0,25,80,'+  (0.96*floodT)+')');
+      gBase.addColorStop(0.45,'rgba(0,45,120,'+ (0.93*floodT)+')');
+      gBase.addColorStop(0.75,'rgba(0,35,100,'+ (0.85*floodT)+')');
+      gBase.addColorStop(0.92,'rgba(0,20,60,'+  (0.5*floodT) +')');
+      gBase.addColorStop(1,   'rgba(0,8,30,0)');
+      fctx.beginPath(); fctx.arc(fp[0],fp[1],floodR,0,Math.PI*2);
+      fctx.fillStyle=gBase; fctx.fill();
+
+      var gOcean = fctx.createRadialGradient(fp[0],fp[1],0, fp[0],fp[1],floodR*0.88);
+      gOcean.addColorStop(0,  'rgba(0,70,170,'+(0.5*floodT)+')');
+      gOcean.addColorStop(0.5,'rgba(0,100,195,'+(0.38*floodT)+')');
+      gOcean.addColorStop(1,  'rgba(0,50,130,0)');
+      fctx.beginPath(); fctx.arc(fp[0],fp[1],floodR*0.88,0,Math.PI*2);
+      fctx.fillStyle=gOcean; fctx.fill();
+
+      var sh=0.4+0.4*Math.sin(tsunamiAge*0.14+tl.lon*0.1);
+      var gSh=fctx.createRadialGradient(fp[0]-floodR*0.22,fp[1]-floodR*0.18,0, fp[0],fp[1],floodR*0.6);
+      gSh.addColorStop(0,'rgba(120,225,255,'+(0.25*floodT*sh)+')');
+      gSh.addColorStop(1,'rgba(0,70,180,0)');
+      fctx.beginPath(); fctx.arc(fp[0],fp[1],floodR*0.6,0,Math.PI*2);
+      fctx.fillStyle=gSh; fctx.fill();
+
+      for(var rw=0;rw<3;rw++){
+        var rwA=0.15*floodT*(0.5+0.5*Math.sin(tsunamiAge*0.1+rw*2));
+        fctx.beginPath(); fctx.arc(fp[0],fp[1],floodR*(0.25+rw*0.25),0,Math.PI*2);
+        fctx.strokeStyle='rgba(0,170,255,'+rwA+')'; fctx.lineWidth=1; fctx.stroke();
+      }
+      fctx.restore();
+    }
+
+    // ── PUNTO PULSANTE + ETIQUETA encima de la inundacion ──
+    if(tl.done){
+      var pulse = 0.75+0.25*Math.sin(tsunamiAge*0.09);
+      fctx.save();
+      fctx.globalAlpha = pulse;
+      fctx.fillStyle = tl.col;
+      fctx.beginPath(); fctx.arc(tx2,ty2,5,0,Math.PI*2); fctx.fill();
+      fctx.globalAlpha = pulse*(0.35+0.25*Math.sin(tsunamiAge*0.18));
+      fctx.beginPath(); fctx.arc(tx2,ty2,13+5*Math.sin(tsunamiAge*0.18),0,Math.PI*2); fctx.fill();
+      fctx.restore();
+
+      fctx.save();
+      fctx.globalAlpha = pulse;
+      fctx.font='bold 11px Cinzel,serif'; fctx.textAlign='center';
+      var tw=fctx.measureText(tl.name).width;
+      fctx.fillStyle='rgba(0,10,30,0.92)';
+      fctx.fillRect(tx2-tw/2-5, ty2-28, tw+10, 32);
+      fctx.strokeStyle=tl.col+'cc'; fctx.lineWidth=1.5;
+      fctx.strokeRect(tx2-tw/2-5, ty2-28, tw+10, 32);
+      fctx.fillStyle=tl.col;
+      fctx.fillText(tl.name, tx2, ty2-15);
+      fctx.font='9px Inter,sans-serif';
+      fctx.fillStyle='#cce8ff';
+      fctx.fillText('🌊 '+tl.eta, tx2, ty2-3);
+      fctx.restore();
+    }
+  });
+}
+
+// ── BLAST ALFA: inicializar líneas hacia países afectados ──
+function iniciarAlfa(){
+  showAlfa = true; alfaLines = [];
+  var oLon = 44.4211, oLat = 32.5425; // Babilonia
+  ALFA_TARGETS.forEach(function(t){
+    alfaLines.push({
+      oLon:oLon, oLat:oLat,
+      lon:t.lon, lat:t.lat,
+      name:t.name, efecto:t.efecto, col:t.col,
+      angle:t.angle,
+      prog:0, speed:0.0022+Math.random()*0.0010,
+      done:false
+    });
+  });
+}
+
+var alfaAge = 0;
+
+// ── ZONA DEVASTADA BABILONIA ──
+function drawBabDevastada(){
+  if(!showBabDevastada) return;
+  babDevAge++;
+  var bab = proj([44.4211, 32.5425]);
+  if(!bab) return;
+  var bx=bab[0], by=bab[1];
+  var rot3=proj.rotate();
+  var la3=44.4211*Math.PI/180, lb3=32.5425*Math.PI/180;
+  var cLo3=-rot3[0]*Math.PI/180, cLa3=-rot3[1]*Math.PI/180;
+  var viz3=Math.sin(lb3)*Math.sin(cLa3)+Math.cos(lb3)*Math.cos(cLa3)*Math.cos(la3-cLo3);
+  if(viz3 <= 0.05) return;
+
+  // Zona devastada — mancha café/quemada grande y visible
+  var devR = R * 0.13 * Math.min(babDevAge/60, 1); // crece al aparecer
+  var pulse = 0.7+0.3*Math.sin(babDevAge*0.04);
+  fctx.save();
+  // Capa exterior café oscuro quemado
+  var burnG = fctx.createRadialGradient(bx,by,0,bx,by,devR);
+  burnG.addColorStop(0,  'rgba(20,8,0,0.97)');
+  burnG.addColorStop(0.25,'rgba(60,20,0,0.92)');
+  burnG.addColorStop(0.50,'rgba(100,40,5,0.82)');
+  burnG.addColorStop(0.72,'rgba(130,60,10,0.60)');
+  burnG.addColorStop(0.88,'rgba(100,45,5,0.30)');
+  burnG.addColorStop(1,  'rgba(60,20,0,0)');
+  fctx.beginPath(); fctx.arc(bx,by,devR,0,Math.PI*2);
+  fctx.fillStyle=burnG; fctx.fill();
+  fctx.restore();
+
+  // Cráter central negro
+  var craterR = R * 0.038;
+  fctx.save();
+  var craterG = fctx.createRadialGradient(bx,by,0,bx,by,craterR);
+  craterG.addColorStop(0,'rgba(0,0,0,1)');
+  craterG.addColorStop(0.6,'rgba(10,3,0,0.9)');
+  craterG.addColorStop(1,'rgba(30,10,0,0)');
+  fctx.beginPath(); fctx.arc(bx,by,craterR,0,Math.PI*2);
+  fctx.fillStyle=craterG; fctx.fill();
+  fctx.restore();
+
+  // Anillo de brasa/fuego en el borde del cráter
+  fctx.save();
+  fctx.globalAlpha = 0.85*pulse*Math.min(babDevAge/25,1);
+  fctx.strokeStyle = '#cc3300';
+  fctx.lineWidth = 2.5;
+  fctx.shadowColor='#ff5500'; fctx.shadowBlur=8;
+  fctx.beginPath(); fctx.arc(bx,by,craterR*1.1,0,Math.PI*2); fctx.stroke();
+  fctx.restore();
+
+  // Columnas de humo ascendente
+  for(var si=0; si<3; si++){
+    var sAge = (babDevAge*0.5 + si*22) % 55;
+    var sX = bx + (si-1)*R*0.025;
+    var sY = by - sAge*1.5;
+    var sAlpha = (1 - sAge/55) * 0.5;
+    var sR = 5 + sAge*0.7;
+    if(sAlpha>0){
+      fctx.save();
+      fctx.globalAlpha = sAlpha;
+      var smokeG = fctx.createRadialGradient(sX,sY,0,sX,sY,sR);
+      smokeG.addColorStop(0,'rgba(60,25,5,0.95)');
+      smokeG.addColorStop(0.5,'rgba(30,12,0,0.5)');
+      smokeG.addColorStop(1,'rgba(0,0,0,0)');
+      fctx.beginPath(); fctx.arc(sX,sY,sR,0,Math.PI*2);
+      fctx.fillStyle=smokeG; fctx.fill();
+      fctx.restore();
+    }
+  }
+
+  // Resplandor brasa pulsante
+  fctx.save();
+  fctx.globalAlpha = 0.22*pulse*Math.min(babDevAge/40,1);
+  var glowG = fctx.createRadialGradient(bx,by,0,bx,by,devR*1.1);
+  glowG.addColorStop(0,'rgba(255,80,0,1)');
+  glowG.addColorStop(0.4,'rgba(180,40,0,0.5)');
+  glowG.addColorStop(1,'rgba(0,0,0,0)');
+  fctx.beginPath(); fctx.arc(bx,by,devR*1.1,0,Math.PI*2);
+  fctx.fillStyle=glowG; fctx.fill();
+  fctx.restore();
+}
+
+// ── BETA BLAST (IMPACTO EN AGUA) ──
+function drawBetaBlast(){
+  if(!showBetaBlast) return;
+  betaBlastAge++;
+  var pac = proj([-135.5789,-32.5425]);
+  if(!pac) return;
+  var bx = pac[0], by = pac[1];
+  var rot2=proj.rotate();
+  var la2=-135.5789*Math.PI/180, lb2=-32.5425*Math.PI/180;
+  var cLo2=-rot2[0]*Math.PI/180, cLa2=-rot2[1]*Math.PI/180;
+  var pacViz2=Math.sin(lb2)*Math.sin(cLa2)+Math.cos(lb2)*Math.cos(cLa2)*Math.cos(la2-cLo2);
+  if(pacViz2 <= 0) return;
+
+  // Hueco en el agua — círculo oscuro que crece y luego se cierra
+  var holePhase = Math.min(betaBlastAge / 55, 1);
+  var holeDecay = betaBlastAge > 80 ? Math.max(0, 1-(betaBlastAge-80)/70) : 1;
+  var holeR = holePhase * R * 0.20 * holeDecay;
+  if(holeR > 2){
+    fctx.save();
+    var holeGrad = fctx.createRadialGradient(bx,by,0,bx,by,holeR);
+    holeGrad.addColorStop(0,'rgba(0,0,0,0.98)');
+    holeGrad.addColorStop(0.55,'rgba(10,20,40,0.85)');
+    holeGrad.addColorStop(0.8,'rgba(20,80,120,0.4)');
+    holeGrad.addColorStop(1,'rgba(0,50,100,0)');
+    fctx.beginPath(); fctx.arc(bx,by,holeR,0,Math.PI*2);
+    fctx.fillStyle=holeGrad; fctx.fill();
+    fctx.restore();
+  }
+
+  // Pared de agua levantándose — anillo luminoso
+  var wallR = holeR * 1.18;
+  if(wallR > 3){
+    fctx.save();
+    fctx.globalAlpha = Math.min(holePhase*2,1) * holeDecay * 0.95;
+    fctx.strokeStyle = '#ccf0ff';
+    fctx.lineWidth = 8 * holeDecay;
+    fctx.shadowColor = '#ffffff';
+    fctx.shadowBlur = 14;
+    fctx.beginPath(); fctx.arc(bx,by,wallR,0,Math.PI*2); fctx.stroke();
+    fctx.restore();
+  }
+
+  // 6 anillos de blast azul/blanco expansivos
+  for(var bi=0; bi<6; bi++){
+    var bPhase = ((betaBlastAge*0.65 + bi*22) % 132) / 132;
+    var bRadius = bPhase * R * 0.90;
+    var bAlpha  = (1-bPhase) * 0.80;
+    fctx.save();
+    fctx.globalAlpha = bAlpha;
+    var bCols = ['#ffffff','#aaeeff','#55ccff','#22aaff','#0088dd','#004488'];
+    fctx.strokeStyle = bCols[bi];
+    fctx.lineWidth = bi<2 ? 3.5 : (bi<4 ? 2.4 : 1.6);
+    fctx.beginPath(); fctx.arc(bx,by,bRadius,0,Math.PI*2); fctx.stroke();
+    fctx.restore();
+  }
+
+  // Nube de vapor/agua central
+  var steamA = Math.min(betaBlastAge/25,1) * Math.max(0, 1-(betaBlastAge-45)/55);
+  if(steamA > 0){
+    fctx.save();
+    fctx.globalAlpha = steamA * 0.65;
+    var steamGrad = fctx.createRadialGradient(bx,by,0,bx,by,R*0.14);
+    steamGrad.addColorStop(0,'rgba(255,255,255,0.95)');
+    steamGrad.addColorStop(0.4,'rgba(180,230,255,0.65)');
+    steamGrad.addColorStop(1,'rgba(0,100,200,0)');
+    fctx.beginPath(); fctx.arc(bx,by,R*0.14,0,Math.PI*2);
+    fctx.fillStyle=steamGrad; fctx.fill();
+    fctx.restore();
+  }
+}
+
+function drawAlfa(){
+  if(!showAlfa) return;
+  alfaAge++;
+  var rot = proj.rotate();
+  function visible(lon, lat){
+    var la=lat*Math.PI/180, lo=lon*Math.PI/180;
+    var cLa=(-rot[1])*Math.PI/180, cLo=(-rot[0])*Math.PI/180;
+    return Math.sin(la)*Math.sin(cLa)+Math.cos(la)*Math.cos(cLa)*Math.cos(lo-cLo);
+  }
+  var now = Date.now();
+
+  // ── Ondas de choque expansivas desde Babilonia ──
+  var babPt = proj([44.4211, 32.5425]);
+  var babViz = visible(44.4211, 32.5425);
+  if(babPt && babViz > 0){
+    var blastPulse = 0.5+0.5*Math.sin(now*0.003);
+
+    // Anillos de onda de calor expansivos (5 anillos desfasados)
+    for(var ri=0; ri<5; ri++){
+      var rPhase = ((alfaAge*0.7 + ri*28) % 140) / 140;
+      var rRadius = rPhase * R * 0.78;
+      var rAlpha  = (1-rPhase) * 0.75;
+      fctx.save();
+      fctx.globalAlpha = rAlpha;
+      var rColors = ['#ff2200','#ff5500','#ff7700','#ffaa00','#ffcc44'];
+      fctx.strokeStyle = rColors[ri];
+      fctx.lineWidth = ri===0 ? 3.5 : (ri===1 ? 2.8 : (ri===2 ? 2.2 : (ri===3 ? 1.6 : 1.2)));
+      fctx.beginPath(); fctx.arc(babPt[0], babPt[1], rRadius+2, 0, Math.PI*2); fctx.stroke();
+      fctx.restore();
+    }
+
+    // Zona de destrucción total (círculo relleno opaco)
+    var blastR = R * 0.14;
+    fctx.save();
+    var blastGrad = fctx.createRadialGradient(babPt[0],babPt[1],0,babPt[0],babPt[1],blastR);
+    blastGrad.addColorStop(0,'rgba(255,100,0,0.45)');
+    blastGrad.addColorStop(0.5,'rgba(200,30,0,0.2)');
+    blastGrad.addColorStop(1,'rgba(180,0,0,0)');
+    fctx.fillStyle = blastGrad;
+    fctx.beginPath(); fctx.arc(babPt[0],babPt[1],blastR,0,Math.PI*2); fctx.fill();
+    // Borde punteado
+    fctx.strokeStyle = 'rgba(255,80,0,'+(0.5+0.3*blastPulse)+')';
+    fctx.lineWidth = 1.8;
+    fctx.setLineDash([5,4]);
+    fctx.beginPath(); fctx.arc(babPt[0],babPt[1],blastR,0,Math.PI*2); fctx.stroke();
+    fctx.setLineDash([]);
+    // Label radio
+    fctx.font = 'bold 9px Cinzel,serif';
+    fctx.textAlign = 'center';
+    fctx.fillStyle = '#ff8844';
+    fctx.globalAlpha = 0.8+0.2*blastPulse;
+    fctx.fillText('R: 1,200 KM', babPt[0], babPt[1] + blastR + 13);
+    fctx.restore();
+  }
+
+  // ── Líneas y etiquetas distribuidas hacia países ──
+  alfaLines.forEach(function(al, idx){
+    var op = proj([al.oLon, al.oLat]);
+    var tp = proj([al.lon, al.lat]);
+    if(!op || !tp) return;
+    if(visible(al.oLon, al.oLat) < -0.1 && visible(al.lon, al.lat) < 0.1) return;
+
+    var ox=op[0], oy=op[1], tx=tp[0], ty=tp[1];
+    if(!al.done) al.prog = Math.min(1, al.prog + al.speed);
+    var cx = ox + (tx-ox)*al.prog;
+    var cy = oy + (ty-oy)*al.prog;
+
+    // Línea de onda de choque
+    fctx.save();
+    fctx.setLineDash([4,3]);
+    fctx.lineWidth = 1.4;
+    var grad = fctx.createLinearGradient(ox,oy,cx,cy);
+    grad.addColorStop(0, al.col+'dd');
+    grad.addColorStop(1, al.col+'22');
+    fctx.strokeStyle = grad;
+    fctx.globalAlpha = 0.8;
+    fctx.beginPath(); fctx.moveTo(ox,oy); fctx.lineTo(cx,cy); fctx.stroke();
+    fctx.setLineDash([]);
+
+    // Cabeza de onda
+    if(al.prog > 0.05){
+      fctx.globalAlpha = 0.9;
+      fctx.fillStyle = al.col;
+      fctx.beginPath(); fctx.arc(cx,cy,4,0,Math.PI*2); fctx.fill();
+      fctx.globalAlpha = 0.3+0.2*Math.sin(alfaAge*0.2+idx);
+      fctx.beginPath(); fctx.arc(cx,cy,10+3*Math.sin(alfaAge*0.2+idx),0,Math.PI*2); fctx.fill();
+    }
+    fctx.restore();
+
+    // Etiqueta en columnas L/R fijas, apiladas verticalmente
+    if(al.prog >= 0.85){
+      al.done = true;
+      var pulse2 = 0.8+0.2*Math.sin(now*0.004+idx);
+
+      var epPt = proj([al.oLon, al.oLat]);
+      var ex = epPt ? epPt[0] : CX;
+      var ey = epPt ? epPt[1] : GY;
+
+      var bw = 132, bh = 38;
+      var dist = R * 0.58;
+      var angleRad = (al.angle !== undefined ? al.angle : 0) * Math.PI / 180;
+      var lx = ex + Math.cos(angleRad) * dist - bw/2;
+      var ly = ey - Math.sin(angleRad) * dist - bh/2;
+      var lcx = lx + bw/2, lcy = ly + bh/2; // centro caja
+
+      fctx.save();
+      fctx.globalAlpha = pulse2;
+
+      // Línea desde epicentro → caja
+      fctx.strokeStyle = al.col + 'aa';
+      fctx.lineWidth = 1.4;
+      fctx.setLineDash([4,3]);
+      fctx.beginPath();
+      fctx.moveTo(ex, ey);
+      fctx.lineTo(lcx, lcy);
+      fctx.stroke();
+      fctx.setLineDash([]);
+
+      // Caja con borde de color
+      fctx.fillStyle = 'rgba(10,0,0,0.92)';
+      fctx.fillRect(lx, ly, bw, bh);
+      fctx.strokeStyle = al.col;
+      fctx.lineWidth = 1.5;
+      fctx.strokeRect(lx, ly, bw, bh);
+      // Borde superior sólido de color
+      fctx.fillStyle = al.col;
+      fctx.fillRect(lx, ly, bw, 3);
+
+      // Texto país
+      fctx.font = 'bold 13px Cinzel,serif';
+      fctx.textAlign = 'center';
+      fctx.fillStyle = al.col;
+      fctx.fillText(al.name, lcx, ly+17);
+      // Texto efecto
+      fctx.font = '9px Inter,sans-serif';
+      fctx.fillStyle = '#ffddbb';
+      fctx.fillText(al.efecto, lcx, ly+30);
+
+      // Línea conector caja → punto país en globo
+      fctx.strokeStyle = al.col+'55';
+      fctx.lineWidth = 0.8;
+      fctx.setLineDash([2,4]);
+      fctx.beginPath();
+      fctx.moveTo(lcx, lcy);
+      fctx.lineTo(tx, ty);
+      fctx.stroke();
+      fctx.setLineDash([]);
+
+      // Punto país pulsante
+      fctx.globalAlpha = pulse2;
+      fctx.fillStyle = al.col;
+      fctx.beginPath(); fctx.arc(tx,ty,3,0,Math.PI*2); fctx.fill();
+      fctx.strokeStyle = al.col;
+      fctx.lineWidth = 1.1;
+      fctx.globalAlpha = pulse2*0.45;
+      fctx.beginPath(); fctx.arc(tx,ty,7+2*Math.sin(now*0.005+idx),0,Math.PI*2); fctx.stroke();
+
+      fctx.restore();
+    }
+  });
+}
+
+// ── NOMBRES DE PAÍSES ──
+function drawCountryLabels(){
+  if(!proj) return;
+  var rot = proj.rotate();
+  PAIS_LABELS.forEach(function(p){
+    var latR = p.lat*Math.PI/180, lonR = p.lon*Math.PI/180;
+    var cLat = (-rot[1])*Math.PI/180, cLon = (-rot[0])*Math.PI/180;
+    var cz = Math.sin(latR)*Math.sin(cLat)+Math.cos(latR)*Math.cos(cLat)*Math.cos(lonR-cLon);
+    if(cz < 0.18) return; // solo cara visible, no en el borde
+    var pt = proj([p.lon, p.lat]);
+    if(!pt) return;
+    var alpha = Math.min(1, (cz-0.18)*3);
+    ctx.save();
+    ctx.globalAlpha = alpha*0.65;
+    ctx.font = 'bold '+Math.max(9, Math.round(R*0.038))+'px Inter,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#c8ddf0';
+    ctx.shadowColor = 'rgba(0,0,0,0.9)';
+    ctx.shadowBlur = 6;
+    ctx.fillText(p.name, pt[0], pt[1]);
+    ctx.restore();
+  });
+}
+
+// ── DRAWSTARS ──
+function drawBg(){
+  ctx.fillStyle='#2d1100'; ctx.fillRect(0,0,W,H);
+  // Nebulosa sutil
+  var neb=ctx.createRadialGradient(W*.3,H*.4,0,W*.3,H*.4,W*.5);
+  neb.addColorStop(0,'rgba(80,30,0,.3)'); neb.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=neb; ctx.fillRect(0,0,W,H);
+
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    var twink=.6+.4*Math.sin(t*s.twinkle);
+    ctx.beginPath(); ctx.arc(s.x*W,s.y*H,s.r*Math.min(W,H),0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,'+(s.b*twink)+')'; ctx.fill();
+  }
+}
+
+// ── INICIAR ──
+function iniciarSim(){
+  if(!land){ return; }
+  simOK=true;
+  btnEl.disabled=true; btnEl.style.opacity='.3';
+  setTimeout(function(){btnEl.style.display='none';},600);
+  progWrap.style.opacity='1';
+  t=0; fase=1; particulas=[]; ondas=[]; brillos=[]; eventos=[];
+  aphVisible=true; aphX=W*1.05; aphY=-H*0.08; aphRot=0; aphTrail=[];
+  rotLon=0; rotLat=0; tgtLon=0; tgtLat=0;
+  fragA.active=false; fragB.active=false;
+  showBetaBlast=false; betaBlastAge=0;
+  showTsunami=false; tsunamiAge=0; tsunamiLines=[];
+  showAlfa=false; alfaAge=0; alfaLines=[];
+  showCrateres=false; craterAge=0; escombros=[];
+  showBabDevastada=false; babDevAge=0;
+
+  planear(.5, function(){ titulo('APROXIMACIÓN DETECTADA','Radar JPL confirma trayectoria de colisión','#ff8800',3200); });
+  planear(1,  function(){
+    narrar('«Vi descender del cielo a otro ángel fuerte, envuelto en una nube, con el arco iris sobre su cabeza; y su rostro era como el sol, y sus pies como columnas de fuego»\n— Apocalipsis 10:1',25000);
+  });
+  planear(8,  function(){
+    titulo('⚡ RUPTURA GRAVITACIONAL','Fuerzas de marea fracturan el núcleo','#cc0000',3000);
+    aphVisible=false;
+    tgtLon=-135.5789; tgtLat=-32.5425; // rotar globo al Pacífico inmediatamente
+    var bab=proj([44.4211,32.5425]);
+    var pac=proj([-135.5789,-32.5425]);
+    fragA={x:aphX,y:aphY,tx:bab?bab[0]:CX+R*.4,ty:bab?bab[1]:GY-R*.1,active:true};
+    fragB={x:aphX,y:aphY,tx:pac?pac[0]:CX-R*.4,ty:pac?pac[1]:GY+R*.3,active:true};
+  });
+  planear(8.5, function(){ narrar('«Y tenía en su mano un librito abierto; y puso su pie derecho sobre el mar...»\n— Apocalipsis 10:2',20000); });
+
+  // ── IMPACTO BETA (PACÍFICO) — primero ──
+  planear(12.5, function(){
+    titulo('💥 IMPACTO — PACÍFICO SUR','','#ff6600',2500);
+    doFlash(700);
+    fragB.active=false; aphVisible=false;
+    tgtLon=-135.5789; tgtLat=-32.5425;
+    var pac=proj([-135.5789,-32.5425]);
+    var px=pac?pac[0]:CX-R*.4, py=pac?pac[1]:GY+R*.3;
+    // Explosión roja/naranja igual que Babilonia
+    explosion(px,py,160,['#ff6600','#ffcc00','#cc0000','#ffaa00','#ffffff','#ff4400'],R*.055,3.8);
+    explosion(px,py,90, ['#cc3300','#ff8800','#ff5500','#ffdd44'],R*.035,2.8);
+    mkEscombro(px, py, 110, R*0.07);
+    mkOnda(px,py,'#ff6600',R*.03, R*1.4,2.8);
+    mkOnda(px,py,'#ffaa00',R*.022,R*1.2,2.0);
+    mkBrillo(px,py,'#ff8800',R*.12);
+    // Blast visual (hueco en agua + anillos)
+    showBetaBlast=true; betaBlastAge=0;
+    // Tsunami sale después de ver la explosión
+    setTimeout(function(){ iniciarTsunami(); }, 3500);
+    setTimeout(function(){ showCrateres=true; }, 1200);
+    infoBab.style.opacity='1';
+  });
+  planear(13.5,  function(){
+    narrar('«...y su pie derecho sobre el mar»  — Apocalipsis 10:2\n\n💥 Impacto en el Pacífico Sur — 400 megatones. Tsunami de 500+ metros a 800 km/h.',22000);
+  });
+  planear(19.5,   function(){ narrar('⚠ ALERTA DE TSUNAMI — Hawaii: 3h · Australia: 2h · N.Zelanda: 3h · Indonesia: 4h · Japón: 5h · Chile: 7h · Perú/Ecuador: 8h · Argentina: 9h · Guatemala/El Salvador/Honduras/Nicaragua: 9h · Costa Rica/Panamá/México: 10h · EE.UU.(CA): 11h',22000); });
+  planear(27.5,   function(){ tgtLon=-70; tgtLat=-20; narrar('Las costas del Pacífico de América del Sur reciben las primeras olas. Chile, Perú y Ecuador devastados. Puertos destruidos, ciudades costeras inundadas.',18000); });
+  planear(30.5,   function(){ tgtLon=-64; tgtLat=-38; narrar('Argentina recibe las olas del sur. Las provincias de Buenos Aires, Río Negro y Chubut son arrasadas por el tsunami. Bolivia, siendo un país mediterráneo, sufre las consecuencias sísmicas y el colapso de infraestructura.',16000); });
+  planear(33.5,   function(){ tgtLon=-90; tgtLat=14; narrar('Centroamérica bajo impacto. Guatemala, El Salvador, Honduras, Nicaragua, Costa Rica y Panamá cubiertos por olas de más de 100 metros.',18000); });
+  planear(39.5,   function(){ tgtLon=138; tgtLat=36; narrar('El tsunami alcanza Japón, Filipinas e Indonesia. Millones de personas en zonas costeras en peligro inminente.',18000); });
+  planear(44.5,   function(){ tgtLon=118; tgtLat=-2; narrar('Indonesia y las Filipinas quedan bajo el agua. La cadena de islas del Pacífico occidental desaparece bajo olas de más de 200 metros.',16000); });
+  planear(48.5,   function(){ tgtLon=44.4211; tgtLat=32.5425; }); // rotar globo a Babilonia antes del impacto
+
+  // ── IMPACTO ALFA (BABILONIA) — ~30 segundos después del Pacífico ──
+  planear(51.5, function(){
+    titulo('💥 IMPACTO — BABILONIA','Fragmento A golpea Oriente Medio','#ff4400',3000);
+    doFlash(800);
+    fragA.active=false; aphVisible=false;
+    tgtLon=44.4211; tgtLat=32.5425;
+    var bab=proj([44.4211,32.5425]);
+    var bx=bab?bab[0]:CX+R*.4, by=bab?bab[1]:GY-R*.1;
+    explosion(bx,by,200,['#ff6600','#ffcc00','#cc0000','#ffaa00','#ffffff','#ff4400','#ffdd44'],R*.06,4.2);
+    explosion(bx,by,100,['#cc3300','#ff8800','#cc0000','#ff5500'],R*.038,3.0);
+    // Fragmentos de meteorito incandescentes volando
+    mkFragMeteorito(bx, by, 55, R*0.085);
+    // Escombros de roca y tierra
+    mkEscombro(bx, by, 80, R*0.07);
+    mkOnda(bx,by,'#ff6600',R*.035,R*1.6,3.2);
+    mkOnda(bx,by,'#ffaa00',R*.025,R*1.3,2.4);
+    mkOnda(bx,by,'#ff8844',R*.018,R*1.1,1.8);
+    mkOnda(bx,by,'#ffcc44',R*.012,R*0.9,1.2);
+    mkBrillo(bx,by,'#cc0000',R*.12);
+    mkBrillo(bx,by,'#ff6600',R*.08);
+    // Zona devastada persistente
+    showBabDevastada = true; babDevX=bx; babDevY=by; babDevAge=0;
+    setTimeout(function(){ iniciarAlfa(); }, 1500);
+  });
+  planear(52.5,   function(){
+    narrar('«...y su pie izquierdo sobre la tierra»  — Apocalipsis 10:2\n\n💥 Impacto en Babilonia — 880 megatones. Radio de destrucción: 1,200 km.',22000);
+  });
+  planear(58.5,   function(){ tgtLon=44.4211; tgtLat=32.5425; narrar('Iraq, Siria, Kuwait, Irán y Jordania devastados. La onda de choque y el calor extremo alcanzan hasta Turquía, Egipto y Pakistán.',20000); });
+  planear(64.5,   function(){ narrar('Dos impactos simultáneos. El mundo tal como lo conocemos ha cambiado para siempre.',20000); });
+  planear(73.5, function(){
+    setP(100);
+    var autoT=0;
+    (function spinFinal(){
+      if(!simOK) return;
+      autoT+=.003;
+      if(!isDrag){
+        tgtLon = -45 + Math.sin(autoT)*150;
+        tgtLat = 5 + Math.sin(autoT*.6)*30;
+      }
+      setTimeout(spinFinal, 50);
+    })();
+    setTimeout(function(){
+      btnEl.style.display='block'; btnEl.disabled=false; btnEl.style.opacity='1';
+      btnEl.textContent='↺ REINICIAR SIMULACIÓN'; btnEl.onclick=function(){location.reload();};
+    },1800);
+  });
+}
+window.iniciar = iniciarSim;
+
+// ── RENDER LOOP ──
+var last=0;
+function frame(now){
+  requestAnimationFrame(frame);
+  var dt=Math.min((now-last)/1000,.05); last=now;
+  // Rotación lenta y continua del asteroide (eje propio)
+  aphRot += 0.004;
+
+  drawBg();
+
+  // Rotar globo suave
+  var lerpV = simOK ? .025 : .015;
+  rotLon += (tgtLon-rotLon)*lerpV;
+  rotLat += (tgtLat-rotLat)*lerpV;
+  if(!simOK && !isDrag){ rotLon+=.04; tgtLon=rotLon; }
+
+  drawGlobe();
+
+  fctx.clearRect(0,0,W,H);
+
+  // ── APOPHIS ACERCÁNDOSE — línea recta desde esquina ──
+  if(simOK && fase===1 && aphVisible){
+    var prog=Math.min(t/8,1);
+    var easeP=1-Math.pow(1-prog,3);
+    // Viene desde fuera de pantalla arriba-derecha → al globo
+    var startX=W*1.05, startY=-H*0.08;
+    var endX=CX+R*.35, endY=GY-R*.25;
+    aphX = startX+(endX-startX)*easeP;
+    aphY = startY+(endY-startY)*easeP;
+    var sc=0.7+easeP*0.65;
+
+    // Registrar estela
+    aphTrail.push({x:aphX, y:aphY, age:0});
+    if(aphTrail.length>80) aphTrail.shift();
+
+    // Dibujar estela luminosa
+    for(var ti=0; ti<aphTrail.length-1; ti++){
+      var tp0=aphTrail[ti], tp1=aphTrail[ti+1];
+      var ta=(ti/aphTrail.length);
+      fctx.save();
+      fctx.globalAlpha = ta*0.75;
+      fctx.strokeStyle='rgba(255,'+(120+Math.round(ta*100))+',20,1)';
+      fctx.lineWidth = ta*3.5+0.5;
+      fctx.lineCap='round';
+      fctx.beginPath(); fctx.moveTo(tp0.x,tp0.y); fctx.lineTo(tp1.x,tp1.y); fctx.stroke();
+      fctx.restore();
+    }
+
+    // Partículas de calor
+    for(var j=0;j<3;j++){
+      mkPart(aphX+(Math.random()-.5)*4, aphY+(Math.random()-.5)*4,
+             (Math.random()-.5)*0.6, (Math.random()-.5)*0.6,
+             Math.random()<.6?'#ff6600':'#ffcc44', 20+Math.random()*15, 2, .0);
+    }
+    drawApophis(aphX,aphY,aphRot,sc*(1-easeP*.15));
+    setP(easeP*40);
+    if(t>=8){ fase=2; }
+  }
+
+  // ── FRAGMENTOS — se parten y separan en dos trayectorias ──
+  if(simOK && fragA.active){
+    var prog2=Math.min((t-8)/4,1);
+    var ease2=prog2*prog2*(3-2*prog2); // smoothstep
+    var bab2=proj([44.4211,32.5425]);
+    var pac2=proj([-135.5789,-32.5425]);
+    var fAtx=bab2?bab2[0]:CX+R*.3, fAty=bab2?bab2[1]:GY;
+    var fBtx=pac2?pac2[0]:CX-R*.4, fBty=pac2?pac2[1]:GY+R*.2;
+
+    // Al inicio (ease2<0.08) los dos fragmentos arrancan del mismo punto separándose
+    // Efecto de ruptura: separación lateral animada
+    var splitOff = ease2 < 0.15 ? ease2/0.15 : 1; // 0→1 durante el primer 15%
+    var sepDist = R * 0.04 * splitOff; // separación lateral al romper
+    var midX = aphX+(fAtx-aphX)*ease2;
+    var midY = aphY+(fAty-aphY)*ease2;
+    // Vector perpendicular a la dirección del frag A para separar visualmente
+    var dxA = fAtx-aphX, dyA = fAty-aphY;
+    var lenA = Math.sqrt(dxA*dxA+dyA*dyA)||1;
+    var perpX = -dyA/lenA, perpY = dxA/lenA;
+
+    var fAx = aphX+(fAtx-aphX)*ease2 + perpX*sepDist;
+    var fAy = aphY+(fAty-aphY)*ease2 + perpY*sepDist;
+    var fBx = aphX+(fBtx-aphX)*ease2 - perpX*sepDist;
+    var fBy = aphY+(fBty-aphY)*ease2 - perpY*sepDist;
+
+    // Flash de ruptura en t≈5 (ease2 muy pequeño)
+    if(splitOff < 0.3){
+      fctx.save();
+      fctx.globalAlpha = (1-splitOff/0.3)*0.7;
+      var splitG = fctx.createRadialGradient(aphX,aphY,0,aphX,aphY,R*0.08);
+      splitG.addColorStop(0,'rgba(255,255,200,1)');
+      splitG.addColorStop(0.4,'rgba(255,180,50,0.6)');
+      splitG.addColorStop(1,'rgba(0,0,0,0)');
+      fctx.beginPath(); fctx.arc(aphX,aphY,R*0.08,0,Math.PI*2);
+      fctx.fillStyle=splitG; fctx.fill();
+      fctx.restore();
+      // Línea de quiebre (grieta)
+      fctx.save();
+      fctx.globalAlpha = (1-splitOff/0.3)*0.9;
+      fctx.strokeStyle='rgba(255,255,150,0.9)';
+      fctx.lineWidth=2;
+      fctx.beginPath();
+      fctx.moveTo(aphX + perpX*R*0.06, aphY + perpY*R*0.06);
+      fctx.lineTo(aphX - perpX*R*0.06, aphY - perpY*R*0.06);
+      fctx.stroke();
+      fctx.restore();
+    }
+
+    // Líneas de trayectoria de fragmentos
+    fctx.save();
+    fctx.setLineDash([6,4]);
+    fctx.lineWidth=1.5;
+    fctx.strokeStyle='rgba(255,180,60,0.6)';
+    fctx.beginPath(); fctx.moveTo(fAx,fAy); fctx.lineTo(fAtx,fAty); fctx.stroke();
+    fctx.strokeStyle='rgba(100,200,255,0.5)';
+    fctx.beginPath(); fctx.moveTo(fBx,fBy); fctx.lineTo(fBtx,fBty); fctx.stroke();
+    fctx.setLineDash([]);
+    // Labels
+    if(bab2 && ease2>0.1){
+      fctx.font='bold 10px Cinzel,serif'; fctx.fillStyle='#ffaa44'; fctx.textAlign='center';
+      fctx.globalAlpha=Math.min(ease2*3,1);
+      fctx.fillText('→ BABILONIA',fAtx,fAty-16);
+    }
+    if(pac2 && ease2>0.1){
+      fctx.font='bold 10px Cinzel,serif'; fctx.fillStyle='#44ccff'; fctx.textAlign='center';
+      fctx.globalAlpha=Math.min(ease2*3,1);
+      fctx.fillText('→ PACÍFICO SUR',fBtx,fBty-16);
+    }
+    fctx.restore();
+
+    // Estelas fragmentos — arrancan del punto de ruptura
+    if(fragA.active && bab2) for(var j=0;j<2;j++) mkPart(fAx+(Math.random()-.5)*3,fAy+(Math.random()-.5)*3,(Math.random()-.5)*.4,(Math.random()-.5)*.4,'#ff7733',15,1.5,.0);
+    if(fragB.active && pac2) for(var j=0;j<2;j++) mkPart(fBx+(Math.random()-.5)*3,fBy+(Math.random()-.5)*3,(Math.random()-.5)*.4,(Math.random()-.5)*.4,'#44aaff',15,1.5,.0);
+    // Fragmento A más grande (va a Babilonia), B más pequeño (va al Pacífico)
+    if(fragA.active && bab2) drawApophis(fAx,fAy,aphRot,.55,.9);
+    if(fragB.active && pac2) drawApophis(fBx,fBy,aphRot+0.8,.38,.85);
+    setP(40+ease2*30);
+    if(t>=12) fase=3;
+  }
+
+  // ── PARTICULAS ──
+  for(var i=particulas.length-1;i>=0;i--){
+    var p=particulas[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=p.g;
+    p.vida--;
+    if(p.vida<=0){particulas.splice(i,1);continue;}
+    var a=p.vida/p.maxV;
+    fctx.beginPath(); fctx.arc(p.x,p.y,p.r*a+.5,0,Math.PI*2);
+    fctx.fillStyle=p.col; fctx.globalAlpha=a*.95; fctx.fill(); fctx.globalAlpha=1;
+  }
+
+  // ── ONDAS ──
+  for(var i=ondas.length-1;i>=0;i--){
+    var o=ondas[i];
+    o.r+=o.vel; o.op=Math.max(0,1-o.r/o.maxR);
+    if(o.op<=0){ondas.splice(i,1);continue;}
+    fctx.beginPath(); fctx.arc(o.x,o.y,o.r,0,Math.PI*2);
+    fctx.strokeStyle=o.col; fctx.lineWidth=o.lw; fctx.globalAlpha=o.op*.75; fctx.stroke(); fctx.globalAlpha=1;
+  }
+
+  // ── ESCOMBROS ──
+  drawEscombros();
+  drawBetaBlast();
+  drawBabDevastada();
+
+  // ── TSUNAMI ──
+  drawTsunami();
+  drawOlasTsunami();
+
+  // ── BLAST ALFA ──
+  drawAlfa();
+
+  // ── BRILLOS ──
+  for(var i=0;i<brillos.length;i++){
+    var b=brillos[i]; b.op=Math.max(0,b.op-.0012); b.pulse+=.08;
+    if(b.op<=0) continue;
+    var br=b.r*(.8+.4*Math.sin(b.pulse));
+    var bg2=fctx.createRadialGradient(b.x,b.y,0,b.x,b.y,br);
+    bg2.addColorStop(0,b.col); bg2.addColorStop(.5,b.col+'88'); bg2.addColorStop(1,'rgba(0,0,0,0)');
+    fctx.beginPath(); fctx.arc(b.x,b.y,br,0,Math.PI*2);
+    fctx.fillStyle=bg2; fctx.globalAlpha=b.op; fctx.fill(); fctx.globalAlpha=1;
+  }
+
+  // Eventos
+  if(simOK){
+    t+=dt;
+    for(var i=0;i<eventos.length;i++){
+      if(!eventos[i].done && t>=eventos[i].ts){ eventos[i].fn(); eventos[i].done=true; }
+    }
+  }
+}
+
+// ── DRAG PARA ROTAR GLOBO ──
+var isDrag=false, dragStart=null, rotStart=null;
+var SENS=.35;
+
+function onDragStart(x,y){
+  isDrag=true; cv.classList.add('drag');
+  dragStart=[x,y]; rotStart=[rotLon,rotLat];
+}
+function onDragMove(x,y){
+  if(!isDrag) return;
+  var dx=x-dragStart[0], dy=y-dragStart[1];
+  rotLon=tgtLon=rotStart[0]+dx*SENS;
+  rotLat=tgtLat=Math.max(-85,Math.min(85,rotStart[1]-dy*SENS));
+}
+function onDragEnd(){ isDrag=false; cv.classList.remove('drag'); }
+
+cv.addEventListener('mousedown',function(e){ onDragStart(e.clientX,e.clientY); });
+window.addEventListener('mousemove',function(e){ onDragMove(e.clientX,e.clientY); });
+window.addEventListener('mouseup',onDragEnd);
+
+cv.addEventListener('touchstart',function(e){
+  if(e.touches.length===1) onDragStart(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+window.addEventListener('touchmove',function(e){
+  if(e.touches.length===1) onDragMove(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+window.addEventListener('touchend',onDragEnd);
+
+// ── CARGA DATOS MAPA ──
+resize();
+requestAnimationFrame(frame);
+
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(function(r){ return r.json(); })
+  .then(function(world){
+    land    = topojson.feature(world, world.objects.land);
+    borders = topojson.mesh(world, world.objects.countries, function(a,b){ return a!==b; });
+    loadEl.style.opacity='0';
+    setTimeout(function(){loadEl.style.display='none';},700);
+    btnEl.disabled=false;
+  })
+  .catch(function(){
+    // Fallback: globo sin mapa
+    loadEl.style.opacity='0';
+    setTimeout(function(){loadEl.style.display='none';},700);
+    btnEl.disabled=false;
+  });
+
+})();
+</script>
+</body>
+</html>

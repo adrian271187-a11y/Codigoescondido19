@@ -3,21 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Estudios — Código Escondido 19</title>
+  <title>Revelaciones — Código Escondido 19</title>
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#e85d04">
   <link rel="apple-touch-icon" href="./assets/ensenanzas/Icons/icon-192.png">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/style.css">
   <style>
-    .estudios-hero {
+    :root {
+      --negro:    #7a3d00;
+      --profundo: #8a4800;
+      --carbon:   #9a5500;
+      --panel:    #a86030;
+      --oscuro:   #7a3d00;
+      --cafe:     #b87040;
+      --cafe2:    #c07840;
+      --cafe3:    #cc8850;
+      --gris:     #ffe8cc;
+      --blanco:   #ffffff;
+      --dorado:   #ffcc44;
+      --dorado2:  #ffe066;
+    }
+    body { background: #8a4800; color: #ffe8cc; }
+    .Revelaciones-hero {
       padding: 7rem 2rem 3rem;
       text-align: center;
       background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(232,93,4,.2) 0%, transparent 70%);
       border-bottom: 1px solid rgba(232,93,4,.15);
     }
-    .estudios-hero h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,4rem); color:var(--blanco); }
-    .estudios-hero p  { color:var(--gris); max-width:52ch; margin:.8rem auto 0; }
+    .Revelaciones-hero h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,4rem); color:var(--blanco); }
+    .Revelaciones-hero p  { color:var(--gris); max-width:52ch; margin:.8rem auto 0; }
 
     /* FILTROS */
     .filtros {
@@ -33,8 +48,8 @@
       background:var(--dorado); color:var(--cafe); border-color:var(--dorado);
     }
 
-    /* GRID DE ESTUDIOS */
-    .estudios-container { max-width:1050px; margin:0 auto; padding:2.5rem 1.5rem; }
+    /* GRID DE Revelaciones */
+    .Revelaciones-container { max-width:1050px; margin:0 auto; padding:2.5rem 1.5rem; }
     .cat-titulo {
       font-family:'Cinzel',serif; font-size:1rem; color:var(--dorado);
       letter-spacing:.08em; margin:2.5rem 0 1.2rem;
@@ -42,7 +57,7 @@
     }
     .cat-titulo::after { content:''; flex:1; height:1px; background:rgba(232,93,4,.2); }
 
-    .estudios-grid {
+    .Revelaciones-grid {
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
       gap:1rem;
@@ -112,7 +127,7 @@
     }
 
     @media(max-width:600px) {
-      .estudios-grid { grid-template-columns:1fr; }
+      .Revelaciones-grid { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -123,24 +138,30 @@
   <ul id="nav-links">
     <li><a href="index.html">Inicio</a></li>
     <li><a href="ensenanzas.html">Enseñanzas</a></li>
-    <li><a href="estudios.html" style="color:var(--dorado)">Estudios</a></li>
+    <li><a href="Revelaciones.html" style="color:var(--dorado)">Revelaciones</a></li>
     <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
     <li id="nav-perfil" style="display:none"><a href="perfil.html" id="nav-usuario">Mi perfil</a></li>
-    <li id="nav-login"><a href="login.html" class="btn-nav">Ingresar</a></li>
     <li id="nav-logout" style="display:none"><a href="#" id="btn-logout" class="btn-nav-out">Salir</a></li>
   </ul>
 </nav>
 
 <!-- HERO -->
-<div class="estudios-hero">
+<div class="Revelaciones-hero">
   <div class="section-label">Material de estudio</div>
-  <h1>Estudios</h1>
+  <h1>Revelaciones</h1>
   <p>Documentos, diagramas y materiales de Código Escondido 19 para profundizar en la Palabra.</p>
+  <a href="https://codigoescondido19.my.canva.site/" target="_blank" rel="noopener"
+     style="display:inline-block;margin-top:1.2rem;padding:.6rem 1.6rem;
+            background:var(--dorado);color:var(--cafe);font-family:'Lato',sans-serif;
+            font-weight:700;font-size:.85rem;letter-spacing:.06em;text-decoration:none;
+            transition:background .2s;">
+    🌐 Ver sitio web
+  </a>
 </div>
 
 <!-- FILTROS -->
 <div class="filtros">
-  <button class="filtro-btn active" onclick="filtrar('todo',this)">Todo</button>
+  <button class="filtro-btn active" onclick="filtrar('Todo',this)">Libros completos</button>
   <button class="filtro-btn" onclick="filtrar('numeros',this)">Números Bíblicos</button>
   <button class="filtro-btn" onclick="filtrar('mercaderias',this)">Mercaderías</button>
   <button class="filtro-btn" onclick="filtrar('identidad',this)">Identidad</button>
@@ -148,11 +169,11 @@
   <button class="filtro-btn" onclick="filtrar('otros',this)">Otros</button>
 </div>
 
-<div class="estudios-container">
+<div class="Revelaciones-container">
 
   <!-- NÚMEROS BÍBLICOS -->
   <div class="cat-titulo" data-cat="numeros">🔢 Números Bíblicos</div>
-  <div class="estudios-grid" id="grid-numeros">
+  <div class="Revelaciones-grid" id="grid-numeros">
 
     <div class="estudio-card" data-cat="numeros">
       <div class="estudio-icono">📊</div>
@@ -160,8 +181,8 @@
       <div class="estudio-titulo">Los Números Bíblicos</div>
       <div class="estudio-desc">Significado de los números del 0 al 49 con versículos de referencia.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/NUMEROS_BIBLICOS.pdf','Los Números Bíblicos')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/NUMEROS_BIBLICOS.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/NUMEROS_BIBLICOS.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/NUMEROS_BIBLICOS.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -171,8 +192,8 @@
       <div class="estudio-titulo">Colores Bíblicos</div>
       <div class="estudio-desc">Los 10 colores del arcoíris y su significado espiritual según las Escrituras.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/colores_biblicos.pdf','Colores Bíblicos')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/colores_biblicos.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/colores_biblicos.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/colores_biblicos.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -182,8 +203,8 @@
       <div class="estudio-titulo">Colores — Ezequiel 28</div>
       <div class="estudio-desc">Las piedras preciosas del Edén y sus colores según Ezequiel 28:13.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/colores.pdf','Colores — Ezequiel 28')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/colores.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/colores.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/colores.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -193,8 +214,8 @@
       <div class="estudio-titulo">Número de la Bestia — Apocalipsis 13:18</div>
       <div class="estudio-desc">Las tres deidades (10, 11, 12) y el significado del 666.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/numero_de_la_bestia.pdf','Número de la Bestia')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/numero_de_la_bestia.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/numero_de_la_bestia.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/numero_de_la_bestia.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -204,8 +225,8 @@
       <div class="estudio-titulo">El Camino de las Estrellas</div>
       <div class="estudio-desc">El misterio de las 7 iglesias — Apocalipsis 1:20, 2:1-29, 3:1-22.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/7ESTRELLAS.pdf','El Camino de las Estrellas')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/7ESTRELLAS.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/7ESTRELLAS.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/7ESTRELLAS.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -215,8 +236,41 @@
       <div class="estudio-titulo">Deidades 10, 11 y 12</div>
       <div class="estudio-desc">Dios Todopoderoso, el Hombre y Satanás — la lucha por el alma.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/deidades-2.pdf','Deidades 10, 11 y 12')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/deidades-2.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/deidades-2.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/deidades-2.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">🔤</div>
+      <div class="estudio-cat">Números · Letras</div>
+      <div class="estudio-titulo">Abecedario Bíblico — 29 Letras</div>
+      <div class="estudio-desc">El significado profético de las 29 letras del abecedario según las Escrituras.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/ABECEDARIO_29.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/ABECEDARIO_29.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">💎</div>
+      <div class="estudio-cat">Números · Piedras</div>
+      <div class="estudio-titulo">Piedras Preciosas</div>
+      <div class="estudio-desc">Las piedras preciosas en las Escrituras y su significado espiritual.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Piedras_Preciosas.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Piedras_Preciosas.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="numeros">
+      <div class="estudio-icono">📅</div>
+      <div class="estudio-cat">Números · Días</div>
+      <div class="estudio-titulo">Días de la Semana</div>
+      <div class="estudio-desc">El significado bíblico y profético de los 7 días de la semana.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Dias_de_la_Semana.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Dias_de_la_Semana.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -224,7 +278,7 @@
 
   <!-- MERCADERÍAS DE BABILONIA -->
   <div class="cat-titulo" data-cat="mercaderias">🏛️ Mercaderías de Babilonia</div>
-  <div class="estudios-grid" id="grid-mercaderias">
+  <div class="Revelaciones-grid" id="grid-mercaderias">
 
     <div class="estudio-card" data-cat="mercaderias">
       <div class="estudio-icono">📖</div>
@@ -232,8 +286,8 @@
       <div class="estudio-titulo">Derribando las Mercaderías de Babilonia</div>
       <div class="estudio-desc">Serie completa: Palabras, La Fe, Preguntas, Lexico y más.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/MERCADERIAS.pdf','Mercaderías de Babilonia')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/MERCADERIAS.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/MERCADERIAS.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/MERCADERIAS.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -243,8 +297,8 @@
       <div class="estudio-titulo">Léxico — Marzo 2026</div>
       <div class="estudio-desc">Actualización del léxico de Código Escondido 19 para marzo de 2026.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/LEXICO_marzo_2026.pdf','Léxico Marzo 2026')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/LEXICO_marzo_2026.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/LEXICO_marzo_2026.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/LEXICO_marzo_2026.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -254,8 +308,8 @@
       <div class="estudio-titulo">Identificar la Voz</div>
       <div class="estudio-desc">Voz del Alma vs Voz del Espíritu — cómo discernir entre ambas.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/IDENTIFICA_LA_VOZ.pdf','Identificar la Voz')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/IDENTIFICA_LA_VOZ.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/IDENTIFICA_LA_VOZ.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/IDENTIFICA_LA_VOZ.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -265,8 +319,19 @@
       <div class="estudio-titulo">Marcos 11:27 — La Puerta</div>
       <div class="estudio-desc">Libertad, Babilonia y Jerusalén — Marcos 11:27-33 y la autoridad de Cristo.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/MARCOS1127.pdf','Marcos 11:27 — La Puerta')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/MARCOS1127.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/MARCOS1127.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/MARCOS1127.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="mercaderias">
+      <div class="estudio-icono">🌿</div>
+      <div class="estudio-cat">Mercaderías de Babilonia</div>
+      <div class="estudio-titulo">Mercadería en el Jardín del Edén</div>
+      <div class="estudio-desc">El origen de las mercaderías de Babilonia en el Jardín del Edén.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Mercaderia_en_el_Eden.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Mercaderia_en_el_Eden.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -274,7 +339,7 @@
 
   <!-- IDENTIDAD Y CREACIÓN -->
   <div class="cat-titulo" data-cat="identidad">🧬 Identidad y Creación</div>
-  <div class="estudios-grid" id="grid-identidad">
+  <div class="Revelaciones-grid" id="grid-identidad">
 
     <div class="estudio-card" data-cat="identidad">
       <div class="estudio-icono">🧬</div>
@@ -282,8 +347,8 @@
       <div class="estudio-titulo">El Matrimonio de Dios Todopoderoso</div>
       <div class="estudio-desc">Varón y Varona — ADN, fusión genética y el diseño original de Dios.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/adn.pdf','Matrimonio de Dios — ADN')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/adn.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/adn.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/adn.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -293,8 +358,8 @@
       <div class="estudio-titulo">Varón y Varona</div>
       <div class="estudio-desc">La derecha, la izquierda y el orden divino en la creación del hombre.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/VARON_Y_VARONA_HTAL.pdf','Varón y Varona')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/VARON_Y_VARONA_HTAL.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/VARON_Y_VARONA_HTAL.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/VARON_Y_VARONA_HTAL.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -304,8 +369,8 @@
       <div class="estudio-titulo">Las Dimensiones</div>
       <div class="estudio-desc">Efesios 3:18 — La anchura, longitud, profundidad y altura del Espíritu.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirImg('assets/estudios/las_dimensiones.jpg','Las Dimensiones')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/las_dimensiones.jpg" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/las_dimensiones.jpg" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/las_dimensiones.jpg" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -315,8 +380,8 @@
       <div class="estudio-titulo">Bautismo en las Aguas Azules</div>
       <div class="estudio-desc">El bautismo al aire libre y con sol — Juan 3:5, Lucas 3:21, Mateo 3:11.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/bautismo.pdf','Bautismo en las Aguas Azules')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/bautismo.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/bautismo.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/bautismo.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -326,8 +391,8 @@
       <div class="estudio-titulo">Oración Padre Nuestro</div>
       <div class="estudio-desc">Los 9 puntos del Padre Nuestro — Lucas 11:2-3, Mateo 6:9-13.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/padrenuestro.pdf','Oración Padre Nuestro')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/padrenuestro.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/padrenuestro.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/padrenuestro.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -337,8 +402,8 @@
       <div class="estudio-titulo">Purificación del Oro</div>
       <div class="estudio-desc">7 etapas y 7 pruebas — el proceso de purificación espiritual.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/purificacion_del_oro.pdf','Purificación del Oro')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/purificacion_del_oro.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/purificacion_del_oro.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/purificacion_del_oro.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -346,7 +411,7 @@
 
   <!-- PROFECÍA -->
   <div class="cat-titulo" data-cat="profecia">📜 Profecía y Ángeles</div>
-  <div class="estudios-grid" id="grid-profecia">
+  <div class="Revelaciones-grid" id="grid-profecia">
 
     <div class="estudio-card" data-cat="profecia">
       <div class="estudio-icono">🔒</div>
@@ -354,8 +419,8 @@
       <div class="estudio-titulo">Ángeles en Prisiones Oscuras</div>
       <div class="estudio-desc">1 Pedro 3:19, Judas 1:6-7 — los ángeles caídos y las eras bíblicas.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/Angeles_en_Prisiones_Oscuras-1.pdf','Ángeles en Prisiones Oscuras')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/Angeles_en_Prisiones_Oscuras-1.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Angeles_en_Prisiones_Oscuras-1.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Angeles_en_Prisiones_Oscuras-1.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -365,8 +430,30 @@
       <div class="estudio-titulo">De Agua y Vino</div>
       <div class="estudio-desc">Apocalipsis 17:15, Juan 2:1 — Babilonia, el agua, el vino y la sangre.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/de_agua_y_vino.pdf','De Agua y Vino')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/de_agua_y_vino.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/de_agua_y_vino.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/de_agua_y_vino.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="profecia">
+      <div class="estudio-icono">☄️</div>
+      <div class="estudio-cat">Profecía · Señales</div>
+      <div class="estudio-titulo">Apophis — Señal del Tiempo</div>
+      <div class="estudio-desc">El asteroide 99942 Apophis y su significado profético para el 13 de abril de 2029.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Aphophis.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Aphophis.pdf" download>⬇ Descargar</a>
+      </div>
+    </div>
+
+    <div class="estudio-card" data-cat="profecia">
+      <div class="estudio-icono">🦁</div>
+      <div class="estudio-cat">Profecía · Apocalipsis</div>
+      <div class="estudio-titulo">Los Cuatro Seres Vivientes</div>
+      <div class="estudio-desc">Apocalipsis 4:6-8, Ezequiel 1 — el León, el Becerro, el Hombre y el Águila.</div>
+      <div class="estudio-btns">
+        <a class="btn-ver" href="assets/ensenanzas/estudios/Los_cuatro_seres_vivientes.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/Los_cuatro_seres_vivientes.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -374,7 +461,7 @@
 
   <!-- CÓDIGO ESCONDIDO 19 -->
   <div class="cat-titulo" data-cat="otros">✦ Código Escondido 19</div>
-  <div class="estudios-grid" id="grid-otros">
+  <div class="Revelaciones-grid" id="grid-otros">
 
     <div class="estudio-card" data-cat="otros">
       <div class="estudio-icono">📘</div>
@@ -382,8 +469,8 @@
       <div class="estudio-titulo">Código Escondido 19 — Estudio Completo</div>
       <div class="estudio-desc">Apocalipsis 13:18 — Las deidades, los planetas y el mensaje profético.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirPDF('assets/estudios/codigo_escondido_19.pdf','Código Escondido 19')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/codigo_escondido_19.pdf" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/codigo_escondido_19.pdf" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/codigo_escondido_19.pdf" download>⬇ Descargar</a>
       </div>
     </div>
 
@@ -393,14 +480,14 @@
       <div class="estudio-titulo">Apocalipsis 13:18 — Diagrama de Deidades</div>
       <div class="estudio-desc">Jesús: Yo Soy el Camino, la Verdad y la Vida — Juan 14:6.</div>
       <div class="estudio-btns">
-        <button class="btn-ver" onclick="abrirImg('assets/estudios/deidades.jpg','Deidades — Apocalipsis 13:18')">Ver</button>
-        <a class="btn-dl" href="assets/estudios/deidades.jpg" download>⬇ Descargar</a>
+        <a class="btn-ver" href="assets/ensenanzas/estudios/deidades.jpg" target="_blank" rel="noopener">👁 Ver</a>
+        <a class="btn-dl" href="assets/ensenanzas/estudios/deidades.jpg" download>⬇ Descargar</a>
       </div>
     </div>
 
   </div>
 
-</div><!-- /estudios-container -->
+</div><!-- /Revelaciones-container -->
 
 <!-- MODAL VISOR PDF -->
 <div id="pdf-modal">
@@ -442,20 +529,9 @@ function filtrar(cat, btn) {
   });
 }
 
-// VISOR PDF
+// VISOR PDF — abre en nueva pestaña directamente
 function abrirPDF(src, title) {
-  document.getElementById('pdf-modal-title').textContent = title;
-  document.getElementById('pdf-iframe').src = src;
-  document.getElementById('pdf-dl-link').href = src;
-  document.getElementById('pdf-dl-link').download = src.split('/').pop();
-  document.getElementById('pdf-new-link').href = src;
-  document.getElementById('pdf-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function cerrarPDF() {
-  document.getElementById('pdf-modal').classList.remove('open');
-  document.getElementById('pdf-iframe').src = '';
-  document.body.style.overflow = '';
+  window.open(src, '_blank');
 }
 
 // VISOR IMAGEN
