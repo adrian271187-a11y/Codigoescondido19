@@ -1,0 +1,158 @@
+name: Compilar app macOS CE19 (archivos locales)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Preparar archivos del sitio
+        run: |
+          mkdir -p electron-app/www
+          cp *.html electron-app/www/ 2>/dev/null || true
+          cp *.js electron-app/www/ 2>/dev/null || true
+          cp *.json electron-app/www/ 2>/dev/null || true
+          cp -r src electron-app/www/ 2>/dev/null || true
+          cp -r assets electron-app/www/ 2>/dev/null || true
+          cp -r Icons electron-app/www/ 2>/dev/null || true
+          cp -r files electron-app/www/ 2>/dev/null || true
+          echo "Archivos copiados:" && ls electron-app/www/
+
+      - name: Crear proyecto Electron
+        run: |
+          cat > electron-app/package.json << 'EOF'
+          {
+            "name": "codigoescondido19",
+            "version": "1.0.0",
+            "description": "Codigo Escondido 19",
+            "main": "main.js",
+            "build": {
+              "appId": "com.codigoescondido19.app",
+              "productName": "Codigo Escondido 19",
+              "directories": { "output": "dist" },
+              "mac": {
+                "target": [{ "target": "dir", "arch": ["x64", "arm64"] }],
+                "category": "public.app-category.education"
+              },
+              "extraResources": [
+                { "from": "www", "to": "www" }
+              ]
+            },
+            "devDependencies": {
+              "electron": "^31.0.0",
+              "electron-builder": "^24.0.0"
+            }
+          }
+          EOF
+
+          cat > electron-app/main.js << 'MAINEOF'
+          const { app, BrowserWindow, protocol } = require('electron')
+          const path = require('path')
+          const fs = require('fs')
+          const https = require('https')
+
+          const FIREBASE_BASE = 'https://codigoescondido19.web.app'
+          const CACHE_DIR = path.join(app.getPath('userData'), 'www')
+          const BUNDLED_DIR = path.join(process.resourcesPath, 'www')
+
+          protocol.registerSchemesAsPrivileged([{
+            scheme: 'app',
+            privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true }
+          }])
+
+          function getFilePath(relative) {
+            const cached = path.join(CACHE_DIR, relative)
+            const bundled = path.join(BUNDLED_DIR, relative)
+            return fs.existsSync(cached) ? cached : (fs.existsSync(bundled) ? bundled : null)
+          }
+
+          function downloadFile(url, dest, cb) {
+            const dir = path.dirname(dest)
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+            const tmp = dest + '.tmp'
+            const file = fs.createWriteStream(tmp)
+            https.get(url, res => {
+              if (res.statusCode !== 200) { file.close(); try{fs.unlinkSync(tmp)}catch(e){} cb(false); return }
+              res.pipe(file)
+              file.on('finish', () => { file.close(); fs.renameSync(tmp, dest); cb(true) })
+            }).on('error', () => { file.close(); try{fs.unlinkSync(tmp)}catch(e){} cb(false) })
+          }
+
+          function tryUpdate() {
+            if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true })
+            const files = [
+              'index.html','src/style.css','src/app.js','src/auth.js','src/firebase.js',
+              'src/tools.js','src/perfil.js','apophis.html','three.min.js',
+              'Revelaciones.html','ensenanzas.html','login.html','perfil.html',
+              'impacto.html','estudios.html','manifest.json','sw.js'
+            ]
+            files.forEach(f => downloadFile(FIREBASE_BASE+'/'+f, path.join(CACHE_DIR,f), ()=>{}))
+          }
+
+          const MIME = {
+            '.html':'text/html','.css':'text/css','.js':'application/javascript',
+            '.json':'application/json','.png':'image/png','.jpg':'image/jpeg',
+            '.jpeg':'image/jpeg','.svg':'image/svg+xml','.gif':'image/gif',
+            '.ico':'image/x-icon','.webp':'image/webp','.woff':'font/woff',
+            '.woff2':'font/woff2','.ttf':'font/ttf','.pdf':'application/pdf'
+          }
+
+          app.whenReady().then(() => {
+            protocol.handle('app', (request) => {
+              const reqUrl = new URL(request.url)
+              let rel = reqUrl.pathname.replace(/^\//, '') || 'index.html'
+              const local = getFilePath(rel)
+              if (local) {
+                const ext = path.extname(local)
+                const data = fs.readFileSync(local)
+                return new Response(data, { status:200, headers:{'Content-Type': MIME[ext]||'application/octet-stream'} })
+              }
+              return new Response('Not found', { status: 404 })
+            })
+
+            const win = new BrowserWindow({
+              width: 1280, height: 900,
+              title: 'Código Escondido 19',
+              backgroundColor: '#8a4800',
+              webPreferences: { nodeIntegration:false, contextIsolation:true, webSecurity:true }
+            })
+            win.setMenuBarVisibility(false)
+            win.loadURL('app://localhost/index.html')
+            setTimeout(tryUpdate, 5000)
+          })
+
+          app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit() })
+          app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) app.emit('ready') })
+          MAINEOF
+
+      - name: Instalar dependencias
+        run: cd electron-app && npm install
+
+      - name: Compilar para macOS
+        run: cd electron-app && npx electron-builder --mac --dir
+
+      - name: Comprimir app (x64)
+        run: |
+          cd electron-app/dist
+          zip -r CodigoEscondido19-macos-x64.zip "mac/Codigo Escondido 19.app" 2>/dev/null || \
+          zip -r CodigoEscondido19-macos-x64.zip mac-x64/ 2>/dev/null || \
+          zip -r CodigoEscondido19-macos-x64.zip $(ls -d mac*/ | head -1)
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-desktop
+          name: "Codigo Escondido 19 - Apps Desktop"
+          draft: false
+          prerelease: false
+          files: electron-app/dist/CodigoEscondido19-macos-x64.zip
